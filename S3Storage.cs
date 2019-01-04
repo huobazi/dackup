@@ -7,7 +7,6 @@ namespace dackup
 {
     public class S3Storage : IStorage
     {
-
         private string region, bucket, accessKeyId, accessKeySecret, pathPrefix;
 
         private DateTime removeThreshold;
