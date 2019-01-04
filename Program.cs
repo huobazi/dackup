@@ -90,6 +90,8 @@ namespace dackup
                     });
 
                     Log.CloseAndFlush();
+                    
+                    Log.Information("======== Dackup done ========");
 
                     return 1;
                 });
