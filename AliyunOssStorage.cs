@@ -13,6 +13,7 @@ namespace dackup
 
         private DateTime removeThreshold;
 
+        private AliyunOssStorage(){}
         public AliyunOssStorage(string endpoint, string accessKeyId, string accessKeySecret, string bucketName, string pathPrefix, DateTime removeThreshold)
         {
             this.endpoint = endpoint;
