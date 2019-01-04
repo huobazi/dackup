@@ -2,19 +2,22 @@
 using System;
 using System.Collections.Generic;
 
-public class ArchiveBackupTask : IBackupTask
+namespace dackup
 {
-    private List<string> pathList;
-    public ArchiveBackupTask(List<string> pathList)
+    public class ArchiveBackupTask : IBackupTask
     {
-        this.pathList = pathList;
-    }
-    public BackupTaskResult Run()
-    {
-        return new BackupTaskResult
+        private List<string> pathList;
+        public ArchiveBackupTask(List<string> pathList)
         {
-            Result = true,
-        };
+            this.pathList = pathList;
+        }
+        public BackupTaskResult Backup()
+        {
+            return new BackupTaskResult
+            {
+                Result = true,
+            };
 
+        }
     }
 }

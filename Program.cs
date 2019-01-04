@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 using McMaster.Extensions.CommandLineUtils;
@@ -46,7 +47,33 @@ namespace dackup
 
                 performCmd.OnExecute(() =>
                 {
-                    Console.WriteLine("Configfile = " + configFile.Value());
+                    var config = configFile.Value();
+
+                    // run backup
+                    var taskList = ParseBackupTaskFromConfig(config);
+                    taskList.ForEach(task=>{
+                        var result = task.Backup();
+                        if(result.Result)
+                        {
+                            BackupContext.Current.AddToGenerateFilesList(result.FilesList);
+                        }
+                    });
+
+                    // run store
+                    var storageList = ParseStorageFromConfig(config);
+                    storageList.ForEach(storage=>{
+                        BackupContext.Current.GenerateFilesList.ForEach(file=>{
+                            storage.Upload(file);
+                        });
+                        storage.Purge();
+                    });
+
+                    // run notify
+                    var notifyList = ParseNotifyFromConfig(config);
+                    notifyList.ForEach(notify=>{
+                        notify.Notify();
+                    });
+
                     return 1;
                 });
 
@@ -60,5 +87,19 @@ namespace dackup
 
             return app.Execute(args);
         }
+
+        private static List<IBackupTask> ParseBackupTaskFromConfig(string configFile)
+        {
+            return null;
+        }
+        private static List<IStorage> ParseStorageFromConfig(string configFile)
+        {
+            return null;
+        }
+        private static List<INotify> ParseNotifyFromConfig(string configFile)
+        {
+            return null;
+        }
+        
     }
 }

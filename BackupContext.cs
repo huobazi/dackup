@@ -1,44 +1,70 @@
 
 using System;
-public sealed class BackupContext
+using System.Linq;
+using System.Collections.Generic;
+
+namespace dackup
 {
-    private static object _mutex = new object();
-    private static BackupContext instance;
-    private BackupContext() { }
-    private BackupContext(string logFile, string tmpPath)
+    public sealed class BackupContext
     {
-        this.LogFile = logFile;
-        this.TmpPath = tmpPath;
-    }
-    public static BackupContext Create(string logFile, string tmpPath)
-    {
-        if (instance != null)
+        private static object _mutex = new object();
+        private static BackupContext instance;
+
+        private static List<string> generateFilesList = new List<string>();
+        private BackupContext() { }
+        private BackupContext(string logFile, string tmpPath)
         {
-            throw new InvalidOperationException("BackupContext already created - use BacupContext.Current to get");
+            this.LogFile = logFile;
+            this.TmpPath = tmpPath;
         }
-        else
+        public static BackupContext Create(string logFile, string tmpPath)
         {
-            lock (_mutex)
+            if (instance != null)
             {
-                if (instance == null)
-                {
-                    instance = new BackupContext(logFile, tmpPath);
-                }
+                throw new InvalidOperationException("BackupContext already created - use BacupContext.Current to get");
             }
-        }
-        return instance;
-    }
-    public static BackupContext Current
-    {
-        get
-        {
-            if (instance == null)
+            else
             {
-                throw new InvalidOperationException("BackupContext not created - use BacupContext.Create to create");
+                lock (_mutex)
+                {
+                    if (instance == null)
+                    {
+                        instance = new BackupContext(logFile, tmpPath);
+                    }
+                }
             }
             return instance;
         }
+        public static BackupContext Current
+        {
+            get
+            {
+                if (instance == null)
+                {
+                    throw new InvalidOperationException("BackupContext not created - use BacupContext.Create to create");
+                }
+                return instance;
+            }
+        }
+        public string LogFile { get; private set; }
+        public string TmpPath { get; private set; }
+        public List<string> GenerateFilesList 
+        {
+            get
+            {
+                return GenerateFilesList.Distinct().ToList();
+            }
+        }
+        public void AddToGenerateFilesList(string fileName)
+        {
+            if(! generateFilesList.Contains(fileName))
+            {
+                generateFilesList.Add(fileName);
+            }
+        }
+        public void AddToGenerateFilesList(List<string> filesList)
+        {
+            generateFilesList.AddRange(filesList);   
+        }
     }
-    public string LogFile { get; private set; }
-    public string TmpPath { get; private set; }
 }

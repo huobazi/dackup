@@ -9,6 +9,8 @@
 
   <ItemGroup>
       <PackageReference Include="Aliyun.OSS.SDK" Version="2.9.0" />
+      <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
+      <PackageReference Include="Npgsql" Version="4.0.4" />
       <RuntimeHostConfigurationOption Include="System.Globalization.Invariant" Value="true" />
 
     <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="2.3.0" />
