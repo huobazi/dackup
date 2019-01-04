@@ -42,8 +42,7 @@ namespace dackup
                 var logPath = performCmd.Option("--log-path  <PATH>", "op. The File path of the log.", CommandOptionType.SingleValue);
                 var tmpPath = performCmd.Option("--tmp-path  <PATH>", "op. The tmp path.", CommandOptionType.SingleValue);
 
-                BackupContext.Current.LogFile =  Path.Join(logPath.Value(),"dackup.log");
-                BackupContext.Current.TmpPath =  tmpPath.Value();
+                BackupContext.Create(Path.Join(logPath.Value(),"dackup.log"),tmpPath.Value());
 
                 performCmd.OnExecute(() =>
                 {

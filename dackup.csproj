@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+      <PackageReference Include="Aliyun.OSS.SDK" Version="2.9.0" />
       <RuntimeHostConfigurationOption Include="System.Globalization.Invariant" Value="true" />
 
     <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="2.3.0" />
