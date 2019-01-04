@@ -2,6 +2,8 @@ using System;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
+using Serilog;
+
 using Aliyun.OSS;
 
 namespace dackup
@@ -13,7 +15,7 @@ namespace dackup
 
         private DateTime removeThreshold;
 
-        private AliyunOssStorage(){}
+        private AliyunOssStorage() { }
         public AliyunOssStorage(string endpoint, string accessKeyId, string accessKeySecret, string bucketName, string pathPrefix, DateTime removeThreshold)
         {
             this.endpoint = endpoint;
@@ -25,10 +27,14 @@ namespace dackup
         }
         public Task Upload(string fileName)
         {
+
             return Task.Run(() =>
             {
                 OssClient client = new OssClient(endpoint, accessKeyId, accessKeySecret);
                 string key = fileName;
+
+                Log.Information($"Upload to aliyun oss: {fileName} key: {key} pathPrefix: {pathPrefix}");
+
                 client.PutObject(bucketName, key, pathPrefix);
             });
         }
@@ -37,6 +43,8 @@ namespace dackup
         {
             return Task.Run(() =>
             {
+                Log.Information($"Purge to aliyun  removeThreshold: {removeThreshold}");
+
                 OssClient client = new OssClient(endpoint, accessKeyId, accessKeySecret);
                 var objectListing = client.ListObjects(bucketName, pathPrefix);
 
@@ -52,19 +60,21 @@ namespace dackup
 
                 if (objectsToDelete.Count == 0)
                 {
-                    Console.WriteLine("Nothing to purge.");
+                    Log.Information("Nothing to purge.");
                 }
                 else
                 {
-                    Console.WriteLine("Prepare to purge...");
                     objectsToDelete.ForEach(item =>
                     {
-                        Console.WriteLine(item);
+                        Log.Information($"Prepare to purge: {item}");
                     });
+
+                    DeleteObjectsRequest request = new DeleteObjectsRequest(bucketName, objectsToDelete);
+                    client.DeleteObjects(request);
+
+                    Log.Information("Aliyun oss purge done.");
                 }
 
-                DeleteObjectsRequest request = new DeleteObjectsRequest(bucketName, objectsToDelete);
-                client.DeleteObjects(request);
             });
         }
     }

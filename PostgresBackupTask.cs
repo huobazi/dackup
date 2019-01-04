@@ -3,6 +3,7 @@ using System.IO;
 using System.Diagnostics;
 using System.Collections.Generic;
 
+using Serilog;
 using Npgsql;
 
 namespace dackup
@@ -20,13 +21,13 @@ namespace dackup
 
         public override void CheckDbConnection()
         {
-            Console.WriteLine($"Testing connection to '{UserName}@{Host}:{Port}/{Database}'...");
+            Log.Information($"Testing connection to '{UserName}@{Host}:{Port}/{Database}'...");
 
             using (var connection = new NpgsqlConnection($"Server={Host};Port={Port};Database={Database};User Id={UserName};Password={Password};"))
             {
                 connection.Open();
             }
-            Console.WriteLine("Connection to DB established.");
+            Log.Information("Connection to DB established.");
         }
         public override BackupTaskResult CreateNewBackup()
         {
@@ -48,7 +49,7 @@ namespace dackup
             process.WaitForExit();
             var code = process.ExitCode;
 
-            Console.WriteLine("Creating new backup completed.");
+            Log.Information($"Postgres backup completed. dump files : {backupFile}");
 
             var result = new BackupTaskResult
             {
@@ -60,17 +61,17 @@ namespace dackup
         }
         private bool CheckPgDump()
         {
-            Console.WriteLine("Checking pg_dump existence...");
+            Log.Information("Checking pg_dump existence...");
 
             var process = Process.Start(PathToPgDump, "--help");
             process.WaitForExit();
             if (process.ExitCode != 0)
             {
-                Console.WriteLine($"pg_dump not found on path '{PathToPgDump}'.");
+                Log.Information($"pg_dump not found on path '{PathToPgDump}'.");
                 return false;
             }
 
-            Console.WriteLine("pg_dump found");
+            Log.Information("pg_dump found");
 
             return true;
         }

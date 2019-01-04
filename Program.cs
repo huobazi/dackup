@@ -3,6 +3,9 @@ using System.IO;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
+using Serilog;
+using Serilog.Configuration;
+
 using McMaster.Extensions.CommandLineUtils;
 using McMaster.Extensions.CommandLineUtils.Validation;
 
@@ -12,6 +15,12 @@ namespace dackup
     {
         public static int Main(string[] args)
         {
+            Log.Logger = new LoggerConfiguration()
+            .MinimumLevel.Information()
+            .WriteTo.Console()
+            .WriteTo.File("log.txt", rollingInterval: RollingInterval.Day, rollOnFileSizeLimit: true)
+            .CreateLogger();
+
             var app = new CommandLineApplication
             {
                 Name = "dackup",
@@ -43,11 +52,13 @@ namespace dackup
                 var logPath = performCmd.Option("--log-path  <PATH>", "op. The File path of the log.", CommandOptionType.SingleValue);
                 var tmpPath = performCmd.Option("--tmp-path  <PATH>", "op. The tmp path.", CommandOptionType.SingleValue);
 
-                BackupContext.Create(Path.Join(logPath.Value(),"dackup.log"),tmpPath.Value());
+                BackupContext.Create(Path.Join(logPath.Value(), "dackup.log"), tmpPath.Value());
 
                 performCmd.OnExecute(() =>
                 {
                     var config = configFile.Value();
+
+                    Log.Information("======== Dackup start ========");
 
                     // run backup
                     var taskList = ParseBackupTaskFromConfig(config);
@@ -59,6 +70,8 @@ namespace dackup
                         }
                     });
 
+                    Log.Information("======== Dackup start storage task ========");
+
                     // run store
                     var storageList = ParseStorageFromConfig(config);
                     storageList.ForEach(storage=>{
@@ -68,11 +81,15 @@ namespace dackup
                         storage.Purge();
                     });
 
+                    Log.Information("======== Dackup start notify task ========");
+
                     // run notify
                     var notifyList = ParseNotifyFromConfig(config);
                     notifyList.ForEach(notify=>{
                         notify.Notify();
                     });
+
+                    Log.CloseAndFlush();
 
                     return 1;
                 });

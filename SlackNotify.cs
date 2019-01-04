@@ -1,6 +1,8 @@
 using System;
 using System.Threading.Tasks;
 
+using Serilog;
+
 namespace dackup
 {
     public class SlackNotify
@@ -18,6 +20,8 @@ namespace dackup
         }
         public Task Notify()
         {
+            Log.Information("======== SlackNotify start ========");
+
             return Task.Run(() =>
                {
                    var message = new SlackMessage();
