@@ -13,10 +13,18 @@ namespace dackup
         {
             Log.Information($"======== Dackup start [{this.GetType().Name }.BackupAsync] ========");
 
-            var task = Task.Run(()=>Backup());
+            var task = Task.Run(() =>
+            {
+                var result = Backup();
+                if (result.Result)
+                {
+                    BackupContext.Current.AddToGenerateFilesList(result.FilesList);
+                }
+                return result;
+            });
             return await task;
         }
-        
+
         protected abstract BackupTaskResult Backup();
     }
 }

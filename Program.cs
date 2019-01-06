@@ -78,17 +78,9 @@ namespace dackup
                         backupTasks.Wait();
                     }
                     catch (AggregateException)
-                    { }
-
-                    backupTaskResult.ForEach(result =>
-                    {
-                        if (result.Result.Result)
-                        {
-                            BackupContext.Current.AddToGenerateFilesList(result.Result.FilesList);
-                        }
-                    });
-
-
+                    { 
+                    }
+                    
                     Log.Information("======== Dackup start storage task ========");
 
                     // run store
