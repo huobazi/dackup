@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Serilog;
 
 using McMaster.Extensions.CommandLineUtils;
+using Microsoft.Extensions.Configuration;
 
 namespace dackup
 {
@@ -54,38 +55,48 @@ namespace dackup
 
                 performCmd.OnExecute(() =>
                 {
-                    var config = configFile.Value();
-
+                    var configFilePath = configFile.Value();
+                    var configFileInfo = new FileInfo(configFilePath);
+                    var configurationBuilder = new ConfigurationBuilder();
+                    configurationBuilder.SetBasePath(configFileInfo.Directory.FullName);
+                    configurationBuilder.AddXmlFile(configFileInfo.Name);                    
+                    var configRoot = configurationBuilder.Build();
+                    
                     Log.Information("======== Dackup start ========");
 
                     // run backup
-                    var backupTaskList = ParseBackupTaskFromConfig(config);
+                    var backupTaskList = ParseBackupTaskFromConfig(configRoot);
                     var backupTaskResult = new List<Task<BackupTaskResult>>();
-                    backupTaskList.ForEach(task=>{
+                    backupTaskList.ForEach(task =>
+                    {
                         var result = task.BackupAsync();
                         backupTaskResult.Add(result);
                     });
                     var backupTasks = Task.WhenAll(backupTaskResult.ToArray());
-                     try {
+                    try
+                    {
                         backupTasks.Wait();
                     }
                     catch (AggregateException)
                     { }
-   
-                    backupTaskResult.ForEach(result=>{
-                        if(result.Result.Result)
+
+                    backupTaskResult.ForEach(result =>
+                    {
+                        if (result.Result.Result)
                         {
                             BackupContext.Current.AddToGenerateFilesList(result.Result.FilesList);
                         }
                     });
-                    
+
 
                     Log.Information("======== Dackup start storage task ========");
 
                     // run store
-                    var storageList = ParseStorageFromConfig(config);
-                    storageList.ForEach(storage=>{
-                        BackupContext.Current.GenerateFilesList.ForEach(file=>{
+                    var storageList = ParseStorageFromConfig(configRoot);
+                    storageList.ForEach(storage =>
+                    {
+                        BackupContext.Current.GenerateFilesList.ForEach(file =>
+                        {
                             storage.UploadAsync(file);
                         });
                         storage.PurgeAsync();
@@ -94,13 +105,14 @@ namespace dackup
                     Log.Information("======== Dackup start notify task ========");
 
                     // run notify
-                    var notifyList = ParseNotifyFromConfig(config);
-                    notifyList.ForEach(notify=>{
+                    var notifyList = ParseNotifyFromConfig(configRoot);
+                    notifyList.ForEach(notify =>
+                    {
                         notify.NotifyAsync();
                     });
 
                     Log.CloseAndFlush();
-                    
+
                     Log.Information("======== Dackup done ========");
 
                     return 1;
@@ -117,18 +129,18 @@ namespace dackup
             return app.Execute(args);
         }
 
-        private static List<IBackupTask> ParseBackupTaskFromConfig(string configFile)
+        private static List<IBackupTask> ParseBackupTaskFromConfig(IConfigurationRoot configRoot)
         {
             return null;
         }
-        private static List<IStorage> ParseStorageFromConfig(string configFile)
+        private static List<IStorage> ParseStorageFromConfig(IConfigurationRoot configRoot)
         {
             return null;
         }
-        private static List<INotify> ParseNotifyFromConfig(string configFile)
+        private static List<INotify> ParseNotifyFromConfig(IConfigurationRoot configRoot)
         {
             return null;
         }
-        
+
     }
 }
