@@ -5,7 +5,7 @@ using Serilog;
 
 namespace dackup
 {
-    public class SlackNotify
+    public class SlackNotify : NotifyBase
     {
         private Uri webHookUri;
         private string channel, userName,messageBody,icon_emoji; 
@@ -18,11 +18,11 @@ namespace dackup
             this.messageBody = messageBody;
             this.icon_emoji = icon_emoji;
         }
-        public Task Notify()
+        protected override Task<NotifyResult> Notify()
         {
             Log.Information("======== SlackNotify start ========");
 
-            return Task.Run(() =>
+            return Task<NotifyResult>.Run(() =>
                {
                    var message = new SlackMessage();
                    message.UserName = this.userName;
@@ -32,6 +32,8 @@ namespace dackup
                    
                    var client = new SlackClient(this.webHookUri);
                    client.SendSlackMessage(message);
+
+                   return new NotifyResult();
                });
         }
     }

@@ -1,12 +1,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 using Serilog;
 
 namespace dackup
 {
-    public abstract class DatabaseBackupTask : IBackupTask
+    public abstract class DatabaseBackupTask : BackupTaskBase
     {
         private string dbType;
         public DatabaseBackupTask(string dbType)
@@ -18,7 +19,7 @@ namespace dackup
 
         public abstract BackupTaskResult CreateNewBackup();
 
-        public BackupTaskResult Backup()
+        protected override BackupTaskResult Backup()
         {
             CheckDbConnection();
             var result = CreateNewBackup();

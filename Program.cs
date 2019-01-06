@@ -1,13 +1,11 @@
 ﻿using System;
 using System.IO;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+using System.Threading.Tasks;
 
 using Serilog;
-using Serilog.Configuration;
 
 using McMaster.Extensions.CommandLineUtils;
-using McMaster.Extensions.CommandLineUtils.Validation;
 
 namespace dackup
 {
@@ -61,14 +59,26 @@ namespace dackup
                     Log.Information("======== Dackup start ========");
 
                     // run backup
-                    var taskList = ParseBackupTaskFromConfig(config);
-                    taskList.ForEach(task=>{
-                        var result = task.Backup();
-                        if(result.Result)
+                    var backupTaskList = ParseBackupTaskFromConfig(config);
+                    var backupTaskResult = new List<Task<BackupTaskResult>>();
+                    backupTaskList.ForEach(task=>{
+                        var result = task.BackupAsync();
+                        backupTaskResult.Add(result);
+                    });
+                    var backupTasks = Task.WhenAll(backupTaskResult.ToArray());
+                     try {
+                        backupTasks.Wait();
+                    }
+                    catch (AggregateException)
+                    { }
+   
+                    backupTaskResult.ForEach(result=>{
+                        if(result.Result.Result)
                         {
-                            BackupContext.Current.AddToGenerateFilesList(result.FilesList);
+                            BackupContext.Current.AddToGenerateFilesList(result.Result.FilesList);
                         }
                     });
+                    
 
                     Log.Information("======== Dackup start storage task ========");
 
@@ -76,9 +86,9 @@ namespace dackup
                     var storageList = ParseStorageFromConfig(config);
                     storageList.ForEach(storage=>{
                         BackupContext.Current.GenerateFilesList.ForEach(file=>{
-                            storage.Upload(file);
+                            storage.UploadAsync(file);
                         });
-                        storage.Purge();
+                        storage.PurgeAsync();
                     });
 
                     Log.Information("======== Dackup start notify task ========");
@@ -86,7 +96,7 @@ namespace dackup
                     // run notify
                     var notifyList = ParseNotifyFromConfig(config);
                     notifyList.ForEach(notify=>{
-                        notify.Notify();
+                        notify.NotifyAsync();
                     });
 
                     Log.CloseAndFlush();

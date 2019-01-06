@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace dackup
 {
-    public class S3Storage : IStorage
+    public class S3Storage : StorageBase
     {
         private string region, bucket, accessKeyId, accessKeySecret, pathPrefix;
 
@@ -21,20 +21,14 @@ namespace dackup
             this.pathPrefix = pathPrefix;
             this.removeThreshold = removeThreshold;
         }
-        public Task Upload(string fileName)
-        {
-            return Task.Run(() =>
-            {
-                
-            });
+        protected override UploadResult Upload(string fileName)
+        {    
+            return new UploadResult();
         }
 
-        public Task Purge()
+        protected override PurgeResult Purge()
         {
-            return Task.Run(() =>
-            {
-                
-            });
+            return new PurgeResult();
         }
     }
 }

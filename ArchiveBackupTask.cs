@@ -1,19 +1,21 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 using Serilog;
 
 namespace dackup
 {
-    public class ArchiveBackupTask : IBackupTask
+    public class ArchiveBackupTask : BackupTaskBase
     {
         private List<string> pathList;
         public ArchiveBackupTask(List<string> pathList)
         {
             this.pathList = pathList;
         }
-        public BackupTaskResult Backup()
+
+        protected override BackupTaskResult Backup()
         {
             if (pathList == null || pathList.Count <= 0)
             {

@@ -5,6 +5,10 @@ namespace dackup
 {
     public interface INotify
     {        
-        Task Notify();
+        Task<NotifyResult> NotifyAsync();
+    }
+
+    public class NotifyResult{
+
     }
 }

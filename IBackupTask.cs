@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 
 
@@ -6,7 +7,7 @@ namespace dackup
 {
     public interface IBackupTask
     {
-        BackupTaskResult Backup();
+        Task<BackupTaskResult> BackupAsync();
     }
 
     public class BackupTaskResult

@@ -5,7 +5,14 @@ namespace dackup
 {
     public interface IStorage
     {        
-        Task Upload(string fileName);
-        Task Purge();
+        Task<UploadResult> UploadAsync(string fileName);
+        Task<PurgeResult> PurgeAsync();
+    }
+
+    public class UploadResult{
+        
+    }
+    public class PurgeResult{
+        
     }
 }
