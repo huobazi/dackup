@@ -2,14 +2,15 @@ using System;
 
 namespace dackup
 {
-    public static class Utils{
+    public static class Utils
+    {
         public static TimeSpan ConvertRemoveThresholdToTimeSpan(string timeSpan)
         {
             if (timeSpan.Length < 2)
             {
-                    throw new InvalidOperationException($"Invalid value for option: remove_threshold '{timeSpan}'");
+                throw new InvalidOperationException($"Invalid value for option: remove_threshold '{timeSpan}'");
             }
-            
+
             var l = timeSpan.Length - 1;
             var value = timeSpan.Substring(0, l);
             var type = timeSpan.Substring(l, 1);
@@ -25,5 +26,11 @@ namespace dackup
                 default: throw new InvalidOperationException($"Invalid value for remove_threshold option: '{timeSpan}'");
             }
         }
+
+        public static DateTime ConvertRemoveThresholdToDateTime(string timeSpan)
+        {
+            return DateTime.Now - ConvertRemoveThresholdToTimeSpan(timeSpan);
+        }
+
     }
 }

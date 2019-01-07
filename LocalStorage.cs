@@ -1,27 +1,20 @@
 using System;
+using System.IO;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
-
 namespace dackup
 {
-    public class S3Storage : StorageBase
-    {
-        private string region, bucket, accessKeyId, accessKeySecret, pathPrefix;
-
-        private S3Storage(){}
-
-        
+    public class LocalStorage : StorageBase
+    {   
+        private string path;
         public DateTime? RemoveThreshold {get;set;}
-        public string PathPrefix{get;set;}
         
-        public S3Storage(string region, string accessKeyId, string accessKeySecret, string bucket)
+        public LocalStorage(string path)
         {
-            this.region = region;
-            this.accessKeyId = accessKeyId;
-            this.accessKeySecret = accessKeySecret;
-            this.bucket = bucket;
+            this.path = path;
         }
+
         protected override UploadResult Upload(string fileName)
         {    
             return new UploadResult();
@@ -33,6 +26,17 @@ namespace dackup
             {
                 return new PurgeResult();
             }
+
+            System.IO.DirectoryInfo di = new DirectoryInfo(path);
+
+            foreach (FileInfo file in di.GetFiles())
+            {
+                if(file.LastWriteTime.ToUniversalTime() <= RemoveThreshold.Value)
+                {
+                    file.Delete(); 
+                }
+            }
+
             return new PurgeResult();
         }
     }

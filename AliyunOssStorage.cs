@@ -12,17 +12,19 @@ namespace dackup
     {
         private string endpoint, accessKeyId, accessKeySecret, bucketName, pathPrefix;
 
-        private DateTime removeThreshold;
 
         private AliyunOssStorage() { }
-        public AliyunOssStorage(string endpoint, string accessKeyId, string accessKeySecret, string bucketName, string pathPrefix, DateTime removeThreshold)
+
+        public string PathPrefix{get;set;}
+
+        public DateTime? RemoveThreshold{get;set;}
+
+        public AliyunOssStorage(string endpoint, string accessKeyId, string accessKeySecret, string bucketName)
         {
             this.endpoint = endpoint;
             this.accessKeyId = accessKeyId;
             this.accessKeySecret = accessKeySecret;
             this.bucketName = bucketName;
-            this.pathPrefix = pathPrefix;
-            this.removeThreshold = removeThreshold;
         }
         protected override UploadResult Upload(string fileName)
         {
@@ -37,7 +39,12 @@ namespace dackup
 
         protected override PurgeResult Purge()
         {
-            Log.Information($"Purge to aliyun  removeThreshold: {removeThreshold}");
+            if (RemoveThreshold == null || RemoveThreshold.Value > DateTime.Now)
+            {
+                return new PurgeResult();
+            }
+
+            Log.Information($"Purge to aliyun  removeThreshold: {RemoveThreshold}");
 
             OssClient client = new OssClient(endpoint, accessKeyId, accessKeySecret);
             var objectListing = client.ListObjects(bucketName, pathPrefix);
@@ -46,7 +53,7 @@ namespace dackup
 
             foreach (var summary in objectListing.ObjectSummaries)
             {
-                if (summary.LastModified.ToUniversalTime() <= removeThreshold)
+                if (summary.LastModified.ToUniversalTime() <= RemoveThreshold.Value)
                 {
                     objectsToDelete.Add(summary.Key);
                 }

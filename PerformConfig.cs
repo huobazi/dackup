@@ -7,14 +7,14 @@ using System.Collections.Generic;
 public class Includes
 {
     [XmlElement(ElementName = "path")]
-    public List<string> Path { get; set; }
+    public List<string> PathList { get; set; }
 }
 
 [XmlRoot(ElementName = "excludes")]
 public class Excludes
 {
     [XmlElement(ElementName = "path")]
-    public string Path { get; set; }
+    public List<string> PathList { get; set; }
 }
 
 [XmlRoot(ElementName = "archives")]
@@ -22,6 +22,7 @@ public class Archives
 {
     [XmlElement(ElementName = "includes")]
     public Includes Includes { get; set; }
+
     [XmlElement(ElementName = "excludes")]
     public Excludes Excludes { get; set; }
 }
@@ -39,7 +40,8 @@ public class Option
 public class Database
 {
     [XmlElement(ElementName = "option")]
-    public List<Option> Option { get; set; }
+    public List<Option> OptionList { get; set; }
+
     [XmlAttribute(AttributeName = "type")]
     public string Type { get; set; }
 }
@@ -48,14 +50,14 @@ public class Database
 public class Databases
 {
     [XmlElement(ElementName = "database")]
-    public Database Database { get; set; }
+    public List<Database> DatabaseList { get; set; }
 }
 
 [XmlRoot(ElementName = "store")]
 public class Storage
 {
     [XmlElement(ElementName = "option")]
-    public List<Option> Option { get; set; }
+    public List<Option> OptionList { get; set; }
 
     [XmlAttribute(AttributeName = "type")]
     public string Type { get; set; }
@@ -65,17 +67,20 @@ public class Storage
 public class Storages
 {
     [XmlElement(ElementName = "storage")]
-    public List<Storage> Store { get; set; }
+    public List<Storage> StorageList { get; set; }
 }
 
 public class NotifyBase
 {
     [XmlElement(ElementName = "option")]
-    public List<Option> Option { get; set; }
+    public List<Option> OptionList { get; set; }
+
     [XmlAttribute(AttributeName = "on_success")]
     public bool OnSuccess { get; set; }
+
     [XmlAttribute(AttributeName = "on_warning")]
     public bool OnWarning { get; set; }
+    
     [XmlAttribute(AttributeName = "on_failure")]
     public bool OnFailure { get; set; }
 }

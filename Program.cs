@@ -1,12 +1,17 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
+using System.Collections.Specialized;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
 using Serilog;
 
 using McMaster.Extensions.CommandLineUtils;
+
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.FileExtensions;
+using Microsoft.Extensions.Configuration.Xml;
 
 namespace dackup
 {
@@ -36,7 +41,8 @@ namespace dackup
 
                 genCmd.OnExecute(() =>
                 {
-                    Console.WriteLine("modleName = " + modelName.Value);
+                    var fileName = Path.Combine(Environment.CurrentDirectory, modelName.Value + ".config");
+                    PerformConfigHelper.GenerateMockupConfig(fileName);
                     return 1;
                 });
             });
@@ -57,15 +63,19 @@ namespace dackup
                 {
                     var configFilePath = configFile.Value();
                     var configFileInfo = new FileInfo(configFilePath);
-                    var configurationBuilder = new ConfigurationBuilder();
-                    configurationBuilder.SetBasePath(configFileInfo.Directory.FullName);
-                    configurationBuilder.AddXmlFile(configFileInfo.Name);                    
-                    var configRoot = configurationBuilder.Build();
-                    
+
+                    var builder = new ConfigurationBuilder()
+                    .SetBasePath(configFileInfo.Directory.FullName)
+                    .AddXmlFile(configFileInfo.Name);
+
+                    var configRoot = builder.Build();
+
+                    var performConfig = configRoot.GetSection("perform").Get<PerformConfig>();
+
                     Log.Information("======== Dackup start ========");
 
                     // run backup
-                    var backupTaskList = ParseBackupTaskFromConfig(configRoot);
+                    var backupTaskList = PerformConfigHelper.ParseBackupTaskFromConfig(performConfig);
                     var backupTaskResult = new List<Task<BackupTaskResult>>();
                     backupTaskList.ForEach(task =>
                     {
@@ -78,13 +88,13 @@ namespace dackup
                         backupTasks.Wait();
                     }
                     catch (AggregateException)
-                    { 
+                    {
                     }
-                    
+
                     Log.Information("======== Dackup start storage task ========");
 
                     // run store
-                    var storageList = ParseStorageFromConfig(configRoot);
+                    var storageList = PerformConfigHelper.ParseStorageFromConfig(performConfig);
                     storageList.ForEach(storage =>
                     {
                         BackupContext.Current.GenerateFilesList.ForEach(file =>
@@ -97,10 +107,12 @@ namespace dackup
                     Log.Information("======== Dackup start notify task ========");
 
                     // run notify
-                    var notifyList = ParseNotifyFromConfig(configRoot);
+                    var notifyList = PerformConfigHelper.ParseNotifyFromConfig(performConfig);
+                    string notifyMessage = "";
+
                     notifyList.ForEach(notify =>
                     {
-                        notify.NotifyAsync();
+                        notify.NotifyAsync(notifyMessage);
                     });
 
                     Log.CloseAndFlush();
@@ -119,19 +131,6 @@ namespace dackup
             });
 
             return app.Execute(args);
-        }
-
-        private static List<IBackupTask> ParseBackupTaskFromConfig(IConfigurationRoot configRoot)
-        {
-            return null;
-        }
-        private static List<IStorage> ParseStorageFromConfig(IConfigurationRoot configRoot)
-        {
-            return null;
-        }
-        private static List<INotify> ParseNotifyFromConfig(IConfigurationRoot configRoot)
-        {
-            return null;
         }
 
     }

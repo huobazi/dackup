@@ -9,15 +9,20 @@ namespace dackup
 {
     public class ArchiveBackupTask : BackupTaskBase
     {
-        private List<string> pathList;
-        public ArchiveBackupTask(List<string> pathList)
+        private List<string> includePathList;
+        private List<string> excludePathList;
+
+        private ArchiveBackupTask(){}
+        
+        public ArchiveBackupTask(List<string> includePathList, List<string> excludePathList)
         {
-            this.pathList = pathList;
+            this.includePathList = includePathList;
+            this.excludePathList = excludePathList;
         }
 
         protected override BackupTaskResult Backup()
         {
-            if (pathList == null || pathList.Count <= 0)
+            if (includePathList == null || includePathList.Count <= 0)
             {
                 return new BackupTaskResult
                 {
@@ -25,9 +30,10 @@ namespace dackup
                 };
             }
             Log.Information($"Archive backup start");
-            this.pathList.ForEach(file =>
+            this.includePathList.ForEach(file =>
             {
                 Log.Information($"Archive backup ===> : {file}");
+                // TODO archive
 
             });
             return new BackupTaskResult
