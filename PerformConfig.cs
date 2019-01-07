@@ -6,15 +6,15 @@ using System.Collections.Generic;
 [XmlRoot(ElementName = "includes")]
 public class Includes
 {
-    [XmlElement(ElementName = "path")]
-    public List<string> PathList { get; set; }
+    [XmlElement(ElementName = "option")]
+    public List<Option> PathList { get; set; }
 }
 
 [XmlRoot(ElementName = "excludes")]
 public class Excludes
 {
-    [XmlElement(ElementName = "path")]
-    public List<string> PathList { get; set; }
+    [XmlElement(ElementName = "option")]
+    public List<Option> PathList { get; set; }
 }
 
 [XmlRoot(ElementName = "archives")]
@@ -32,6 +32,7 @@ public class Option
 {
     [XmlAttribute(AttributeName = "name")]
     public string Name { get; set; }
+    
     [XmlAttribute(AttributeName = "value")]
     public string Value { get; set; }
 }
@@ -44,6 +45,9 @@ public class Database
 
     [XmlAttribute(AttributeName = "type")]
     public string Type { get; set; }
+
+    [XmlAttribute(AttributeName = "name")]
+    public string Name { get; set; }
 }
 
 [XmlRoot(ElementName = "databases")]
@@ -80,7 +84,7 @@ public class NotifyBase
 
     [XmlAttribute(AttributeName = "on_warning")]
     public bool OnWarning { get; set; }
-    
+
     [XmlAttribute(AttributeName = "on_failure")]
     public bool OnFailure { get; set; }
 }
@@ -122,5 +126,8 @@ public class PerformConfig
 
     [XmlAttribute(AttributeName = "compress")]
     public string Compress { get; set; }
+
+    [XmlAttribute(AttributeName = "name")]
+    public string Name { get; set; }
 }
 

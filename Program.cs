@@ -19,11 +19,6 @@ namespace dackup
     {
         public static int Main(string[] args)
         {
-            Log.Logger = new LoggerConfiguration()
-            .MinimumLevel.Information()
-            .WriteTo.Console()
-            .WriteTo.File("log.txt", rollingInterval: RollingInterval.Day, rollOnFileSizeLimit: true)
-            .CreateLogger();
 
             var app = new CommandLineApplication
             {
@@ -58,6 +53,12 @@ namespace dackup
                 var tmpPath = performCmd.Option("--tmp-path  <PATH>", "op. The tmp path.", CommandOptionType.SingleValue);
 
                 BackupContext.Create(Path.Join(logPath.Value(), "dackup.log"), tmpPath.Value());
+
+                Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Information()
+                .WriteTo.Console()
+                .WriteTo.File(BackupContext.Current.LogFile, rollingInterval: RollingInterval.Month, rollOnFileSizeLimit: true)
+                .CreateLogger();
 
                 performCmd.OnExecute(() =>
                 {

@@ -17,7 +17,9 @@ namespace dackup
             {
                 if (config.Archives != null)
                 {
-                    var task = new ArchiveBackupTask(config.Archives.Includes.PathList, config.Archives.Excludes.PathList);
+                    var includesList = config.Archives.Includes.PathList.Select(c=>c.Value).ToList();
+                    var excludesList = config.Archives.Excludes.PathList.Select(c=>c.Value).ToList();
+                    var task = new ArchiveBackupTask(includesList, excludesList);
                     tasks.Add(task);
                 }
                 if (config.Databases != null && config.Databases.DatabaseList != null)

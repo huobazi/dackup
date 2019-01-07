@@ -31,7 +31,7 @@ namespace dackup
             OssClient client = new OssClient(endpoint, accessKeyId, accessKeySecret);
             string key = fileName;
 
-            Log.Information($"Upload to aliyun oss: {fileName} key: {key} pathPrefix: {pathPrefix}");
+            Log.Information($"Upload to aliyun oss: {fileName} key: {key} pathPrefix: {this.PathPrefix}");
 
             client.PutObject(bucketName, key, this.PathPrefix);
             return new UploadResult();
@@ -47,7 +47,7 @@ namespace dackup
             Log.Information($"Purge to aliyun  removeThreshold: {RemoveThreshold}");
 
             OssClient client = new OssClient(endpoint, accessKeyId, accessKeySecret);
-            var objectListing = client.ListObjects(bucketName, pathPrefix);
+            var objectListing = client.ListObjects(bucketName, this.PathPrefix);
 
             var objectsToDelete = new List<string>();
 
