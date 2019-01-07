@@ -10,7 +10,7 @@ namespace dackup
 {
     public class AliyunOssStorage : StorageBase
     {
-        private string endpoint, accessKeyId, accessKeySecret, bucketName, pathPrefix;
+        private string endpoint, accessKeyId, accessKeySecret, bucketName;
 
 
         private AliyunOssStorage() { }
@@ -33,7 +33,7 @@ namespace dackup
 
             Log.Information($"Upload to aliyun oss: {fileName} key: {key} pathPrefix: {pathPrefix}");
 
-            client.PutObject(bucketName, key, pathPrefix);
+            client.PutObject(bucketName, key, this.PathPrefix);
             return new UploadResult();
         }
 

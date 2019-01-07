@@ -7,7 +7,7 @@ namespace dackup
 {
     public abstract class StorageBase : IStorage
     {
-        public async Task<UploadResult> UploadAsync(string fileName)
+        public virtual async Task<UploadResult> UploadAsync(string fileName)
         {            
             Log.Information($"======== Dackup start [{this.GetType().Name }.UploadAsync] ========");
 
@@ -15,7 +15,7 @@ namespace dackup
             return await task;
         }
 
-        public async Task<PurgeResult> PurgeAsync()
+        public virtual async Task<PurgeResult> PurgeAsync()
         {
             Log.Information($"======== Dackup start [{this.GetType().Name }.PurgeAsync] ========");
 

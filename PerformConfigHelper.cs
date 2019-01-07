@@ -5,7 +5,6 @@ using System.Collections.Specialized;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
-using System.IO;
 
 namespace dackup
 {
@@ -69,7 +68,7 @@ namespace dackup
                             var task = new S3Storage(region, accessKeyId, accessKeySecret, bucket);
                             if (storageConfig.OptionList.Find(c => c.Name.ToLower() == "path") != null)
                             {
-                                task.PathPrefix = storageConfig.OptionList.Find(c => c.Name.ToLower() == "path").Value;
+                                task.PathPrefix = storageConfig.OptionList.Find(c => c.Name.ToLower() == "path").Value.Trim('/').Trim('\\');
                             }
                             if (storageConfig.OptionList.Find(c => c.Name.ToLower() == "remove_threshold") != null)
                             {
@@ -87,7 +86,7 @@ namespace dackup
                             var task = new AliyunOssStorage(endpoint, accessKeyId, accessKeySecret, bucket);
                             if (storageConfig.OptionList.Find(c => c.Name.ToLower() == "path") != null)
                             {
-                                task.PathPrefix = storageConfig.OptionList.Find(c => c.Name.ToLower() == "path").Value;
+                                task.PathPrefix = storageConfig.OptionList.Find(c => c.Name.ToLower() == "path").Value.Trim('/').Trim('\\');
                             }
                             if (storageConfig.OptionList.Find(c => c.Name.ToLower() == "remove_threshold") != null)
                             {
