@@ -31,7 +31,11 @@ namespace dackup
             using (var s3Client = new AmazonS3Client(this.accessKeyId, this.accessKeySecret, RegionEndpoint.GetBySystemName(this.region)))
             {
                 var fileTransferUtility = new TransferUtility(s3Client);
-                var keyName = PathPrefix + "/" + fileName;
+                
+                string keyName = this.PathPrefix + "/" + fileName.Replace(BackupContext.Current.TmpPath,string.Empty).TrimStart('/');
+                
+                Log.Information($"Upload to s3 file: {fileName} key: {keyName}");
+
                 await fileTransferUtility.UploadAsync(fileName, this.bucket, keyName);
                 return new UploadResult();
             }

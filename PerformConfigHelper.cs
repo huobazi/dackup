@@ -131,7 +131,7 @@ namespace dackup
                 if (config.Notifiers != null && config.Notifiers.HttpPost != null)
                 {
                     var cfg = config.Notifiers.HttpPost;
-                    var webhook_url = cfg.OptionList.Find(c => c.Name == "uri").Value;
+                    var webhook_url = cfg.OptionList.Find(c => c.Name == "url").Value;
                     var slack = new HttpPostNotify(webhook_url);
                     slack.OnFailure = cfg.OnFailure;
                     slack.OnSuccess = cfg.OnSuccess;
@@ -145,6 +145,7 @@ namespace dackup
                             nv[param.Name] = param.Value;
                         });
                         slack.Params = nv;
+                        //TODO http post
                     }
                 }
                 if (config.Notifiers != null && config.Notifiers.Slack != null)

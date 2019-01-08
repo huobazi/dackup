@@ -95,8 +95,6 @@ namespace dackup
                     }
 
                     Log.Information("Dackup start storage task ");
-
-                    var x = BackupContext.Current.GenerateFilesList;
                     
                     // run store
                     var storageList = PerformConfigHelper.ParseStorageFromConfig(performConfig);
@@ -104,7 +102,7 @@ namespace dackup
                     {
                         BackupContext.Current.GenerateFilesList.ForEach(file =>
                         {
-                            storage.UploadAsync(file).Wait();
+                            storage.UploadAsync(file);
                         });
                         storage.PurgeAsync();
                     });
@@ -113,13 +111,26 @@ namespace dackup
 
                     // run notify
                     var notifyList = PerformConfigHelper.ParseNotifyFromConfig(performConfig);
-                    string notifyMessage = "Dackup sucess";
+                    string notifyMessage = $"Dackup {DateTime.Now} Sucess";
 
                     notifyList.ForEach(notify =>
                     {
                         notify.NotifyAsync(notifyMessage);
                     });
+                                        
+                    Log.Information("Dackup clean tmp folder ");
 
+                    var di = new DirectoryInfo(BackupContext.Current.TmpPath);
+                    foreach (var file in di.GetFiles())
+                    {
+                        file.Delete();
+                    }
+                    foreach (var dir in di.GetDirectories())
+                    {
+                        dir.Delete(true);
+                    }
+
+                    Directory.Delete(BackupContext.Current.TmpPath);
 
                     Log.Information("Dackup done ");
                     Log.CloseAndFlush();
