@@ -9,7 +9,7 @@ namespace dackup
     {
         public virtual async Task<UploadResult> UploadAsync(string fileName)
         {            
-            Log.Information($"======== Dackup start [{this.GetType().Name }.UploadAsync] ========");
+            Log.Information($"Dackup start [{this.GetType().Name }.UploadAsync]");
 
             var task = Task.Run(() => Upload(fileName));
             return await task;
@@ -17,7 +17,7 @@ namespace dackup
 
         public virtual async Task<PurgeResult> PurgeAsync()
         {
-            Log.Information($"======== Dackup start [{this.GetType().Name }.PurgeAsync] ========");
+            Log.Information($"Dackup start [{this.GetType().Name }.PurgeAsync]");
 
             var task = Task.Run(() => Purge());
             return await task;

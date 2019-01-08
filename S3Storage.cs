@@ -42,7 +42,7 @@ namespace dackup
         }
         public override async Task<PurgeResult> PurgeAsync()
         {           
-             Log.Information($"======== Dackup start [{this.GetType().Name }.PurgeAsync] ========");
+            Log.Information($"Purge to s3  removeThreshold: {RemoveThreshold}");
 
             if (RemoveThreshold == null || RemoveThreshold.Value > DateTime.Now)
             {

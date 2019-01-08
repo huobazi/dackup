@@ -11,7 +11,7 @@ namespace dackup
     {
         public async Task<BackupTaskResult> BackupAsync()
         {
-            Log.Information($"======== Dackup start [{this.GetType().Name }.BackupAsync] ========");
+            Log.Information($"Dackup start [{this.GetType().Name }.BackupAsync]");
 
             var task = Task.Run(() =>
             {
