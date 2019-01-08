@@ -9,10 +9,6 @@ using Serilog;
 
 using McMaster.Extensions.CommandLineUtils;
 
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Configuration.FileExtensions;
-using Microsoft.Extensions.Configuration.Xml;
-
 namespace dackup
 {
     class Program
@@ -63,17 +59,10 @@ namespace dackup
                 performCmd.OnExecute(() =>
                 {
                     var configFilePath = configFile.Value();
-                    var configFileInfo = new FileInfo(configFilePath);
 
-                    var builder = new ConfigurationBuilder()
-                    .SetBasePath(configFileInfo.Directory.FullName)
-                    .AddXmlFile(configFileInfo.Name);
+                    var performConfig = PerformConfigHelper.LoadFrom(configFilePath);
 
-                    var configRoot = builder.Build();
-
-                    var performConfig = configRoot.GetSection("perform").Get<PerformConfig>();
-
-                    Log.Information("======== Dackup start ========");
+                    Log.Information(" Step 1: Dackup start backup task ");
 
                     // run backup
                     var backupTaskList = PerformConfigHelper.ParseBackupTaskFromConfig(performConfig);
@@ -92,7 +81,7 @@ namespace dackup
                     {
                     }
 
-                    Log.Information("======== Dackup start storage task ========");
+                    Log.Information(" Step 2: Dackup start storage task ");
 
                     // run store
                     var storageList = PerformConfigHelper.ParseStorageFromConfig(performConfig);
@@ -105,7 +94,7 @@ namespace dackup
                         storage.PurgeAsync();
                     });
 
-                    Log.Information("======== Dackup start notify task ========");
+                    Log.Information(" Step 3: Dackup start notify task ");
 
                     // run notify
                     var notifyList = PerformConfigHelper.ParseNotifyFromConfig(performConfig);
@@ -116,9 +105,9 @@ namespace dackup
                         notify.NotifyAsync(notifyMessage);
                     });
 
-                    Log.CloseAndFlush();
 
-                    Log.Information("======== Dackup done ========");
+                    Log.Information(" Step 4: Dackup done ");
+                    Log.CloseAndFlush();
 
                     return 1;
                 });

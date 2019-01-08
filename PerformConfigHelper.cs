@@ -5,11 +5,33 @@ using System.Collections.Specialized;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
+using System.Xml.Serialization;
 
 namespace dackup
 {
     public static class PerformConfigHelper
     {
+        public static PerformConfig LoadFrom(string fileName)
+        {
+            FileStream fs = null;
+            try
+            {
+                XmlSerializer serializer = new XmlSerializer( typeof( PerformConfig ) );
+                fs = new FileStream( fileName, FileMode.Open, FileAccess.Read );
+                return (PerformConfig)serializer.Deserialize( fs );
+            }
+            catch ( Exception )
+            {
+                return null;
+            }
+            finally
+            {
+                if ( fs != null )
+                {
+                    fs.Close( );
+                }
+            }
+        }
         public static List<IBackupTask> ParseBackupTaskFromConfig(PerformConfig config)
         {
             var tasks = new List<IBackupTask>();
@@ -17,14 +39,14 @@ namespace dackup
             {
                 if (config.Archives != null)
                 {
-                    var includesList = config.Archives.Includes.PathList.Select(c=>c.Value).ToList();
-                    var excludesList = config.Archives.Excludes.PathList.Select(c=>c.Value).ToList();
+                    var includesList = config.Archives.Includes;
+                    var excludesList = config.Archives.Excludes;
                     var task = new ArchiveBackupTask(includesList, excludesList);
                     tasks.Add(task);
                 }
-                if (config.Databases != null && config.Databases.DatabaseList != null)
+                if (config.Databases != null && config.Databases != null)
                 {
-                    config.Databases.DatabaseList.ForEach(dbConfig =>
+                    config.Databases.ForEach(dbConfig =>
                     {
                         if (dbConfig.Type.ToLower().Trim() == "postgres")
                         {
@@ -47,9 +69,9 @@ namespace dackup
             var tasks = new List<IStorage>();
             if (config != null)
             {
-                if (config.Storages != null && config.Storages.StorageList != null)
+                if (config.Storages != null && config.Storages != null)
                 {
-                    config.Storages.StorageList.ForEach(storageConfig =>
+                    config.Storages.ForEach(storageConfig =>
                     {
                         if (storageConfig.Type.ToLower().Trim() == "local")
                         {

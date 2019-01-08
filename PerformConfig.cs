@@ -3,75 +3,47 @@ using System;
 using System.Xml.Serialization;
 using System.Collections.Generic;
 
-[XmlRoot(ElementName = "includes")]
-public class Includes
-{
-    [XmlElement(ElementName = "option")]
-    public List<Option> PathList { get; set; }
-}
 
-[XmlRoot(ElementName = "excludes")]
-public class Excludes
-{
-    [XmlElement(ElementName = "option")]
-    public List<Option> PathList { get; set; }
-}
-
-[XmlRoot(ElementName = "archives")]
-public class Archives
-{
-    [XmlElement(ElementName = "includes")]
-    public Includes Includes { get; set; }
-
-    [XmlElement(ElementName = "excludes")]
-    public Excludes Excludes { get; set; }
-}
-
-[XmlRoot(ElementName = "option")]
 public class Option
 {
-    [XmlAttribute(AttributeName = "name")]
+     [XmlAttribute(AttributeName = "name")]
     public string Name { get; set; }
-    
+         
     [XmlAttribute(AttributeName = "value")]
     public string Value { get; set; }
 }
 
-[XmlRoot(ElementName = "database")]
+public class Archives
+{
+    [XmlArray(ElementName="includes")]
+    [XmlArrayItem(ElementName="path")]
+    public List<string> Includes { get; set; }
+
+    [XmlArray(ElementName="excludes")]
+    [XmlArrayItem(ElementName="path")]
+    public List<string> Excludes { get; set; }
+}
+
 public class Database
 {
+
     [XmlElement(ElementName = "option")]
     public List<Option> OptionList { get; set; }
 
-    [XmlAttribute(AttributeName = "type")]
+     [XmlAttribute(AttributeName = "type")]
     public string Type { get; set; }
-
+     
     [XmlAttribute(AttributeName = "name")]
     public string Name { get; set; }
 }
 
-[XmlRoot(ElementName = "databases")]
-public class Databases
-{
-    [XmlElement(ElementName = "database")]
-    public List<Database> DatabaseList { get; set; }
-}
-
-[XmlRoot(ElementName = "store")]
 public class Storage
 {
     [XmlElement(ElementName = "option")]
     public List<Option> OptionList { get; set; }
-
+     
     [XmlAttribute(AttributeName = "type")]
     public string Type { get; set; }
-}
-
-[XmlRoot(ElementName = "storages")]
-public class Storages
-{
-    [XmlElement(ElementName = "storage")]
-    public List<Storage> StorageList { get; set; }
 }
 
 public class NotifyBase
@@ -89,39 +61,38 @@ public class NotifyBase
     public bool OnFailure { get; set; }
 }
 
-[XmlRoot(ElementName = "http_post")]
 public class HttpPost : NotifyBase
 {
 }
 
-[XmlRoot(ElementName = "slack")]
 public class Slack : NotifyBase
 {
 }
 
-[XmlRoot(ElementName = "notifiers")]
 public class Notifiers
-{
-    [XmlElement(ElementName = "http_post")]
+{    
+    [XmlElement(ElementName="http_post")]
     public HttpPost HttpPost { get; set; }
-
-    [XmlElement(ElementName = "slack")]
+    
+    [XmlElement(ElementName="slack")]
     public Slack Slack { get; set; }
 }
 
-[XmlRoot(ElementName = "perform")]
+[XmlRoot(ElementName="perform")]
 public class PerformConfig
 {
-    [XmlElement(ElementName = "archives")]
+    [XmlElement(ElementName="archives")]
     public Archives Archives { get; set; }
 
-    [XmlElement(ElementName = "databases")]
-    public Databases Databases { get; set; }
+    [XmlArray(ElementName="databases")]
+    [XmlArrayItem(ElementName="database")]
+    public List<Database> Databases { get; set; }
 
-    [XmlElement(ElementName = "storages")]
-    public Storages Storages { get; set; }
+    [XmlArray(ElementName="storages")]
+    [XmlArrayItem(ElementName="storage")]
+    public List<Storage> Storages { get; set; }
 
-    [XmlElement(ElementName = "notifiers")]
+    [XmlElement(ElementName="notifiers")]
     public Notifiers Notifiers { get; set; }
 
     [XmlAttribute(AttributeName = "compress")]
