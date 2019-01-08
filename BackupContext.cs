@@ -52,7 +52,7 @@ namespace dackup
         {
             get
             {
-                return GenerateFilesList.Distinct().ToList();
+                return generateFilesList.Distinct().ToList();
             }
         }
         public void AddToGenerateFilesList(string fileName)
