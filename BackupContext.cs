@@ -64,6 +64,10 @@ namespace dackup
         }
         public void AddToGenerateFilesList(List<string> filesList)
         {
+            if( filesList == null)
+            {
+                return;
+            }
             generateFilesList.AddRange(filesList);   
         }
     }

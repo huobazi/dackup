@@ -31,7 +31,6 @@ namespace dackup
         }
         public override BackupTaskResult CreateNewBackup()
         {
-
             var backupName = $"{Database}_{DateTime.UtcNow:s}.tar.gz";
             var backupFile = Path.Join(BackupContext.Current.TmpPath, backupName);
             var processStartInfo = new ProcessStartInfo("bash",
@@ -49,7 +48,7 @@ namespace dackup
             process.WaitForExit();
             var code = process.ExitCode;
 
-            Log.Information($"Postgres backup completed. dump files : {backupFile}");
+            Log.Information($"{Database} backup completed. dump files : {backupFile}");
 
             var result = new BackupTaskResult
             {

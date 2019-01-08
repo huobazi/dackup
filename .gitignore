@@ -264,3 +264,4 @@ __pycache__/
 *.pyc
 
 dackup*.log
+local.config

@@ -45,24 +45,37 @@ namespace dackup
                 var configFile = performCmd.Option("--config-file  <FILE>", "Required. The File name of the config.", CommandOptionType.SingleValue)
                                             .IsRequired()
                                             .Accepts(v => v.ExistingFile());
-                var logPath = performCmd.Option("--log-path  <PATH>", "op. The File path of the log.", CommandOptionType.SingleValue);
-                var tmpPath = performCmd.Option("--tmp-path  <PATH>", "op. The tmp path.", CommandOptionType.SingleValue);
+                var logPathConfig = performCmd.Option("--log-path  <PATH>", "op. The File path of the log.", CommandOptionType.SingleValue);
+                var tmpPathConfig = performCmd.Option("--tmp-path  <PATH>", "op. The tmp path.", CommandOptionType.SingleValue);
 
-                BackupContext.Create(Path.Join(logPath.Value(), "dackup.log"), tmpPath.Value());
-
-                Log.Logger = new LoggerConfiguration()
-                .MinimumLevel.Information()
-                .WriteTo.Console()
-                .WriteTo.File(BackupContext.Current.LogFile, rollingInterval: RollingInterval.Month, rollOnFileSizeLimit: true)
-                .CreateLogger();
 
                 performCmd.OnExecute(() =>
                 {
+                    var logPath = logPathConfig.Value();
+                    var tmpPath = tmpPathConfig.Value();
+                    if (string.IsNullOrEmpty(tmpPath))
+                    {
+                        tmpPath = "tmp";
+                    }
+
+                    var tmpWorkDirPath = Path.Combine(tmpPath, $"{DateTime.UtcNow:s}");
+                    BackupContext.Create(Path.Join(logPath, "dackup.log"), tmpWorkDirPath);
+
+                    Log.Logger = new LoggerConfiguration()
+                    .MinimumLevel.Information()
+                    .WriteTo.Console()
+                    .WriteTo.File(BackupContext.Current.LogFile, rollingInterval: RollingInterval.Month, rollOnFileSizeLimit: true)
+                    .CreateLogger();
+
+                    Log.Information($" tmp: {BackupContext.Current.TmpPath}");
+                    Log.Information($" log: {BackupContext.Current.LogFile}");
                     var configFilePath = configFile.Value();
 
                     var performConfig = PerformConfigHelper.LoadFrom(configFilePath);
 
                     Log.Information(" Step 1: Dackup start backup task ");
+
+                    Directory.CreateDirectory(BackupContext.Current.TmpPath);
 
                     // run backup
                     var backupTaskList = PerformConfigHelper.ParseBackupTaskFromConfig(performConfig);
@@ -81,24 +94,26 @@ namespace dackup
                     {
                     }
 
-                    Log.Information(" Step 2: Dackup start storage task ");
+                    Log.Information("Dackup start storage task ");
 
+                    var x = BackupContext.Current.GenerateFilesList;
+                    
                     // run store
                     var storageList = PerformConfigHelper.ParseStorageFromConfig(performConfig);
                     storageList.ForEach(storage =>
                     {
                         BackupContext.Current.GenerateFilesList.ForEach(file =>
                         {
-                            storage.UploadAsync(file);
+                            storage.UploadAsync(file).Wait();
                         });
                         storage.PurgeAsync();
                     });
 
-                    Log.Information(" Step 3: Dackup start notify task ");
+                    Log.Information("Dackup start notify task ");
 
                     // run notify
                     var notifyList = PerformConfigHelper.ParseNotifyFromConfig(performConfig);
-                    string notifyMessage = "";
+                    string notifyMessage = "Dackup sucess";
 
                     notifyList.ForEach(notify =>
                     {
@@ -106,7 +121,7 @@ namespace dackup
                     });
 
 
-                    Log.Information(" Step 4: Dackup done ");
+                    Log.Information("Dackup done ");
                     Log.CloseAndFlush();
 
                     return 1;

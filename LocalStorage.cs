@@ -17,6 +17,10 @@ namespace dackup
 
         protected override UploadResult Upload(string fileName)
         {    
+            var fileInfo = new FileInfo(fileName);
+            System.IO.Directory.CreateDirectory(this.path);
+            System.IO.File.Copy(fileName, Path.Combine(this.path, fileInfo.Name));
+            
             return new UploadResult();
         }
 
