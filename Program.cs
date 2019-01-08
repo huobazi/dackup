@@ -58,7 +58,7 @@ namespace dackup
                         tmpPath = "tmp";
                     }
 
-                    var tmpWorkDirPath = Path.Combine(tmpPath, $"{DateTime.UtcNow:s}");
+                    var tmpWorkDirPath = Path.Combine(tmpPath, $"dackup-tmp-{DateTime.UtcNow:s}");
                     BackupContext.Create(Path.Join(logPath, "dackup.log"), tmpWorkDirPath);
 
                     Log.Logger = new LoggerConfiguration()
