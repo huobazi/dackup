@@ -26,19 +26,19 @@ namespace dackup
             }
 
             var tmpWorkDirPath = Path.Combine(tmpPath, $"dackup-tmp-{DateTime.UtcNow:s}");
-            BackupContext.Create(Path.Join(logPath, "dackup.log"), tmpWorkDirPath);
+            DackupContext.Create(Path.Join(logPath, "dackup.log"), tmpWorkDirPath);
 
             Log.Logger = new LoggerConfiguration()
             .MinimumLevel.Information()
             .WriteTo.Console()
-            .WriteTo.File(BackupContext.Current.LogFile, rollingInterval: RollingInterval.Month, rollOnFileSizeLimit: true)
+            .WriteTo.File(DackupContext.Current.LogFile, rollingInterval: RollingInterval.Month, rollOnFileSizeLimit: true)
             .CreateLogger();
 
             AppDomain.CurrentDomain.UnhandledException += (s, e) => Log.Error("*** Crash! ***", "UnhandledException");
             TaskScheduler.UnobservedTaskException += (s, e) => Log.Error("*** Crash! ***", "UnobservedTaskException");
 
-            Log.Information($"Dackup workdir tmp: {BackupContext.Current.TmpPath}");
-            Log.Information($"Dackup log: {BackupContext.Current.LogFile}");
+            Log.Information($"Dackup workdir tmp: {DackupContext.Current.TmpPath}");
+            Log.Information($"Dackup log: {DackupContext.Current.LogFile}");
 
             return PerformConfigHelper.LoadFrom(configfile);
 
@@ -67,7 +67,7 @@ namespace dackup
 
             storageList.ForEach(storage =>
             {
-                BackupContext.Current.GenerateFilesList.ForEach(file =>
+                DackupContext.Current.GenerateFilesList.ForEach(file =>
                 {
                     storageUploadResultList.Add(storage.UploadAsync(file));
                 });
@@ -100,7 +100,7 @@ namespace dackup
         {
             Log.Information("Dackup clean tmp folder ");
 
-            var di = new DirectoryInfo(BackupContext.Current.TmpPath);
+            var di = new DirectoryInfo(DackupContext.Current.TmpPath);
             foreach (var file in di.GetFiles())
             {
                 file.Delete();
@@ -110,7 +110,7 @@ namespace dackup
                 dir.Delete(true);
             }
 
-            Directory.Delete(BackupContext.Current.TmpPath);
+            Directory.Delete(DackupContext.Current.TmpPath);
 
         }
     }

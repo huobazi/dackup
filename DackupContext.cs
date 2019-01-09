@@ -5,23 +5,23 @@ using System.Collections.Generic;
 
 namespace dackup
 {
-    public sealed class BackupContext
+    public sealed class DackupContext
     {
         private static object _mutex = new object();
-        private static BackupContext instance;
+        private static DackupContext instance;
 
         private static List<string> generateFilesList = new List<string>();
-        private BackupContext() { }
-        private BackupContext(string logFile, string tmpPath)
+        private DackupContext() { }
+        private DackupContext(string logFile, string tmpPath)
         {
             this.LogFile = logFile;
             this.TmpPath = tmpPath;
         }
-        public static BackupContext Create(string logFile, string tmpPath)
+        public static DackupContext Create(string logFile, string tmpPath)
         {
             if (instance != null)
             {
-                throw new InvalidOperationException("BackupContext already created - use BacupContext.Current to get");
+                throw new InvalidOperationException("DackupContext already created - use BacupContext.Current to get");
             }
             else
             {
@@ -29,19 +29,19 @@ namespace dackup
                 {
                     if (instance == null)
                     {
-                        instance = new BackupContext(logFile, tmpPath);
+                        instance = new DackupContext(logFile, tmpPath);
                     }
                 }
             }
             return instance;
         }
-        public static BackupContext Current
+        public static DackupContext Current
         {
             get
             {
                 if (instance == null)
                 {
-                    throw new InvalidOperationException("BackupContext not created - use BacupContext.Create to create");
+                    throw new InvalidOperationException("DackupContext not created - use BacupContext.Create to create");
                 }
                 return instance;
             }

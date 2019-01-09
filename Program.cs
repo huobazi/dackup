@@ -62,7 +62,7 @@ namespace dackup
 
                         var performConfig = ApplicationHelper.PrepaireConfig(configFilePath,logPath,tmpPath);
 
-                        Directory.CreateDirectory(BackupContext.Current.TmpPath);
+                        Directory.CreateDirectory(DackupContext.Current.TmpPath);
 
                         // run backup
                         var backupTasks = ApplicationHelper.RunBackup(performConfig);

@@ -32,7 +32,7 @@ namespace dackup
             {
                 var fileTransferUtility = new TransferUtility(s3Client);
                 
-                string key = this.PathPrefix + $"/{DateTime.Now:s}/" + fileName.Replace(BackupContext.Current.TmpPath,string.Empty).TrimStart('/');
+                string key = this.PathPrefix + $"/{DateTime.Now:s}/" + fileName.Replace(DackupContext.Current.TmpPath,string.Empty).TrimStart('/');
                 key = key.Trim('/');
             
                 Log.Information($"Upload to s3 file: {fileName} key: {key}");
