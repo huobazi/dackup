@@ -31,7 +31,7 @@ namespace dackup
         }
         public override BackupTaskResult CreateNewBackup()
         {
-            var backupName = $"{Database}_{DateTime.UtcNow:s}.tar.gz";
+            var backupName = $"{Database}_{DateTime.Now:s}.tar.gz";
             var backupFile = Path.Join(BackupContext.Current.TmpPath, backupName);
             var processStartInfo = new ProcessStartInfo("bash",
                                                         $"-c \"{PathToPgDump} -h {Host} -p {Port} -U {UserName} -d {Database} -F tar | gzip > {backupFile}\"")

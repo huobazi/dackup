@@ -26,17 +26,18 @@ namespace dackup
         }
         public override async Task<UploadResult> UploadAsync(string fileName)
         {
-            Log.Information($"======== Dackup start [{this.GetType().Name }.UploadAsync] ========");
+            Log.Information($"Dackup start [{this.GetType().Name }.UploadAsync]");
 
             using (var s3Client = new AmazonS3Client(this.accessKeyId, this.accessKeySecret, RegionEndpoint.GetBySystemName(this.region)))
             {
                 var fileTransferUtility = new TransferUtility(s3Client);
                 
-                string keyName = this.PathPrefix + "/" + fileName.Replace(BackupContext.Current.TmpPath,string.Empty).TrimStart('/');
-                
-                Log.Information($"Upload to s3 file: {fileName} key: {keyName}");
+                string key = this.PathPrefix + $"/{DateTime.Now:s}/" + fileName.Replace(BackupContext.Current.TmpPath,string.Empty).TrimStart('/');
+                key = key.Trim('/');
+            
+                Log.Information($"Upload to s3 file: {fileName} key: {key}");
 
-                await fileTransferUtility.UploadAsync(fileName, this.bucket, keyName);
+                await fileTransferUtility.UploadAsync(fileName, this.bucket, key);
                 return new UploadResult();
             }
         }
@@ -90,7 +91,6 @@ namespace dackup
         protected override PurgeResult Purge()
         {
             throw new NotImplementedException();
-
         }
 
     }

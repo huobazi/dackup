@@ -3,6 +3,8 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
+using Serilog;
+
 namespace dackup
 {
     public class LocalStorage : StorageBase
@@ -30,6 +32,8 @@ namespace dackup
             {
                 return new PurgeResult();
             }
+            
+            Log.Information($"Purge to local  removeThreshold: {RemoveThreshold}");
 
             System.IO.DirectoryInfo di = new DirectoryInfo(path);
 

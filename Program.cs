@@ -4,10 +4,12 @@ using System.Linq;
 using System.Collections.Specialized;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Text;
 
 using Serilog;
-
 using McMaster.Extensions.CommandLineUtils;
+
+using dackup.Configuration;
 
 namespace dackup
 {
@@ -15,6 +17,7 @@ namespace dackup
     {
         public static int Main(string[] args)
         {
+            var startAt = DateTime.Now;
 
             var app = new CommandLineApplication
             {
@@ -48,93 +51,58 @@ namespace dackup
                 var logPathConfig = performCmd.Option("--log-path  <PATH>", "op. The File path of the log.", CommandOptionType.SingleValue);
                 var tmpPathConfig = performCmd.Option("--tmp-path  <PATH>", "op. The tmp path.", CommandOptionType.SingleValue);
 
-
                 performCmd.OnExecute(() =>
                 {
-                    var logPath = logPathConfig.Value();
-                    var tmpPath = tmpPathConfig.Value();
-                    if (string.IsNullOrEmpty(tmpPath))
-                    {
-                        tmpPath = "tmp";
-                    }
-
-                    var tmpWorkDirPath = Path.Combine(tmpPath, $"dackup-tmp-{DateTime.UtcNow:s}");
-                    BackupContext.Create(Path.Join(logPath, "dackup.log"), tmpWorkDirPath);
-
-                    Log.Logger = new LoggerConfiguration()
-                    .MinimumLevel.Information()
-                    .WriteTo.Console()
-                    .WriteTo.File(BackupContext.Current.LogFile, rollingInterval: RollingInterval.Month, rollOnFileSizeLimit: true)
-                    .CreateLogger();
-
-                    Log.Information($" tmp: {BackupContext.Current.TmpPath}");
-                    Log.Information($" log: {BackupContext.Current.LogFile}");
-                    var configFilePath = configFile.Value();
-
-                    var performConfig = PerformConfigHelper.LoadFrom(configFilePath);
-
-                    Log.Information(" Step 1: Dackup start backup task ");
-
-                    Directory.CreateDirectory(BackupContext.Current.TmpPath);
-
-                    // run backup
-                    var backupTaskList = PerformConfigHelper.ParseBackupTaskFromConfig(performConfig);
-                    var backupTaskResult = new List<Task<BackupTaskResult>>();
-                    backupTaskList.ForEach(task =>
-                    {
-                        var result = task.BackupAsync();
-                        backupTaskResult.Add(result);
-                    });
-                    var backupTasks = Task.WhenAll(backupTaskResult.ToArray());
                     try
                     {
+                        var logPath = logPathConfig.Value();
+                        var tmpPath = tmpPathConfig.Value();
+                        
+                        var configFilePath = configFile.Value();
+
+                        var performConfig = ApplicationHelper.PrepaireConfig(configFilePath,logPath,tmpPath);
+
+                        Directory.CreateDirectory(BackupContext.Current.TmpPath);
+
+                        // run backup
+                        var backupTasks = ApplicationHelper.RunBackup(performConfig);
                         backupTasks.Wait();
+
+                        // run store
+                        var storageTask = ApplicationHelper.RunStorage(performConfig);
+                        var storageTasks = Task.WhenAll(storageTask.Item1, storageTask.Item2);
+
+                        // run notify
+                        var now = DateTime.Now;
+                        var duration = (now - startAt);
+
+                        var sb = new StringBuilder();
+                        sb.AppendLine($"Backup Completed Successfully!");
+                        sb.AppendLine($"Model={performConfig.Name}");
+                        sb.AppendLine($"Start={startAt}");
+                        sb.AppendLine($"Finished={now}");
+                        sb.AppendLine($"Duration={duration}");
+
+                        var notifyTasks = ApplicationHelper.RunNotify(performConfig, sb.ToString());
+
+                        // wait
+                        storageTasks.Wait();
+
+                        ApplicationHelper.Clean();
+                        
+                        notifyTasks.Wait();
+
+                        Log.Information("Dackup done ");
+
                     }
-                    catch (AggregateException)
+                    catch (Exception exception)
                     {
+                        Log.Error(Utils.FlattenException(exception));
                     }
-
-                    Log.Information("Dackup start storage task ");
-                    
-                    // run store
-                    var storageList = PerformConfigHelper.ParseStorageFromConfig(performConfig);
-                    storageList.ForEach(storage =>
+                    finally
                     {
-                        BackupContext.Current.GenerateFilesList.ForEach(file =>
-                        {
-                            storage.UploadAsync(file);
-                        });
-                        storage.PurgeAsync();
-                    });
-
-                    Log.Information("Dackup start notify task ");
-
-                    // run notify
-                    var notifyList = PerformConfigHelper.ParseNotifyFromConfig(performConfig);
-                    string notifyMessage = $"Dackup {DateTime.Now} Sucess";
-
-                    notifyList.ForEach(notify =>
-                    {
-                        notify.NotifyAsync(notifyMessage);
-                    });
-                                        
-                    Log.Information("Dackup clean tmp folder ");
-
-                    var di = new DirectoryInfo(BackupContext.Current.TmpPath);
-                    foreach (var file in di.GetFiles())
-                    {
-                        file.Delete();
+                        Log.CloseAndFlush();
                     }
-                    foreach (var dir in di.GetDirectories())
-                    {
-                        dir.Delete(true);
-                    }
-
-                    Directory.Delete(BackupContext.Current.TmpPath);
-
-                    Log.Information("Dackup done ");
-                    Log.CloseAndFlush();
-
                     return 1;
                 });
 

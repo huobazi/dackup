@@ -16,29 +16,26 @@ namespace dackup
         {
             this.webHookUri = new Uri(webHookUrl);
         }
-        protected override Task<NotifyResult> Notify(string messageBody)
+        protected override NotifyResult Notify(string messageBody)
         {
-            Log.Information("======== SlackNotify start ========");
+            Log.Information($"Dackup start [{this.GetType().Name }.NotifyAsync]");
+            
+            var message = new SlackMessage();
+            if (this.UserName != null)
+            {
+                message.UserName = this.UserName;
+            }
+            if (this.Channel != null)
+            {
+                message.Channel = this.Channel;
+            }
+            message.Text = messageBody;
+            message.Icon = this.Icon_emoji;
 
-            return Task<NotifyResult>.Run(() =>
-               {
-                   var message = new SlackMessage();
-                   if (this.UserName != null)
-                   {
-                       message.UserName = this.UserName;
-                   }
-                   if (this.Channel != null)
-                   {
-                       message.Channel = this.Channel;
-                   }
-                   message.Text = messageBody;
-                   message.Icon = this.Icon_emoji;
+            var client = new SlackClient(this.webHookUri);
+            client.SendSlackMessage(message);
 
-                   var client = new SlackClient(this.webHookUri);
-                   client.SendSlackMessage(message);
-
-                   return new NotifyResult();
-               });
+            return new NotifyResult();
         }
     }
 }

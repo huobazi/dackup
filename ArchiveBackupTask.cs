@@ -37,7 +37,7 @@ namespace dackup
 
             this.includePathList.ForEach(file =>
             {
-                Log.Information($"Archive backup ===> : {file}");
+                Log.Information($"Archive backup : {file}");
 
                 FileAttributes attr = File.GetAttributes(file);
 
@@ -56,7 +56,7 @@ namespace dackup
                 }
             });
 
-            var tgzFileName  = Path.Combine(Path.Combine(BackupContext.Current.TmpPath, $"archives_{DateTime.UtcNow:s}.tar.gz"));
+            var tgzFileName  = Path.Combine(Path.Combine(BackupContext.Current.TmpPath, $"archives_{DateTime.Now:s}.tar.gz"));
 
             Utils.CreateTarGZ(tgzFileName,directory);
 

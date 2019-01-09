@@ -7,6 +7,9 @@ using System.Reflection;
 using System.Text;
 using System.Xml.Serialization;
 
+
+using dackup.Configuration;
+
 namespace dackup
 {
     public static class PerformConfigHelper
@@ -16,19 +19,19 @@ namespace dackup
             FileStream fs = null;
             try
             {
-                XmlSerializer serializer = new XmlSerializer( typeof( PerformConfig ) );
-                fs = new FileStream( fileName, FileMode.Open, FileAccess.Read );
-                return (PerformConfig)serializer.Deserialize( fs );
+                XmlSerializer serializer = new XmlSerializer(typeof(PerformConfig));
+                fs = new FileStream(fileName, FileMode.Open, FileAccess.Read);
+                return (PerformConfig)serializer.Deserialize(fs);
             }
-            catch ( Exception )
+            catch (Exception)
             {
                 return null;
             }
             finally
             {
-                if ( fs != null )
+                if (fs != null)
                 {
-                    fs.Close( );
+                    fs.Close();
                 }
             }
         }
@@ -131,43 +134,59 @@ namespace dackup
                 if (config.Notifiers != null && config.Notifiers.HttpPost != null)
                 {
                     var cfg = config.Notifiers.HttpPost;
-                    var webhook_url = cfg.OptionList.Find(c => c.Name == "url").Value;
-                    var slack = new HttpPostNotify(webhook_url);
-                    slack.OnFailure = cfg.OnFailure;
-                    slack.OnSuccess = cfg.OnSuccess;
-                    slack.OnWarning = cfg.OnWarning;
-                    var paramsList = cfg.OptionList.Where(c => c.Name.ToLower() != "url").ToList();
-                    if (paramsList != null)
+                    if (cfg.Enable)
                     {
-                        var nv = new NameValueCollection();
-                        paramsList.ForEach(param =>
+                        var webhook_url = cfg.OptionList.Find(c => c.Name == "url").Value;
+                        var httpPost = new HttpPostNotify(webhook_url);
+                        httpPost.Enable = cfg.Enable;
+                        httpPost.OnFailure = cfg.OnFailure;
+                        httpPost.OnSuccess = cfg.OnSuccess;
+                        httpPost.OnWarning = cfg.OnWarning;
+                        if (cfg.Headers != null)
                         {
-                            nv[param.Name] = param.Value;
-                        });
-                        slack.Params = nv;
-                        //TODO http post
+                            httpPost.Headers = new NameValueCollection();
+                            cfg.Headers.ForEach(header =>
+                            {
+                                httpPost.Headers[header.Name] = header.Value;
+                            });
+                        }
+                        var paramsList = cfg.OptionList.Where(c => c.Name.ToLower() != "url").ToList();
+                        if (paramsList != null)
+                        {
+                            httpPost.Params = new NameValueCollection();
+                            paramsList.ForEach(param =>
+                            {
+                                httpPost.Params[param.Name] = param.Value;
+                            });
+                        }
+                        tasks.Add(httpPost);
                     }
                 }
                 if (config.Notifiers != null && config.Notifiers.Slack != null)
                 {
                     var cfg = config.Notifiers.Slack;
-                    var webhook_url = cfg.OptionList.Find(c => c.Name == "webhook_url").Value;
-                    var slack = new SlackNotify(webhook_url);
-                    slack.OnFailure = cfg.OnFailure;
-                    slack.OnSuccess = cfg.OnSuccess;
-                    slack.OnWarning = cfg.OnWarning;
+                    if (cfg.Enable)
+                    {
+                        var webhook_url = cfg.OptionList.Find(c => c.Name == "webhook_url").Value;
+                        var slack = new SlackNotify(webhook_url);
+                        slack.Enable = cfg.Enable;
+                        slack.OnFailure = cfg.OnFailure;
+                        slack.OnSuccess = cfg.OnSuccess;
+                        slack.OnWarning = cfg.OnWarning;
 
-                    if (cfg.OptionList.Find(c => c.Name.ToLower() == "channel") != null)
-                    {
-                        slack.Channel = cfg.OptionList.Find(c => c.Name.ToLower() == "channel").Value;
-                    }
-                    if (cfg.OptionList.Find(c => c.Name.ToLower() == "icon_emoji") != null)
-                    {
-                        slack.Icon_emoji = cfg.OptionList.Find(c => c.Name.ToLower() == "icon_emoji").Value;
-                    }
-                    if (cfg.OptionList.Find(c => c.Name.ToLower() == "username") != null)
-                    {
-                        slack.UserName = cfg.OptionList.Find(c => c.Name.ToLower() == "username").Value;
+                        if (cfg.OptionList.Find(c => c.Name.ToLower() == "channel") != null)
+                        {
+                            slack.Channel = cfg.OptionList.Find(c => c.Name.ToLower() == "channel").Value;
+                        }
+                        if (cfg.OptionList.Find(c => c.Name.ToLower() == "icon_emoji") != null)
+                        {
+                            slack.Icon_emoji = cfg.OptionList.Find(c => c.Name.ToLower() == "icon_emoji").Value;
+                        }
+                        if (cfg.OptionList.Find(c => c.Name.ToLower() == "username") != null)
+                        {
+                            slack.UserName = cfg.OptionList.Find(c => c.Name.ToLower() == "username").Value;
+                        }
+                        tasks.Add(slack);
                     }
                 }
             }

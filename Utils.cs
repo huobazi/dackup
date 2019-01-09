@@ -1,5 +1,7 @@
 using System;
 using System.IO;
+using System.Text;
+using System.Diagnostics;
 
 using ICSharpCode.SharpZipLib.GZip;
 using ICSharpCode.SharpZipLib.Tar;
@@ -71,9 +73,9 @@ namespace dackup
 
             tarArchive.RootPath = sourceDirectory.Replace('\\', '/');
             if (tarArchive.RootPath.EndsWith("/"))
-             {
+            {
                 tarArchive.RootPath = tarArchive.RootPath.Remove(tarArchive.RootPath.Length - 1);
-             }
+            }
 
             AddDirectoryFilesToTar(tarArchive, sourceDirectory, true);
 
@@ -98,6 +100,46 @@ namespace dackup
                 foreach (string directory in directories)
                     AddDirectoryFilesToTar(tarArchive, directory, recurse);
             }
+        }
+
+        public static string FlattenException(Exception exception)
+        {
+            var stringBuilder = new StringBuilder();
+            var footprints = GetAllFootprints(exception);
+
+            while (exception != null)
+            {
+                stringBuilder.AppendLine(exception.Message);
+                exception = exception.InnerException;
+            }
+            stringBuilder.AppendLine(footprints);
+
+            return stringBuilder.ToString();
+        }
+
+        private static string GetAllFootprints(Exception exception)
+        {
+            if (exception == null)
+            {
+                return string.Empty;
+            }
+            var st = new StackTrace(exception, true);
+            var frames = st.GetFrames();
+            var traceString = new StringBuilder();
+
+            foreach (var frame in frames)
+            {
+                if (frame.GetFileLineNumber() < 1)
+                {
+                    continue;
+                }
+                traceString.Append("File: " + frame.GetFileName());
+                traceString.Append(", Method:" + frame.GetMethod().Name);
+                traceString.Append(", LineNumber: " + frame.GetFileLineNumber());
+                traceString.Append("  -->  ");
+            }
+
+            return traceString.ToString();
         }
     }
 }
