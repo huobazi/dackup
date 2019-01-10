@@ -2,7 +2,6 @@ Dackup is a fullstack backup app, Which is similar to [backup](https://github.co
 
 ## Features
 
-- No dependencies.(see [.NET CoreRT](https://github.com/dotnet/corert) )
 - Multiple Databases source support(now postgres only).
 - Multiple Storage type support.
 - Archive folder or files into a tar.gz
@@ -102,8 +101,8 @@ Install dotnet core sdk 2.2 then
 
 ```
 dotnet publish -r win-x64 -c release;
-dotnet publish -r linux-x64 -c release;
 dotnet publish -r osx-x64 -c release;
+dotnet publish -r linux-x64 -c release;
 ```
 
 ## License
