@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Text;
 using System.Xml.Serialization;
 
+using Serilog;
 
 using dackup.Configuration;
 
@@ -23,8 +24,9 @@ namespace dackup
                 fs = new FileStream(fileName, FileMode.Open, FileAccess.Read);
                 return (PerformConfig)serializer.Deserialize(fs);
             }
-            catch (Exception)
+            catch (Exception exception)
             {
+                Log.Error(Utils.FlattenException(exception));
                 return null;
             }
             finally
