@@ -1,10 +1,12 @@
 
 using System;
+using System.Xml;
 using System.Xml.Serialization;
 using System.Collections.Generic;
 
 namespace dackup.Configuration
 {
+    [Serializable]
     public class NameValueElement
     {
         [XmlAttribute(AttributeName = "name")]
@@ -14,9 +16,9 @@ namespace dackup.Configuration
         public string Value { get; set; }
     }
 
+    [Serializable]
     public class Archive
     {
-
         [XmlAttribute(AttributeName = "name")]
         public string Name { get; set; }
 
@@ -29,6 +31,7 @@ namespace dackup.Configuration
         public List<string> Excludes { get; set; }
     }
 
+    [Serializable]
     public class Database
     {
         [XmlElement(ElementName = "option")]
@@ -44,6 +47,7 @@ namespace dackup.Configuration
         public bool Enable { get; set; } = true;
     }
 
+    [Serializable]
     public class Storage
     {
         [XmlElement(ElementName = "option")]
@@ -59,6 +63,7 @@ namespace dackup.Configuration
         public string Name { get; set; }
     }
 
+    [Serializable]
     public class NotifyBase
     {
         [XmlElement(ElementName = "option")]
@@ -80,22 +85,26 @@ namespace dackup.Configuration
         public string Name { get; set; }
     }
 
+    [Serializable]
     public class HttpPost : NotifyBase
     {
         [XmlElement(ElementName = "header")]
         public List<NameValueElement> Headers { get; set; }
     }
 
+    [Serializable]
     public class Slack : NotifyBase
     {
     }
 
+    [Serializable]
     public class Email : NotifyBase
     {
         [XmlAttribute(AttributeName = "delivery_method")]
         public string DeliveryMethod { get; set; }
     }
 
+    [Serializable]
     public class Notifiers
     {
         [XmlElement(ElementName = "http_post")]
@@ -108,7 +117,7 @@ namespace dackup.Configuration
         public List<Email> EmailList { get; set; }
     }
 
-    [XmlRoot(ElementName = "perform")]
+    [Serializable, XmlRoot(ElementName = "perform")]
     public class PerformConfig
     {
         [XmlArray(ElementName = "archives")]
