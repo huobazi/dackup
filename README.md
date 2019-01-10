@@ -5,10 +5,8 @@ Dackup is a fullstack backup app, Which is similar to [backup](https://github.co
 - No dependencies.(see [.NET CoreRT](https://github.com/dotnet/corert) )
 - Multiple Databases source support(now postgres only).
 - Multiple Storage type support.
-- Archive folder or files into a tar.
+- Archive folder or files into a tar.gz
 - Multiple Notifier type support.
-
-## Current Support status
 
 ### Databases
 
@@ -91,7 +89,7 @@ use the subcommand ``` gen ``` to generate a task config file
 ```
 
 
-## Backup with crontab
+## With crontab
 
 ```bash
 $ crontab -l

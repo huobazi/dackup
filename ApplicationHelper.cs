@@ -36,9 +36,6 @@ namespace dackup
             AppDomain.CurrentDomain.UnhandledException += (s, e) => Log.Error("*** Crash! ***", "UnhandledException");
             TaskScheduler.UnobservedTaskException += (s, e) => Log.Error("*** Crash! ***", "UnobservedTaskException");
 
-            Log.Information($"Dackup workdir tmp: {DackupContext.Current.TmpPath}");
-            Log.Information($"Dackup log: {DackupContext.Current.LogFile}");
-
             return PerformConfigHelper.LoadFrom(configfile);
 
         }
