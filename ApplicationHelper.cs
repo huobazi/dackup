@@ -13,7 +13,6 @@ namespace dackup
 {
     public static class ApplicationHelper
     {
-
         public static PerformConfig PrepaireConfig(string configfile, string logPath, string tmpPath)
         {
             if (string.IsNullOrEmpty(logPath))

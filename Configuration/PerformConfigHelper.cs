@@ -40,14 +40,18 @@ namespace dackup
             var tasks = new List<IBackupTask>();
             if (config != null)
             {
-                if (config.Archives != null)
+                if (config.Archives != null && config.Archives.Count > 0)
                 {
-                    var includesList = config.Archives.Includes;
-                    var excludesList = config.Archives.Excludes;
-                    var task = new ArchiveBackupTask(includesList, excludesList);
-                    tasks.Add(task);
+                    config.Archives.ForEach(cfg =>
+                    {
+                        var name = cfg.Name;
+                        var includesList = cfg.Includes;
+                        var excludesList = cfg.Excludes;
+                        var task = new ArchiveBackupTask(name, includesList, excludesList);
+                        tasks.Add(task);
+                    });
                 }
-                if (config.Databases != null && config.Databases != null)
+                if (config.Databases != null && config.Databases.Count > 0)
                 {
                     config.Databases.ForEach(dbConfig =>
                     {
@@ -223,7 +227,7 @@ namespace dackup
 
                                 var email = new EmailSmtpNotify(from, to, address, domain, userName, password,
                                 authentication, bool.Parse(enableStarttls), cc, bcc);
-                                
+
                                 email.Enable = cfg.Enable;
                                 email.OnFailure = cfg.OnFailure;
                                 email.OnSuccess = cfg.OnSuccess;

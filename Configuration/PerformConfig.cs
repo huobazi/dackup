@@ -14,8 +14,12 @@ namespace dackup.Configuration
         public string Value { get; set; }
     }
 
-    public class Archives
+    public class Archive
     {
+
+        [XmlAttribute(AttributeName = "name")]
+        public string Name { get; set; }
+
         [XmlArray(ElementName = "includes")]
         [XmlArrayItem(ElementName = "path")]
         public List<string> Includes { get; set; }
@@ -107,8 +111,9 @@ namespace dackup.Configuration
     [XmlRoot(ElementName = "perform")]
     public class PerformConfig
     {
-        [XmlElement(ElementName = "archives")]
-        public Archives Archives { get; set; }
+        [XmlArray(ElementName = "archives")]
+        [XmlArrayItem(ElementName = "archive")]
+        public List<Archive> Archives { get; set; }
 
         [XmlArray(ElementName = "databases")]
         [XmlArrayItem(ElementName = "database")]
