@@ -50,6 +50,9 @@ namespace dackup.Configuration
 
         [XmlAttribute(AttributeName = "enable")]
         public bool Enable { get; set; } = true;
+
+        [XmlAttribute(AttributeName = "name")]
+        public string Name { get; set; }
     }
 
     public class NotifyBase
