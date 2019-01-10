@@ -17,7 +17,8 @@ namespace dackup
     {
         public static int Main(string[] args)
         {
-            var startAt = DateTime.Now;
+            var statistics = new Statistics();
+            statistics.StartedAt = DateTime.Now;
 
             var app = new CommandLineApplication
             {
@@ -62,6 +63,8 @@ namespace dackup
 
                         var performConfig = ApplicationHelper.PrepaireConfig(configFilePath,logPath,tmpPath);
 
+                        statistics.ModelName = performConfig.Name;
+
                         Directory.CreateDirectory(DackupContext.Current.TmpPath);
 
                         // run backup
@@ -73,17 +76,10 @@ namespace dackup
                         var storageTasks = Task.WhenAll(storageTask.Item1, storageTask.Item2);
 
                         // run notify
-                        var now = DateTime.Now;
-                        var duration = (now - startAt);
+                        statistics.FinishedAt = DateTime.Now;
+                        
 
-                        var sb = new StringBuilder();
-                        sb.AppendLine($"Backup Completed Successfully!");
-                        sb.AppendLine($"Model={performConfig.Name}");
-                        sb.AppendLine($"Start={startAt}");
-                        sb.AppendLine($"Finished={now}");
-                        sb.AppendLine($"Duration={duration}");
-
-                        var notifyTasks = ApplicationHelper.RunNotify(performConfig, sb.ToString());
+                        var notifyTasks = ApplicationHelper.RunNotify(performConfig, statistics);
 
                         // wait
                         storageTasks.Wait();

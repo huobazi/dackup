@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using System.Text;
 
 using Serilog;
 
@@ -16,10 +17,19 @@ namespace dackup
         {
             this.webHookUri = new Uri(webHookUrl);
         }
-        protected override NotifyResult Notify(string messageBody)
+        protected override NotifyResult Notify(Statistics statistics)
         {
             Log.Information($"Dackup start [{this.GetType().Name }.NotifyAsync]");
             
+
+            var duration = (statistics.FinishedAt - statistics.StartedAt);
+            var sb = new StringBuilder();
+            sb.AppendLine($"Backup Completed Successfully!");
+            sb.AppendLine($"Model={statistics.ModelName}");
+            sb.AppendLine($"Start={statistics.StartedAt}");
+            sb.AppendLine($"Finished={statistics.FinishedAt}");
+            sb.AppendLine($"Duration={duration}");
+
             var message = new SlackMessage();
             if (this.UserName != null)
             {
@@ -29,7 +39,7 @@ namespace dackup
             {
                 message.Channel = this.Channel;
             }
-            message.Text = messageBody;
+            message.Text = sb.ToString();
             message.Icon = this.Icon_emoji;
 
             var client = new SlackClient(this.webHookUri);

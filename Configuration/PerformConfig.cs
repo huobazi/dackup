@@ -27,7 +27,6 @@ namespace dackup.Configuration
 
     public class Database
     {
-
         [XmlElement(ElementName = "option")]
         public List<NameValueElement> OptionList { get; set; }
 
@@ -36,6 +35,9 @@ namespace dackup.Configuration
 
         [XmlAttribute(AttributeName = "name")]
         public string Name { get; set; }
+
+        [XmlAttribute(AttributeName = "enable")]
+        public bool Enable { get; set; } = true;
     }
 
     public class Storage
@@ -45,6 +47,9 @@ namespace dackup.Configuration
 
         [XmlAttribute(AttributeName = "type")]
         public string Type { get; set; }
+
+        [XmlAttribute(AttributeName = "enable")]
+        public bool Enable { get; set; } = true;
     }
 
     public class NotifyBase
@@ -63,6 +68,9 @@ namespace dackup.Configuration
 
         [XmlAttribute(AttributeName = "enable")]
         public bool Enable { get; set; } = true;
+
+        [XmlAttribute(AttributeName = "name")]
+        public string Name { get; set; }
     }
 
     public class HttpPost : NotifyBase
@@ -75,13 +83,22 @@ namespace dackup.Configuration
     {
     }
 
+    public class Email : NotifyBase
+    {
+        [XmlAttribute(AttributeName = "delivery_method")]
+        public string DeliveryMethod { get; set; }
+    }
+
     public class Notifiers
     {
         [XmlElement(ElementName = "http_post")]
-        public HttpPost HttpPost { get; set; }
+        public List<HttpPost> HttpPostList { get; set; }
 
         [XmlElement(ElementName = "slack")]
-        public Slack Slack { get; set; }
+        public List<Slack> SlackList { get; set; }
+
+        [XmlElement(ElementName = "email")]
+        public List<Email> EmailList { get; set; }
     }
 
     [XmlRoot(ElementName = "perform")]

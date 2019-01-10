@@ -80,7 +80,7 @@ namespace dackup
             return new Tuple<Task<UploadResult[]>, Task<PurgeResult[]>>(storageUploadTasks, storagePurgeTasks);
         }
 
-        public static Task<NotifyResult[]> RunNotify(PerformConfig cfg, string notifyMessage)
+        public static Task<NotifyResult[]> RunNotify(PerformConfig cfg, Statistics statistics)
         {
             Log.Information("Dackup start notify task ");
 
@@ -90,7 +90,7 @@ namespace dackup
 
             notifyList.ForEach(notify =>
             {
-                notifyResultList.Add(notify.NotifyAsync(notifyMessage));
+                notifyResultList.Add(notify.NotifyAsync(statistics));
             });
 
             return Task.WhenAll(notifyResultList.ToArray());

@@ -3,8 +3,12 @@ using System.Collections;
 using System.Collections.Specialized;
 using System.Threading.Tasks;
 using System.Net;
+using System.Text;
 
 using Serilog;
+
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace dackup
 {
@@ -21,16 +25,29 @@ namespace dackup
             this.webHookUri = new Uri(url);
         }
 
-        public override async Task<NotifyResult> NotifyAsync(string messageBody)
+        public override async Task<NotifyResult> NotifyAsync(Statistics statistics)
         {
             Log.Information($"Dackup start [{this.GetType().Name }.NotifyAsync]");
+
+
+
+            dynamic msg = new JObject();
+            msg.Title = "Backup Completed Successfully!";
+            msg.ModelName = statistics.ModelName;
+            msg.StartedAt = statistics.StartedAt;
+            msg.FinishedAt = statistics.FinishedAt;
+            msg.Duration = statistics.FinishedAt - statistics.StartedAt;        
+            msg.Tags = new JArray("Dackup", "OnSale");
+
             var nv = new NameValueCollection(this.Params);
-            nv["msg"] = messageBody;
+            nv["msg"] = JsonConvert.SerializeObject(msg);
+
             var client = new WebClient();
-            if(this.Headers != null && this.Headers.Count >0){
+            if (this.Headers != null && this.Headers.Count > 0)
+            {
                 foreach (var key in this.Headers.AllKeys)
                 {
-                    client.Headers.Add(key,this.Headers[key]);
+                    client.Headers.Add(key, this.Headers[key]);
                 }
             }
             var method = "POST";

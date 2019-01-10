@@ -13,14 +13,14 @@ namespace dackup
 
         public bool Enable { get; set; }
 
-        public virtual async Task<NotifyResult> NotifyAsync(string messageBody)
+        public virtual async Task<NotifyResult> NotifyAsync(Statistics statistics)
         {
             Log.Information($"Dackup start [{this.GetType().Name }.NotifyAsync]");
 
-            var task = Task.Run(() => Notify(messageBody));
+            var task = Task.Run(() => Notify(statistics));
             return await task;
         }
-        protected virtual NotifyResult Notify(string messageBody)
+        protected virtual NotifyResult Notify(Statistics statistics)
         {
             return null;
         }
