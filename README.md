@@ -2,6 +2,7 @@ Dackup is a fullstack backup app, Which is similar to [backup](https://github.co
 
 ## Features
 
+- Not any dependence
 - Multiple Databases source support(now postgres only).
 - Multiple Storage type support.
 - Archive folder or files into a tar.gz

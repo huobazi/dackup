@@ -5,7 +5,7 @@ usage()
     echo "usage: releash.sh -t your_token_content"
 }
 
-readonly RELEASE_VERSION="0.0.1"
+readonly RELEASE_VERSION="0.0.1.beta-1"
 
 github_api_token=
 
@@ -47,7 +47,7 @@ do
     distFile="$SCRIPT_PATH/dist/dackup-$rid.zip"
     cd $SCRIPT_PATH/bin/release/netcoreapp2.2/$rid/publish/
     zip -r $distFile .
-    releaseFiles+=$distFile
+    releaseFiles+=($distFile)
     cd $BASE_PWD
 done
 
@@ -57,11 +57,10 @@ do
 	dotnet publish $SCRIPT_PATH/dackup.csproj -r $rid -c release
     cd $SCRIPT_PATH/bin/release/netcoreapp2.2/$rid/publish/
 	tar -cvzf  $distFile *
-    releaseFiles+=$distFile
+    releaseFiles+=($distFile)
     cd $BASE_PWD
 done
 
-echo
 
 for file in "${releaseFiles[@]}"
 do
@@ -69,7 +68,6 @@ do
 done
 
 
-readonly github_api_token=$GITHUB_TOKEN
 readonly owner="huobazi"
 readonly repo="dackup"
 readonly tag=$RELEASE_VERSION
@@ -90,24 +88,35 @@ curl -o /dev/null -sH "$AUTH" $GH_REPO || { echo "Error: Invalid repo, token or 
 # Read asset tags.
 response=$(curl -sH "$AUTH" $GH_TAGS)
 
-# Get ID of the asset based on given filename.
+
+# Get ID of the release.
 eval $(echo "$response" | grep -m 1 "id.:" | grep -w id | tr : = | tr -cd '[[:alnum:]]=')
 [ "$id" ] || { echo "Error: Failed to get release id for tag: $tag"; echo "$response" | awk 'length($0)<100' >&2; exit 1; }
-
-# Upload asset
-echo "Uploading asset... "
-
-# Construct url
+release_id="$id"
 
 for file in "${releaseFiles[@]}"
 do
+    filename=$file
 
-    $filename=$file
-    GH_ASSET="https://uploads.github.com/repos/$owner/$repo/releases/$id/assets?name=$(basename $filename)"
+    id=""
+    eval $(echo "$response" | grep -C1 "name.:.\+$filename" | grep -m 1 "id.:" | grep -w id | tr : = | tr -cd '[[:alnum:]]=')
+    assert_id="$id"
+    if [ "$assert_id" = "" ]; then
+        echo "No need to overwrite asset"
+    else
+        echo "Deleting asset($assert_id)... "
+        curl "$GITHUB_OAUTH_BASIC" -X "DELETE" -H "Authorization: token $github_api_token" "https://api.github.com/repos/$owner/$repo/releases/assets/$assert_id"
+    fi
+
+    echo "Uploading $file to github ... "
+
+    GH_ASSET="https://uploads.github.com/repos/$owner/$repo/releases/$release_id/assets?name=$(basename $filename)"
+    
     curl "$GITHUB_OAUTH_BASIC" --data-binary @"$filename" -H "Authorization: token $github_api_token" -H "Content-Type: application/octet-stream" $GH_ASSET
 
-    echo Published to github successfully: $file
+    echo "Published to github successfully: $file"
 done
+
 echo "Published successfully!
 
 cd $BASE_PWD
