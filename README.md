@@ -96,8 +96,8 @@ you can view the [mockup config file](https://github.com/huobazi/dackup/blob/mas
 
 ```bash
 $ crontab -l
-0 0 * * * /your_path/dackup perform --config-file your_first_task.config --tmp-path /your_tmp_path/first --log-path /your_log_path
-1 1 * * * /your_path/dackup perform --config-file your_second_task.config --tmp-path /your_tmp_path/second --log-path /your_log_path
+0 0 * * * /your_path/dackup perform --config-file /your_path/your_first_task.config --tmp-path /your_tmp_path/first --log-path /your_log_path
+0 2 * * * /your_path/dackup perform --config-file /your_path/your_second_task.config --tmp-path /your_tmp_path/second --log-path /your_log_path
 ```
 
 ## Install
