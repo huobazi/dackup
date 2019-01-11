@@ -84,6 +84,8 @@ Use arrow keys to scroll. Press 'q' to exit.
 
 use the subcommand ``` new ``` to generate a task config file
 
+you can view the [mockup config file](https://github.com/huobazi/dackup/blob/master/perform-config-mockup.config)
+
 ```bash
 /your_path/dackup new my_first_task
 ```
