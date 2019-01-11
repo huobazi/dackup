@@ -72,10 +72,10 @@ done
 readonly github_api_token=$GITHUB_TOKEN
 readonly owner="huobazi"
 readonly repo="dackup"
-readonly tag=RELEASE_VERSION
+readonly tag=$RELEASE_VERSION
 readonly GH_API="https://api.github.com"
 readonly GH_REPO="$GH_API/repos/$owner/$repo"
-readonly GH_TAGS="$GH_REPO/releases/tags/$tag"
+GH_TAGS="$GH_REPO/releases/tags/$tag"
 readonly AUTH="Authorization: token $github_api_token"
 readonly WGET_ARGS="--content-disposition --auth-no-challenge --no-cookie"
 readonly CURL_ARGS="-LJO#"

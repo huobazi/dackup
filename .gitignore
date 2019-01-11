@@ -265,3 +265,5 @@ __pycache__/
 dackup*.log
 local.config
 dist/
+
+run_release.sh
