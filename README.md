@@ -40,7 +40,7 @@ Options:
   -?|-h|--help  Show help information
 
 Commands:
-  gen           Generate a config file
+  new           Generate a config file
   perform       Performing your backup by config
 
 Run 'dackup [command] --help' for more information about a command.
@@ -49,11 +49,11 @@ Use arrow keys to scroll. Press 'q' to exit.
 ```
 
 ```bash
-$ /your_path/dackup gen
+$ /your_path/dackup new
 
 Generate a config file
 
-Usage: dackup gen [arguments] [options]
+Usage: dackup new [arguments] [options]
 
 Arguments:
   model         Name of the model
@@ -81,10 +81,10 @@ Use arrow keys to scroll. Press 'q' to exit.
 
 ## Configuration
 
-use the subcommand ``` gen ``` to generate a task config file
+use the subcommand ``` new ``` to generate a task config file
 
 ```bash
-/your_path/dackup gen my_first_task
+/your_path/dackup new my_first_task
 ```
 
 

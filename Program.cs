@@ -28,13 +28,13 @@ namespace dackup
 
             app.HelpOption(inherited: true);
 
-            app.Command("gen", genCmd =>
+            app.Command("new", newCmd =>
             {
-                genCmd.Description = "Generate a config file";
+                newCmd.Description = "Generate a config file";
 
-                var modelName = genCmd.Argument("model", "Name of the model").IsRequired();
+                var modelName = newCmd.Argument("model", "Name of the model").IsRequired();
 
-                genCmd.OnExecute(() =>
+                newCmd.OnExecute(() =>
                 {
                     var fileName = Path.Combine(Environment.CurrentDirectory, modelName.Value + ".config");
                     PerformConfigHelper.GenerateMockupConfig(fileName);
