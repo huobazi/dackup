@@ -86,14 +86,11 @@ Use arrow keys to scroll. Press 'q' to exit.
 
 ## Configuration
 
-use the subcommand ``` new ``` to generate a task config file
-
-you can view the [mockup config file](https://github.com/huobazi/dackup/blob/master/perform-config-mockup.config)
+Use the subcommand ``` new ``` to generate a task config file, You can view the [mockup config file](https://github.com/huobazi/dackup/blob/master/perform-config-mockup.config)
 
 ```bash
-/your_path/dackup new my_first_task
+$ /your_path/dackup new my_first_task
 ```
-
 
 ## Crontab
 

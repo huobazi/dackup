@@ -12,7 +12,6 @@ namespace dackup
         private string name;
         private List<string> includePathList;
         private List<string> excludePathList;
-
         private ArchiveBackupTask() { }
 
         public ArchiveBackupTask(string name, List<string> includePathList, List<string> excludePathList)
@@ -21,7 +20,6 @@ namespace dackup
             this.includePathList = includePathList;
             this.excludePathList = excludePathList;
         }
-
         protected override BackupTaskResult Backup()
         {
             if (includePathList == null || includePathList.Count <= 0)
@@ -32,6 +30,7 @@ namespace dackup
                     Message = "No archives files setting"
                 };
             }
+
             Log.Information($"Archive backup start");
 
             var directory = Path.Combine(DackupContext.Current.TmpPath, "archives");
@@ -42,7 +41,6 @@ namespace dackup
                 Log.Information($"Archive backup : {file}");
 
                 FileAttributes attr = File.GetAttributes(file);
-
                 if (attr.HasFlag(FileAttributes.Directory))
                 {
                     var destDirectory = Path.Combine(directory, file.TrimStart('/'));
