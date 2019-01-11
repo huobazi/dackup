@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Text;
 using System.Diagnostics;
+using System.Collections.Generic;
 
 using ICSharpCode.SharpZipLib.GZip;
 using ICSharpCode.SharpZipLib.Tar;
@@ -36,26 +37,71 @@ namespace dackup
         {
             return DateTime.Now - ConvertRemoveThresholdToTimeSpan(timeSpan);
         }
-        public static void DirectoryCopy(string sourceDirectory, string targetDirectory)
+        public static void DirectoryCopy(string sourceDirectory, string targetDirectory, List<string> excludes = null)
         {
             DirectoryInfo diSource = new DirectoryInfo(sourceDirectory);
             DirectoryInfo diTarget = new DirectoryInfo(targetDirectory);
 
-            CopyAll(diSource, diTarget);
+            CopyAll(diSource, diTarget, excludes);
         }
-        private static void CopyAll(DirectoryInfo source, DirectoryInfo target)
+        private static void CopyAll(DirectoryInfo source, DirectoryInfo target, List<string> excludes = null)
         {
-            Directory.CreateDirectory(target.FullName);
-
-            foreach (FileInfo fi in source.GetFiles())
+            if (!IsDirectoryExcluded(source.FullName, excludes))
             {
-                fi.CopyTo(Path.Combine(target.FullName, fi.Name), true);
+                Directory.CreateDirectory(target.FullName);
+
+                foreach (FileInfo fi in source.GetFiles())
+                {
+                    string destFile = Path.Combine(target.FullName, fi.Name);
+                    FileCopy(fi.FullName, destFile, excludes);
+                }
+
+                foreach (DirectoryInfo diSourceSubDir in source.GetDirectories())
+                {
+                    DirectoryInfo nextTargetSubDir = target.CreateSubdirectory(diSourceSubDir.Name);
+                    CopyAll(diSourceSubDir, nextTargetSubDir, excludes);
+                }
+            }
+            
+            bool IsDirectoryExcluded(string directoryPath, List<string> excludeList)
+            {
+                if (excludeList == null || excludeList.Count <= 0)
+                {
+                    return false;
+                }
+                else if (excludeList.Contains(directoryPath))
+                {
+                    return true;
+                }
+
+                return false;
+            }
+        }
+        public static void FileCopy(string sourceFile, string destFile, List<string> excludes = null)
+        {
+            if (!IsFileExcluded(sourceFile, excludes))
+            {
+                File.Copy(sourceFile, destFile, true);
             }
 
-            foreach (DirectoryInfo diSourceSubDir in source.GetDirectories())
+            bool IsFileExcluded(string fileName, List<string> excludeList)
             {
-                DirectoryInfo nextTargetSubDir = target.CreateSubdirectory(diSourceSubDir.Name);
-                CopyAll(diSourceSubDir, nextTargetSubDir);
+                if (excludeList == null || excludeList.Count <= 0)
+                {
+                    return false;
+                }
+                else if (excludeList.Contains(fileName))
+                {
+                    return true;
+                }
+
+                var extension = Path.GetExtension(fileName);
+                if (!string.IsNullOrEmpty(extension))
+                {
+                    return excludeList.Contains("*" + extension);
+                }
+
+                return false;
             }
         }
         // https://github.com/icsharpcode/SharpZipLib/wiki/GZip-and-Tar-Samples#createTGZ
@@ -91,7 +137,9 @@ namespace dackup
             {
                 string[] directories = Directory.GetDirectories(sourceDirectory);
                 foreach (string directory in directories)
+                {
                     AddDirectoryFilesToTar(tarArchive, directory, recurse);
+                }
             }
         }
         public static string FlattenException(Exception exception)
@@ -107,30 +155,32 @@ namespace dackup
             stringBuilder.AppendLine(footprints);
 
             return stringBuilder.ToString();
-        }
-        private static string GetAllFootprints(Exception exception)
-        {
-            if (exception == null)
-            {
-                return string.Empty;
-            }
-            var st = new StackTrace(exception, true);
-            var frames = st.GetFrames();
-            var traceString = new StringBuilder();
 
-            foreach (var frame in frames)
+            string GetAllFootprints(Exception ex)
             {
-                if (frame.GetFileLineNumber() < 1)
+                if (ex == null)
                 {
-                    continue;
+                    return string.Empty;
                 }
-                traceString.Append("File: " + frame.GetFileName());
-                traceString.Append(", Method:" + frame.GetMethod().Name);
-                traceString.Append(", LineNumber: " + frame.GetFileLineNumber());
-                traceString.Append("  -->  ");
-            }
+                var st = new StackTrace(ex, true);
+                var frames = st.GetFrames();
+                var traceString = new StringBuilder();
 
-            return traceString.ToString();
+                foreach (var frame in frames)
+                {
+                    if (frame.GetFileLineNumber() < 1)
+                    {
+                        continue;
+                    }
+                    traceString.Append("File: " + frame.GetFileName());
+                    traceString.Append(", Method:" + frame.GetMethod().Name);
+                    traceString.Append(", LineNumber: " + frame.GetFileLineNumber());
+                    traceString.Append("  -->  ");
+                }
+
+                return traceString.ToString();
+            }
         }
+
     }
 }

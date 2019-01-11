@@ -46,21 +46,20 @@ namespace dackup
                 if (attr.HasFlag(FileAttributes.Directory))
                 {
                     var destDirectory = Path.Combine(directory, file.TrimStart('/'));
-                    Utils.DirectoryCopy(file, destDirectory);
+                    Utils.DirectoryCopy(file, destDirectory, excludePathList);
                 }
                 else
                 {
                     var destFile = Path.Combine(directory, file.TrimStart('/'));
                     var destDirectory = destFile.Substring(0, destFile.LastIndexOf('/') + 1);
                     Directory.CreateDirectory(destDirectory);
-
-                    File.Copy(file, destFile, true);
+                    Utils.FileCopy(file, destFile, excludePathList);
                 }
             });
 
-            var tgzFileName  = Path.Combine(Path.Combine(DackupContext.Current.TmpPath, $"archives_{this.name}_{DateTime.Now:s}.tar.gz"));
+            var tgzFileName = Path.Combine(Path.Combine(DackupContext.Current.TmpPath, $"archives_{this.name}_{DateTime.Now:s}.tar.gz"));
 
-            Utils.CreateTarGZ(tgzFileName,directory);
+            Utils.CreateTarGZ(tgzFileName, directory);
 
             return new BackupTaskResult
             {
