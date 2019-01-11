@@ -111,6 +111,18 @@ dotnet publish  -r osx-x64 -c release;
 dotnet publish  -r linux-x64 -c release;
 ```
 
+## Contributing
+
+1. Fork it
+2. Create your feature branch (`git checkout -b my-new-feature`)
+3. Commit your changes (`git commit -am 'Added some feature'`)
+4. Push to the branch (`git push origin my-new-feature`)
+5. Create new Pull Request
+
+## Contributors
+
+See the [Contributors List](https://github.com/huobazi/dackup/graphs/contributors).
+
 ## License
 
 MIT
