@@ -32,14 +32,10 @@ namespace dackup
                 default: throw new InvalidOperationException($"Invalid value for remove_threshold option: '{timeSpan}'");
             }
         }
-
         public static DateTime ConvertRemoveThresholdToDateTime(string timeSpan)
         {
             return DateTime.Now - ConvertRemoveThresholdToTimeSpan(timeSpan);
         }
-
-
-
         public static void DirectoryCopy(string sourceDirectory, string targetDirectory)
         {
             DirectoryInfo diSource = new DirectoryInfo(sourceDirectory);
@@ -47,7 +43,6 @@ namespace dackup
 
             CopyAll(diSource, diTarget);
         }
-
         private static void CopyAll(DirectoryInfo source, DirectoryInfo target)
         {
             Directory.CreateDirectory(target.FullName);
@@ -63,7 +58,6 @@ namespace dackup
                 CopyAll(diSourceSubDir, nextTargetSubDir);
             }
         }
-
         // https://github.com/icsharpcode/SharpZipLib/wiki/GZip-and-Tar-Samples#createTGZ
         public static void CreateTarGZ(string tgzFilename, string sourceDirectory)
         {
@@ -81,7 +75,6 @@ namespace dackup
 
             tarArchive.Close();
         }
-
         private static void AddDirectoryFilesToTar(TarArchive tarArchive, string sourceDirectory, bool recurse)
         {
             TarEntry tarEntry = TarEntry.CreateEntryFromFile(sourceDirectory);
@@ -101,7 +94,6 @@ namespace dackup
                     AddDirectoryFilesToTar(tarArchive, directory, recurse);
             }
         }
-
         public static string FlattenException(Exception exception)
         {
             var stringBuilder = new StringBuilder();
@@ -116,7 +108,6 @@ namespace dackup
 
             return stringBuilder.ToString();
         }
-
         private static string GetAllFootprints(Exception exception)
         {
             if (exception == null)

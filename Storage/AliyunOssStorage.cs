@@ -11,14 +11,9 @@ namespace dackup
     public class AliyunOssStorage : StorageBase
     {
         private string endpoint, accessKeyId, accessKeySecret, bucketName;
-
-
         private AliyunOssStorage() { }
-
         public string PathPrefix{get;set;}
-
         public DateTime? RemoveThreshold{get;set;}
-
         public AliyunOssStorage(string endpoint, string accessKeyId, string accessKeySecret, string bucketName)
         {
             this.endpoint = endpoint;
@@ -37,7 +32,6 @@ namespace dackup
             client.PutObject(bucketName, key, fileName);
             return new UploadResult();
         }
-
         protected override PurgeResult Purge()
         {
             if (RemoveThreshold == null || RemoveThreshold.Value > DateTime.Now)

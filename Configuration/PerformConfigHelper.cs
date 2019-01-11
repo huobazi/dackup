@@ -246,12 +246,10 @@ namespace dackup
             }
             return tasks;
         }
-
         public static void GenerateMockupConfig(string fileName)
         {
             WriteResourceToFile("dackup.perform-config-mockup.config", fileName);
         }
-
         public static void WriteResourceToFile(string resourceName, string fileName)
         {
             Console.WriteLine($"====> Write mockup file to {fileName}");

@@ -9,7 +9,6 @@ namespace dackup
     {
         private static object _mutex = new object();
         private static DackupContext instance;
-
         private static List<string> generateFilesList = new List<string>();
         private DackupContext() { }
         private DackupContext(string logFile, string tmpPath)

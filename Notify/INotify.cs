@@ -10,6 +10,5 @@ namespace dackup
 
     public class NotifyResult
     {
-
     }
 }

@@ -10,9 +10,7 @@ namespace dackup
         public bool OnSuccess { get; set; }
         public bool OnWarning { get; set; }
         public bool OnFailure { get; set; }
-
         public bool Enable { get; set; }
-
         public virtual async Task<NotifyResult> NotifyAsync(Statistics statistics)
         {
             Log.Information($"Dackup start [{this.GetType().Name }.NotifyAsync]");

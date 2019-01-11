@@ -10,13 +10,11 @@ namespace dackup
     public class LocalStorage : StorageBase
     {   
         private string path;
-        public DateTime? RemoveThreshold {get;set;}
-        
+        public DateTime? RemoveThreshold {get;set;} 
         public LocalStorage(string path)
         {
             this.path = path;
         }
-
         protected override UploadResult Upload(string fileName)
         {    
             var fileInfo = new FileInfo(fileName);
@@ -25,7 +23,6 @@ namespace dackup
             
             return new UploadResult();
         }
-
         protected override PurgeResult Purge()
         {
             if (RemoveThreshold == null || RemoveThreshold.Value > DateTime.Now)

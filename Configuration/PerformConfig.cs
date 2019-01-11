@@ -15,7 +15,6 @@ namespace dackup.Configuration
         [XmlAttribute(AttributeName = "value")]
         public string Value { get; set; }
     }
-
     [Serializable]
     public class Archive
     {
@@ -30,7 +29,6 @@ namespace dackup.Configuration
         [XmlArrayItem(ElementName = "path")]
         public List<string> Excludes { get; set; }
     }
-
     [Serializable]
     public class Database
     {
@@ -46,7 +44,6 @@ namespace dackup.Configuration
         [XmlAttribute(AttributeName = "enable")]
         public bool Enable { get; set; } = true;
     }
-
     [Serializable]
     public class Storage
     {
@@ -96,7 +93,6 @@ namespace dackup.Configuration
     public class Slack : NotifyBase
     {
     }
-
     [Serializable]
     public class Email : NotifyBase
     {
@@ -116,7 +112,6 @@ namespace dackup.Configuration
         [XmlElement(ElementName = "email")]
         public List<Email> EmailList { get; set; }
     }
-
     [Serializable, XmlRoot(ElementName = "perform")]
     public class PerformConfig
     {

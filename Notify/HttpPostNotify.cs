@@ -15,21 +15,15 @@ namespace dackup
     public class HttpPostNotify : NotifyBase
     {
         private Uri webHookUri;
-
         public NameValueCollection Params { get; set; }
-
         public NameValueCollection Headers { get; set; }
-
         public HttpPostNotify(string url)
         {
             this.webHookUri = new Uri(url);
         }
-
         public override async Task<NotifyResult> NotifyAsync(Statistics statistics)
         {
             Log.Information($"Dackup start [{this.GetType().Name }.NotifyAsync]");
-
-
 
             dynamic msg = new JObject();
             msg.Title = "Backup Completed Successfully!";

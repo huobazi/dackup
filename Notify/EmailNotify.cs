@@ -18,11 +18,8 @@ namespace dackup
     {
         private string from, to, cc, bcc, address, domain, userName, password, authentication;
         private bool enableStarttls;
-
         public int Port { get; set; } = 25;
-
         private EmailSmtpNotify() { }
-
         public EmailSmtpNotify(string from, string to, string address, string domain, string userName, string password,
         string authentication, bool enableStarttls, string cc = null, string bcc = null)
         {
@@ -37,7 +34,6 @@ namespace dackup
             this.cc = cc;
             this.bcc = bcc;
         }
-
         public override async Task<NotifyResult> NotifyAsync(Statistics statistics)
         {
             Log.Information($"Dackup start [{this.GetType().Name }.NotifyAsync]");
@@ -52,7 +48,7 @@ namespace dackup
             SmtpClient client = new SmtpClient();
             client.Host = this.address;
             client.Port = this.Port;
-            // now dotnet core hav no client domain settings
+            // now dotnet core have no client domain settings
             // https://github.com/dotnet/corefx/issues/33123
             //client.ClientDomain = this.domain;
             client.EnableSsl = this.enableStarttls;

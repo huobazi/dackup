@@ -11,14 +11,11 @@ namespace dackup
     public sealed class SlackClient
     {
         public static readonly Uri DefaultWebHookUri = new Uri("https://hooks.slack.com/services/.../.../...");
-
         private readonly Uri webHookUri;
-
         public SlackClient(Uri webHookUri)
         {
             this.webHookUri = webHookUri;
         }
-
         public void SendSlackMessage(SlackMessage message)
         {
             using (var webClient = new WebClient())
@@ -28,9 +25,7 @@ namespace dackup
                 byte[] response = webClient.UploadData(this.webHookUri, "POST", request);
             }
         }
-
     }
-
     public sealed class SlackMessage
     {
         [JsonProperty("channel")]

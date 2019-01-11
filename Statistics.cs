@@ -8,7 +8,6 @@ namespace dackup
     {
         public string ModelName { get; set; }
         public DateTime StartedAt { get; set; }
-
         public DateTime FinishedAt { get; set; }
     }
 }

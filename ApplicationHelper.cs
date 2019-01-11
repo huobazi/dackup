@@ -39,7 +39,6 @@ namespace dackup
             return PerformConfigHelper.LoadFrom(configfile);
 
         }
-
         public static Task<BackupTaskResult[]> RunBackup(PerformConfig cfg)
         {
             Log.Information("Dackup start backup task ");
@@ -52,7 +51,6 @@ namespace dackup
             });
             return Task.WhenAll(backupTaskResult.ToArray());
         }
-
         public static Tuple<Task<UploadResult[]>, Task<PurgeResult[]>> RunStorage(PerformConfig cfg)
         {
             Log.Information("Dackup start storage task ");
@@ -75,7 +73,6 @@ namespace dackup
 
             return new Tuple<Task<UploadResult[]>, Task<PurgeResult[]>>(storageUploadTasks, storagePurgeTasks);
         }
-
         public static Task<NotifyResult[]> RunNotify(PerformConfig cfg, Statistics statistics)
         {
             Log.Information("Dackup start notify task ");
@@ -91,7 +88,6 @@ namespace dackup
 
             return Task.WhenAll(notifyResultList.ToArray());
         }
-
         public static void Clean()
         {
             Log.Information("Dackup clean tmp folder ");

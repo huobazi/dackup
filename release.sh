@@ -74,7 +74,7 @@ readonly tag=$RELEASE_VERSION
 for file in "${releaseFiles[@]}"
 do
     ghr -t $github_api_token  -u $owner  -r $repo -n "Dackup $tag" -replace $tag $file
-    echo "$file upload successfully."
+    echo "$file upload to github successfully."
 done
 
 echo "Published successfully!"

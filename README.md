@@ -92,7 +92,7 @@ you can view the [mockup config file](https://github.com/huobazi/dackup/blob/mas
 ```
 
 
-## With crontab
+## Crontab
 
 ```bash
 $ crontab -l
@@ -124,7 +124,7 @@ dotnet publish  -r linux-x64 -c release;
 
 ## Contributors
 
-See the [Contributors List](https://github.com/huobazi/dackup/graphs/contributors).
+[Contributors List](https://github.com/huobazi/dackup/graphs/contributors).
 
 ## License
 
