@@ -96,13 +96,18 @@ $ crontab -l
 1 1 * * * /your_path/dackup perform --config-file your_second_task.config --tmp-path /your_tmp_path/second --log-path /your_log_path
 ```
 
+## Install
+
+You can download binary from release page and place it in $PATH directory.
+
 ## Build
+
 Install dotnet core sdk 2.2 then
 
 ```
-dotnet publish -r win-x64 -c release;
-dotnet publish -r osx-x64 -c release;
-dotnet publish -r linux-x64 -c release;
+dotnet publish  -r win-x64 -c release;
+dotnet publish  -r osx-x64 -c release;
+dotnet publish  -r linux-x64 -c release;
 ```
 
 ## License
