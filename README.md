@@ -86,7 +86,7 @@ Use arrow keys to scroll. Press 'q' to exit.
 
 ## Configuration
 
-Use the subcommand ``` new ``` to generate a task config file, You can view the [mockup config file](https://github.com/huobazi/dackup/blob/master/perform-config-mockup.config)
+Use the subcommand ``` new ``` to generate a task config file, such as [mockup config file](https://github.com/huobazi/dackup/blob/master/perform-config-mockup.config)
 
 ```bash
 $ /your_path/dackup new my_first_task
@@ -111,9 +111,9 @@ You can download binary from [release](https://github.com/huobazi/dackup/release
 Install dotnet core sdk 2.2 then
 
 ```bash
-dotnet publish  -r win-x64 -c release;
-dotnet publish  -r osx-x64 -c release;
-dotnet publish  -r linux-x64 -c release;
+dotnet publish -r win-x64 -c release;
+dotnet publish -r osx-x64 -c release;
+dotnet publish -r linux-x64 -c release;
 ```
 
 ## Contributing
