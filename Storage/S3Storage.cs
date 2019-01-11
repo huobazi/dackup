@@ -55,6 +55,7 @@ namespace dackup
                 var objectListing = s3Client.ListObjectsAsync(this.bucket, this.PathPrefix);
                 await objectListing;
                 var deleteRequest = new DeleteObjectsRequest();
+                deleteRequest.BucketName = this.bucket;
 
                 foreach (var s3Object in objectListing.Result.S3Objects)
                 {
