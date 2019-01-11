@@ -23,10 +23,6 @@ while [ "$1" != "" ]; do
     shift
 done
 
-if [ "$github_api_token" = "" ]; then
-    usage
-    exit 1
-fi
 
 readonly BASE_PWD=$PWD
 
@@ -67,6 +63,10 @@ do
     echo "Released successfully: $file"
 done
 
+
+if [ "$github_api_token" = "" ]; then
+    exit 1
+fi
 
 readonly owner="huobazi"
 readonly repo="dackup"
