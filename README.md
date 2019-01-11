@@ -2,16 +2,19 @@ Dackup is a fullstack backup app, Which is similar to [backup](https://github.co
 
 ## Features
 
-- Multiple platform (win/osx/linux)
-- Not any dependence
+- Multiple platform (win/osx/linux).
+- Not require any dependence.
+- Archive folder or files to a tar.gz
 - Multiple Databases source support(now postgres only).
 - Multiple Storage type support.
-- Archive folder or files into a tar.gz
 - Multiple Notifier type support.
 
 ### Databases
 
 - PostgreSQL
+- Mysql (coming soon)
+- MongoDB (coming soon)
+- SQL Server (coming soon)
 
 ### Archive
 
@@ -95,9 +98,11 @@ you can view the [mockup config file](https://github.com/huobazi/dackup/blob/mas
 ## Crontab
 
 ```bash
+
 $ crontab -l
 0 0 * * * /your_path/dackup perform --config-file /your_path/your_first_task.config --tmp-path /your_tmp_path/first --log-path /your_log_path
 0 2 * * * /your_path/dackup perform --config-file /your_path/your_second_task.config --tmp-path /your_tmp_path/second --log-path /your_log_path
+
 ```
 
 ## Install
@@ -108,7 +113,7 @@ You can download binary from [release](https://github.com/huobazi/dackup/release
 
 Install dotnet core sdk 2.2 then
 
-```
+```bash
 dotnet publish  -r win-x64 -c release;
 dotnet publish  -r osx-x64 -c release;
 dotnet publish  -r linux-x64 -c release;
