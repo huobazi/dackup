@@ -3,7 +3,7 @@ Dackup is a fullstack backup app, Which is similar to [backup](https://github.co
 ## Features
 
 - Multiple platform (win/osx/linux).
-- No dependence.
+- No Dependence.
 - Archive folder or files to tar.gz
 - Multiple Databases source support.
 - Multiple Storage type support.
@@ -31,6 +31,7 @@ Archive files or folder into a `.tar.gz` file.
 - Email
 - HttpPost
 - [Slack](https://slack.com/)
+- [DingTalk](https://www.dingtalk.com/)
 
 ## Usage
 
