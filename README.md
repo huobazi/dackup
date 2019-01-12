@@ -12,7 +12,7 @@ Dackup is a fullstack backup app, Which is similar to [backup](https://github.co
 ### Databases
 
 - PostgreSQL
-- Mysql (coming soon)
+- Mysql
 - MongoDB (coming soon)
 - SQL Server (coming soon)
 
