@@ -21,14 +21,11 @@ namespace dackup
         {
             Log.Information($"Dackup start [{this.GetType().Name }.NotifyAsync]");
             
-
-            var duration = (statistics.FinishedAt - statistics.StartedAt);
-            var sb = new StringBuilder();
-            sb.AppendLine($"Backup Completed Successfully!");
-            sb.AppendLine($"Model={statistics.ModelName}");
-            sb.AppendLine($"Start={statistics.StartedAt}");
-            sb.AppendLine($"Finished={statistics.FinishedAt}");
-            sb.AppendLine($"Duration={duration}");
+            var markdownBody = $@"Backup Completed Successfully!" + System.Environment.NewLine +
+                 $"> Model: {statistics.ModelName} " + System.Environment.NewLine +
+                 $"> Start: {statistics.StartedAt} " + System.Environment.NewLine +
+                 $"> FinishedAt: {statistics.FinishedAt}  " + System.Environment.NewLine +
+                 $"> Duration: {statistics.FinishedAt - statistics.StartedAt} " + System.Environment.NewLine;
 
             var message = new SlackMessage();
             if (this.UserName != null)
@@ -39,7 +36,7 @@ namespace dackup
             {
                 message.Channel = this.Channel;
             }
-            message.Text = sb.ToString();
+            message.Text = markdownBody;
             message.Icon = this.Icon_emoji;
 
             var client = new SlackClient(this.webHookUri);
