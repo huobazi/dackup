@@ -73,7 +73,7 @@ namespace dackup
                 {
                     deleteRequest.Objects.ForEach(item =>
                     {
-                        Log.Information($"Prepare to purge: {item}");
+                        Log.Information($"Prepare to purge: {item.Key}");
                     });
 
                     await s3Client.DeleteObjectsAsync(deleteRequest);
