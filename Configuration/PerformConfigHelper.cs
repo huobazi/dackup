@@ -70,6 +70,17 @@ namespace dackup
                                 task.PathToPgDump = dbConfig.OptionList.Find(c => c.Name.ToLower() == "path_to_pg_dump".ToLower()).Value;
                                 tasks.Add(task);
                             }
+                            if (dbConfig.Type.ToLower().Trim() == "mysql")
+                            {
+                                var task = new MySqlBackupTask();
+                                task.Host = dbConfig.OptionList.Find(c => c.Name.ToLower() == "host").Value;
+                                task.Database = dbConfig.OptionList.Find(c => c.Name.ToLower() == "database").Value;
+                                task.UserName = dbConfig.OptionList.Find(c => c.Name.ToLower() == "username").Value;
+                                task.Password = dbConfig.OptionList.Find(c => c.Name.ToLower() == "password").Value;
+                                task.Port = int.Parse(dbConfig.OptionList.Find(c => c.Name.ToLower() == "port").Value);
+                                task.PathToMysqlDump = dbConfig.OptionList.Find(c => c.Name.ToLower() == "path_to_mysqldump".ToLower()).Value;
+                                tasks.Add(task);
+                            }
                         }
                     });
                 }
