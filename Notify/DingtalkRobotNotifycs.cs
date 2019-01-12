@@ -50,11 +50,7 @@ namespace dackup
             var client = new WebClient();
             client.Encoding = System.Text.Encoding.UTF8;
             client.Headers.Add("Content-Type", "application/json");
-
             var method = "POST";
-
-            // var gaga = client.UploadString(this.webHookUri, method, payload);
-            // Log.Debug(gaga);
 
             var data = await client.UploadStringTaskAsync(this.webHookUri, method, payload);
 
