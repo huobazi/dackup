@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Text;
+using System.Net;
 using System.Diagnostics;
 using System.Collections.Generic;
 
@@ -62,7 +63,7 @@ namespace dackup
                     CopyAll(diSourceSubDir, nextTargetSubDir, excludes);
                 }
             }
-            
+
             bool IsDirectoryExcluded(string directoryPath, List<string> excludeList)
             {
                 if (excludeList == null || excludeList.Count <= 0)
@@ -126,6 +127,7 @@ namespace dackup
             TarEntry tarEntry = TarEntry.CreateEntryFromFile(sourceDirectory);
             tarArchive.WriteEntry(tarEntry, false);
 
+
             string[] filenames = Directory.GetFiles(sourceDirectory);
             foreach (string filename in filenames)
             {
@@ -139,6 +141,27 @@ namespace dackup
                 foreach (string directory in directories)
                 {
                     AddDirectoryFilesToTar(tarArchive, directory, recurse);
+                }
+            }
+        }
+
+        public static void CreateTarGZ(List<string> sourceFileList, string tgzFilename)
+        {
+            using (FileStream fs = new FileStream(tgzFilename, FileMode.Create, FileAccess.Write, FileShare.None))
+            {
+                using (Stream gzipStream = new GZipOutputStream(fs))
+                {
+                    using (TarArchive tarArchive = TarArchive.CreateOutputTarArchive(gzipStream))
+                    {
+                        foreach (string filename in sourceFileList)
+                        {
+                            {
+                                TarEntry tarEntry = TarEntry.CreateEntryFromFile(filename);
+                                tarEntry.Name = Path.GetFileName(filename);
+                                tarArchive.WriteEntry(tarEntry, false);
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -180,6 +203,31 @@ namespace dackup
 
                 return traceString.ToString();
             }
+        }
+        public static bool IsLocalhost(string hostNameOrAddress)
+        {
+            if (string.IsNullOrEmpty(hostNameOrAddress))
+            {
+                return false;
+            }
+            try
+            {
+                IPAddress[] hostIPs = Dns.GetHostAddresses(hostNameOrAddress);
+                IPAddress[] localIPs = Dns.GetHostAddresses(Dns.GetHostName());
+                foreach (IPAddress hostIP in hostIPs)
+                {
+                    if (IPAddress.IsLoopback(hostIP)) return true;
+                    foreach (IPAddress localIP in localIPs)
+                    {
+                        if (hostIP.Equals(localIP)) return true;
+                    }
+                }
+            }
+            catch
+            {
+                return false;
+            }
+            return false;
         }
 
     }

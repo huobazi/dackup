@@ -31,16 +31,20 @@ namespace dackup
         }
         public override BackupTaskResult CreateNewBackup()
         {
-            var backupName = $"databases_{Database}_{DateTime.Now:s}.tar.gz";
+            var now = DateTime.Now;
+            var backupTGZName = $"databases_{Database}_{now:s}.tar.gz";
+            var backupSQLName = $"databases_{Database}_{now:s}.sql";
+            var dumpFile = Path.Join(DackupContext.Current.TmpPath, backupTGZName);
             var gzipCmd = "| gzip -c";
-            if(Host.ToLower() != "localhost" || Host.ToLower() != "127.0.0.1")
+
+            if (Utils.IsLocalhost(Host))
             {
-                backupName = $"databases_{Database}_{DateTime.Now:s}.sql";
                 gzipCmd = string.Empty;
+                dumpFile = Path.Join(DackupContext.Current.TmpPath, backupSQLName);
             }
-            var backupFile = Path.Join(DackupContext.Current.TmpPath, backupName);
+
             var processStartInfo = new ProcessStartInfo("bash",
-                                                        $"-c \"{PathToMysqlDump} --host={Host} --port={Port} --user={UserName} --password{Password} {Database} {gzipCmd} > {backupFile}\"")
+                                                        $"-c \"{PathToMysqlDump} --host={Host} --port={Port} --user={UserName} --password{Password} {Database} {gzipCmd} > {dumpFile}\"")
             {
                 RedirectStandardOutput = true,
                 UseShellExecute = false,
@@ -49,16 +53,20 @@ namespace dackup
 
             var process = new Process { StartInfo = processStartInfo };
             process.Start();
-
             process.WaitForExit();
             var code = process.ExitCode;
 
-            Log.Information($"{Database} backup completed. dump files : {backupFile}");
+            if (dumpFile.EndsWith(".sql"))
+            {
+                Utils.CreateTarGZ(new List<string> { dumpFile, }, backupTGZName);
+            }
+
+            Log.Information($"{Database} backup completed. dump files : {backupTGZName}");
 
             var result = new BackupTaskResult
             {
                 Result = true,
-                FilesList = new List<string> { backupFile },
+                FilesList = new List<string> { backupTGZName },
             };
 
             return result;
