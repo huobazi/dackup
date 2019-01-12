@@ -177,6 +177,33 @@ namespace dackup
                     });
 
                 }
+                if (config.Notifiers != null && config.Notifiers.DingtalkRobotList != null)
+                {
+                    config.Notifiers.DingtalkRobotList.ForEach(cfg =>
+                    {
+                        if (cfg.Enable)
+                        {
+                            var webhook_url = cfg.OptionList.Find(c => c.Name == "url").Value;
+                            var dingtalkRobot = new DingtalkRobotNotify(webhook_url);
+                            dingtalkRobot.AtAll = cfg.AtAll;
+                            dingtalkRobot.Enable = cfg.Enable;
+                            dingtalkRobot.OnFailure = cfg.OnFailure;
+                            dingtalkRobot.OnSuccess = cfg.OnSuccess;
+                            dingtalkRobot.OnWarning = cfg.OnWarning;
+                            if (cfg.AtMobiles != null && cfg.AtMobiles.Count > 0)
+                            {
+                                dingtalkRobot.AtMobiles = new List<string>();
+                                cfg.AtMobiles.ForEach(header =>
+                                {
+                                    dingtalkRobot.AtMobiles.AddRange(header.Value.Split(';', StringSplitOptions.RemoveEmptyEntries));
+                                });
+                            }
+                            dingtalkRobot.AtMobiles = dingtalkRobot.AtMobiles.Distinct().ToList();
+                            tasks.Add(dingtalkRobot);
+                        }
+                    });
+
+                }
                 if (config.Notifiers != null && config.Notifiers.SlackList != null)
                 {
                     config.Notifiers.SlackList.ForEach(cfg =>

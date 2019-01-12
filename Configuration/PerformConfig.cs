@@ -88,7 +88,14 @@ namespace dackup.Configuration
         [XmlElement(ElementName = "header")]
         public List<NameValueElement> Headers { get; set; }
     }
+    public class DingtalkRobot : NotifyBase
+    {
+        [XmlAttribute(AttributeName = "atAll")]
+        public bool AtAll { get; set; }
 
+        [XmlElement(ElementName = "at")]
+        public List<NameValueElement> AtMobiles { get; set; }
+    }
     [Serializable]
     public class Slack : NotifyBase
     {
@@ -106,6 +113,9 @@ namespace dackup.Configuration
         [XmlElement(ElementName = "http_post")]
         public List<HttpPost> HttpPostList { get; set; }
 
+        [XmlElement(ElementName = "dingtalk_robot")]
+        public List<DingtalkRobot> DingtalkRobotList{get;set;}
+        
         [XmlElement(ElementName = "slack")]
         public List<Slack> SlackList { get; set; }
 
