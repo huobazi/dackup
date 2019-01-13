@@ -35,6 +35,9 @@ namespace dackup.Configuration
         [XmlElement(ElementName = "option")]
         public List<NameValueElement> OptionList { get; set; }
 
+        [XmlElement(ElementName = "additional_option")]
+        public List<NameValueElement> AdditionalOptionList { get; set; }
+
         [XmlAttribute(AttributeName = "type")]
         public string Type { get; set; }
 

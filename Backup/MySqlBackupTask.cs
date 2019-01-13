@@ -1,6 +1,8 @@
 using System;
 using System.IO;
 using System.Diagnostics;
+using System.Collections;
+using System.Text;
 using System.Collections.Generic;
 
 using Serilog;
@@ -29,22 +31,72 @@ namespace dackup
             }
             Log.Information("Connection to DB established.");
         }
-        public override BackupTaskResult CreateNewBackup()
+        private (string resultFileName, string resultContent) GenerateOptionsToCommand()
         {
             var now = DateTime.Now;
-            var backupTGZName = $"databases_{Database}_{now:s}.tar.gz";
-            var backupSQLName = $"databases_{Database}_{now:s}.sql";
-            var dumpFile = Path.Join(DackupContext.Current.TmpPath, backupTGZName);
-            var gzipCmd = "| gzip -c";
+            var defaultBackupSQLName = $"databases_{Database}_{now:yyyy_MM_dd_HH_mm_ss}.sql";
+            var dumpFile = Path.Join(DackupContext.Current.TmpPath, defaultBackupSQLName);
 
-            if (Utils.IsLocalhost(Host))
+            this.AddCommandOptions("--host", this.Host);
+            this.AddCommandOptions("--port", this.Port.ToString());
+            this.AddCommandOptions("--user", this.UserName);
+            this.AddCommandOptions("--password", this.Password);
+            if (!CommandOptions.ContainsKey("--databases") && !CommandOptions.ContainsKey("-B"))
             {
-                gzipCmd = string.Empty;
-                dumpFile = Path.Join(DackupContext.Current.TmpPath, backupSQLName);
+                this.AddCommandOptions("--databases", this.Database);
             }
-
-            var processStartInfo = new ProcessStartInfo("bash",
-                                                        $"-c \"{PathToMysqlDump} --host={Host} --port={Port} --user={UserName} --password{Password} {Database} {gzipCmd} > {dumpFile}\"")
+            if (!CommandOptions.ContainsKey("--result-file") && !CommandOptions.ContainsKey("-r"))
+            {
+                dumpFile = Path.Join(DackupContext.Current.TmpPath, defaultBackupSQLName);
+                this.AddCommandOptions("--result-file", dumpFile);
+            }
+            else
+            {
+                if (CommandOptions.ContainsKey("--result-file"))
+                {
+                    dumpFile = Path.Join(DackupContext.Current.TmpPath, $"{now:yyyy_MM_dd_HH_mm_ss}_{CommandOptions["--result-file"]}");
+                    this.AddCommandOptions("--result-file", dumpFile);
+                }
+                else if (CommandOptions.ContainsKey("-r"))
+                {
+                    dumpFile = Path.Join(DackupContext.Current.TmpPath, $"{now:yyyy_MM_dd_HH_mm_ss}_{CommandOptions["-r"]}");
+                    this.AddCommandOptions("-r", dumpFile);
+                }
+            }
+            var sb = new StringBuilder();
+            foreach (var key in CommandOptions.Keys)
+            {
+                var value = CommandOptions[key];
+                if (string.IsNullOrWhiteSpace(value))
+                {
+                    sb.Append($" {key} ");
+                }
+                else
+                {
+                    if (key == "--databases" || key == "-B")
+                    {
+                        sb.Append($" {key} {value} ");
+                    }
+                    else
+                    {
+                        if (key.StartsWith("--"))
+                        {
+                            sb.Append($" {key}={value} ");
+                        }
+                        else
+                        {
+                            sb.Append($" {key} {value} ");
+                        }
+                    }
+                }
+            }
+            return (dumpFile, sb.ToString());
+        }
+        public override BackupTaskResult CreateNewBackup()
+        {
+            var (dumpfile, cmdOptions) = GenerateOptionsToCommand();
+            var dumpTGZFileName = dumpfile + ".tar.gz";
+            var processStartInfo = new ProcessStartInfo("bash", $"-c \"{PathToMysqlDump} {cmdOptions} \"")
             {
                 RedirectStandardOutput = true,
                 UseShellExecute = false,
@@ -56,17 +108,14 @@ namespace dackup
             process.WaitForExit();
             var code = process.ExitCode;
 
-            if (dumpFile.EndsWith(".sql"))
-            {
-                Utils.CreateTarGZ(new List<string> { dumpFile, }, backupTGZName);
-            }
+            Utils.CreateTarGZ(new List<string> { dumpfile, }, dumpTGZFileName);
 
-            Log.Information($"{Database} backup completed. dump files : {backupTGZName}");
+            Log.Information($"{Database} backup completed. dump files : {dumpTGZFileName}");
 
             var result = new BackupTaskResult
             {
                 Result = true,
-                FilesList = new List<string> { backupTGZName },
+                FilesList = new List<string> { dumpTGZFileName },
             };
 
             return result;

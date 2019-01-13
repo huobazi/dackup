@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Text;
 using System.Diagnostics;
 using System.Collections.Generic;
 
@@ -29,12 +30,73 @@ namespace dackup
             }
             Log.Information("Connection to DB established.");
         }
+        private (string resultFileName, string resultContent) GenerateOptionsToCommand()
+        {
+            var now = DateTime.Now;
+            var defaultBackupFileName = $"databases_{Database}_{now:yyyy_MM_dd_HH_mm_ss}.backup";
+            var dumpFile = Path.Join(DackupContext.Current.TmpPath, defaultBackupFileName);
+
+            this.AddCommandOptions("--host", this.Host);
+            this.AddCommandOptions("--port", this.Port.ToString());
+            this.AddCommandOptions("--username", this.UserName);
+
+            if (!CommandOptions.ContainsKey("--format") && !CommandOptions.ContainsKey("-F"))
+            {
+                this.AddCommandOptions("--format", "custom");
+            }
+            if (!CommandOptions.ContainsKey("--compress") && !CommandOptions.ContainsKey("-Z"))
+            {
+                this.AddCommandOptions("--compress", "6");
+            }
+            if (!CommandOptions.ContainsKey("--dbname") && !CommandOptions.ContainsKey("-d"))
+            {
+                this.AddCommandOptions("--dbname", this.Database);
+            }
+            if (!CommandOptions.ContainsKey("--file") && !CommandOptions.ContainsKey("-f"))
+            {
+                dumpFile = Path.Join(DackupContext.Current.TmpPath, defaultBackupFileName);
+                this.AddCommandOptions("--file", dumpFile);
+            }
+            else
+            {
+                if (CommandOptions.ContainsKey("--file"))
+                {
+                    dumpFile = Path.Join(DackupContext.Current.TmpPath, $"{now:yyyy_MM_dd_HH_mm_ss}_{CommandOptions["--file"]}");
+                    this.AddCommandOptions("--file", dumpFile);
+                }
+                else if (CommandOptions.ContainsKey("-f"))
+                {
+                    dumpFile = Path.Join(DackupContext.Current.TmpPath, $"{now:yyyy_MM_dd_HH_mm_ss}_{CommandOptions["-f"]}");
+                    this.AddCommandOptions("-f", dumpFile);
+                }
+            }
+            var sb = new StringBuilder();
+            foreach (var key in CommandOptions.Keys)
+            {
+                var value = CommandOptions[key];
+                if (string.IsNullOrWhiteSpace(value))
+                {
+                    sb.Append($" {key} ");
+                }
+                else
+                {
+                    if (key.StartsWith("--"))
+                    {
+                        sb.Append($" {key}={value} ");
+                    }
+                    else
+                    {
+                        sb.Append($" {key} {value} ");
+                    }
+                }
+            }
+            return (dumpFile, sb.ToString()); 
+        }
         public override BackupTaskResult CreateNewBackup()
         {
-            var backupName = $"databases_{Database}_{DateTime.Now:s}.tar.gz";
-            var backupFile = Path.Join(DackupContext.Current.TmpPath, backupName);
-            var processStartInfo = new ProcessStartInfo("bash",
-                                                        $"-c \"{PathToPgDump} -h {Host} -p {Port} -U {UserName} -d {Database} -F tar | gzip > {backupFile}\"")
+            var (backupFile , cmdOptions) = GenerateOptionsToCommand();
+
+            var processStartInfo = new ProcessStartInfo("bash", $"-c \"{PathToPgDump}  {cmdOptions} \"")
             {
                 RedirectStandardOutput = true,
                 UseShellExecute = false,

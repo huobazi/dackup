@@ -1,8 +1,10 @@
-Dackup is a fullstack backup app, Which is similar to [backup](https://github.com/backup/backup).
+# Dackup
+
+Dackup is a fullstack backup tool, Which is similar to [backup](https://github.com/backup/backup).
 
 ## Features
 
-- Multiple platform (win/osx/linux).
+- Cross-Platform (win/osx/linux).
 - No Dependence.
 - Archive folder or files to tar.gz
 - Multiple Databases source support.

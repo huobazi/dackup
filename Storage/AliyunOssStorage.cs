@@ -24,7 +24,7 @@ namespace dackup
         protected override UploadResult Upload(string fileName)
         {
             OssClient client = new OssClient(endpoint, accessKeyId, accessKeySecret);
-            string key = this.PathPrefix + $"/{DateTime.Now:s}/" + fileName.Replace(DackupContext.Current.TmpPath,string.Empty).TrimStart('/');
+            string key = this.PathPrefix + $"/{DateTime.Now:yyyy_MM_dd_HH_mm_ss}/" + fileName.Replace(DackupContext.Current.TmpPath,string.Empty).TrimStart('/');
             key = key.Trim('/');
             
             Log.Information($"Upload to aliyun file: {fileName} key: {key} pathPrefix: {this.PathPrefix}");

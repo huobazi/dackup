@@ -55,7 +55,7 @@ namespace dackup
                 }
             });
 
-            var tgzFileName = Path.Combine(Path.Combine(DackupContext.Current.TmpPath, $"archives_{this.name}_{DateTime.Now:s}.tar.gz"));
+            var tgzFileName = Path.Combine(Path.Combine(DackupContext.Current.TmpPath, $"archives_{this.name}_{DateTime.Now:yyyy_MM_dd_HH_mm_ss}.tar.gz"));
 
             Utils.CreateTarGZ(tgzFileName, directory);
 
