@@ -37,6 +37,8 @@ Archive files or folder into a `.tar.gz` file.
 
 ## Usage
 
+### Help
+
 ```bash
 $ /your_path/dackup
 
@@ -56,6 +58,8 @@ Run 'dackup [command] --help' for more information about a command.
 Use arrow keys to scroll. Press 'q' to exit.
 ```
 
+### Generate config
+
 ```bash
 $ /your_path/dackup new
 
@@ -71,6 +75,8 @@ Options:
 
 Use arrow keys to scroll. Press 'q' to exit.
 ```
+
+### Perform
 
 ```bash
 $ /your_path/dackup perform
