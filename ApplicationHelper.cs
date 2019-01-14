@@ -51,7 +51,7 @@ namespace dackup
             });
             return Task.WhenAll(backupTaskResult.ToArray());
         }
-        public static Tuple<Task<UploadResult[]>, Task<PurgeResult[]>> RunStorage(PerformConfig cfg)
+        public static (Task<UploadResult[]>, Task<PurgeResult[]>) RunStorage(PerformConfig cfg)
         {
             Log.Information("Dackup start storage task ");
 
@@ -71,7 +71,7 @@ namespace dackup
             var storageUploadTasks = Task.WhenAll(storageUploadResultList.ToArray());
             var storagePurgeTasks = Task.WhenAll(storagePurgeResultList.ToArray());
 
-            return new Tuple<Task<UploadResult[]>, Task<PurgeResult[]>>(storageUploadTasks, storagePurgeTasks);
+            return (storageUploadTasks, storagePurgeTasks);
         }
         public static Task<NotifyResult[]> RunNotify(PerformConfig cfg, Statistics statistics)
         {

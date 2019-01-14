@@ -70,14 +70,14 @@ namespace dackup
                         // run backup
                         var backupTasks = ApplicationHelper.RunBackup(performConfig);
                         backupTasks.Wait();
+                        
+                        statistics.FinishedAt = DateTime.Now;  
 
                         // run store
-                        var storageTask = ApplicationHelper.RunStorage(performConfig);
-                        var storageTasks = Task.WhenAll(storageTask.Item1, storageTask.Item2);
+                        var (storageUploadTasks, storagePurgeTasks) = ApplicationHelper.RunStorage(performConfig);
+                        var storageTasks = Task.WhenAll(storageUploadTasks, storagePurgeTasks);
 
-                        // run notify
-                        statistics.FinishedAt = DateTime.Now;
-                        
+                        // run notify                     
 
                         var notifyTasks = ApplicationHelper.RunNotify(performConfig, statistics);
 
