@@ -5,7 +5,10 @@ readonly RELEASE_VERSION="0.0.1.beta-4"
 
 usage()
 {
-    echo "usage: releash.sh -t your_token_content"
+    echo "---------------------------------------"
+    echo "usage:"
+    echo "releash.sh -t your_token_content"
+    echo "---------------------------------------"
 }
 
 github_api_token=
@@ -38,7 +41,7 @@ declare -a releaseFiles=()
 
 for rid in "${winOS[@]}"
 do
-	dotnet publish $SCRIPT_PATH/dackup.csproj -r $rid -c release
+    dotnet publish $SCRIPT_PATH/dackup.csproj -r $rid -c release
     distFile="$SCRIPT_PATH/dist/dackup-$rid.zip"
     cd $SCRIPT_PATH/bin/release/netcoreapp2.2/$rid/publish/
     zip -r $distFile .
@@ -49,9 +52,9 @@ done
 for rid in "${unixOS[@]}"
 do 
     distFile="$SCRIPT_PATH/dist/dackup-$rid.tar.gz"
-	dotnet publish $SCRIPT_PATH/dackup.csproj -r $rid -c release
+    dotnet publish $SCRIPT_PATH/dackup.csproj -r $rid -c release
     cd $SCRIPT_PATH/bin/release/netcoreapp2.2/$rid/publish/
-	tar -cvzf  $distFile *
+    tar -cvzf  $distFile *
     releaseFiles+=($distFile)
     cd $BASE_PWD
 done
