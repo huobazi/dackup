@@ -13,6 +13,10 @@ namespace dackup
         public DateTime? RemoveThreshold {get;set;} 
         public LocalStorage(string path)
         {
+            if(string.IsNullOrWhiteSpace(path))
+            {
+                throw new ArgumentException("path can not be null or empty.");
+            }
             this.path = path;
         }
         protected override UploadResult Upload(string fileName)

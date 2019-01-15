@@ -62,12 +62,12 @@ namespace dackup
                             if (dbConfig.Type.ToLower().Trim() == "postgres")
                             {
                                 var task = new PostgresBackupTask();
-                                task.Host = dbConfig.OptionList.Find(c => c.Name.ToLower() == "host")?.Value;
-                                task.Database = dbConfig.OptionList.Find(c => c.Name.ToLower() == "database")?.Value;
-                                task.UserName = dbConfig.OptionList.Find(c => c.Name.ToLower() == "username")?.Value;
-                                task.Password = dbConfig.OptionList.Find(c => c.Name.ToLower() == "password")?.Value;
-                                task.Port = int.Parse(dbConfig.OptionList.Find(c => c.Name.ToLower() == "port")?.Value);
-                                task.PathToPgDump = dbConfig.OptionList.Find(c => c.Name.ToLower() == "path_to_pg_dump".ToLower())?.Value;
+                                dbConfig.OptionList.TrySetTo(task.Host,"host");
+                                dbConfig.OptionList.TrySetTo(task.Database,"database");
+                                dbConfig.OptionList.TrySetTo(task.UserName,"username");
+                                dbConfig.OptionList.TrySetTo(task.Password,"password");
+                                dbConfig.OptionList.TrySetTo(task.Port,"port");
+                                dbConfig.OptionList.TrySetTo(task.PathToPgDump,"path_to_pg_dump");
                                 if (dbConfig.AdditionalOptionList != null && dbConfig.AdditionalOptionList.Count > 0)
                                 {
                                     dbConfig.AdditionalOptionList.ForEach(c =>
@@ -77,15 +77,34 @@ namespace dackup
                                 }
                                 tasks.Add(task);
                             }
-                            if (dbConfig.Type.ToLower().Trim() == "mysql")
+                            else if (dbConfig.Type.ToLower().Trim() == "mysql")
                             {
                                 var task = new MySqlBackupTask();
-                                task.Host = dbConfig.OptionList.Find(c => c.Name.ToLower() == "host")?.Value;
-                                task.Database = dbConfig.OptionList.Find(c => c.Name.ToLower() == "database")?.Value;
-                                task.UserName = dbConfig.OptionList.Find(c => c.Name.ToLower() == "username")?.Value;
-                                task.Password = dbConfig.OptionList.Find(c => c.Name.ToLower() == "password")?.Value;
-                                task.Port = int.Parse(dbConfig.OptionList.Find(c => c.Name.ToLower() == "port")?.Value);
-                                task.PathToMysqlDump = dbConfig.OptionList.Find(c => c.Name.ToLower() == "path_to_mysqldump".ToLower())?.Value;
+                                dbConfig.OptionList.TrySetTo(task.Host,"host");
+                                dbConfig.OptionList.TrySetTo(task.Database,"database");
+                                dbConfig.OptionList.TrySetTo(task.UserName,"username");
+                                dbConfig.OptionList.TrySetTo(task.Password,"password");
+                                dbConfig.OptionList.TrySetTo(task.Port,"port");
+                                dbConfig.OptionList.TrySetTo(task.PathToMysqlDump,"path_to_pg_dump");
+
+                                if (dbConfig.AdditionalOptionList != null && dbConfig.AdditionalOptionList.Count > 0)
+                                {
+                                    dbConfig.AdditionalOptionList.ForEach(c =>
+                                    {
+                                        task.AddCommandOptions(c.Name, c.Value);
+                                    });
+                                }
+                                tasks.Add(task);
+                            }
+                            else if (dbConfig.Type.ToLower().Trim() == "mongodb")
+                            {
+                                var task = new MongoDBBackupTask();
+                                dbConfig.OptionList.TrySetTo(task.Host,"host");
+                                dbConfig.OptionList.TrySetTo(task.Database,"database");
+                                dbConfig.OptionList.TrySetTo(task.UserName,"username");
+                                dbConfig.OptionList.TrySetTo(task.Password,"password");
+                                dbConfig.OptionList.TrySetTo(task.Port,"port");
+                                dbConfig.OptionList.TrySetTo(task.PathToMongoDump,"path_to_pg_dump");
                                 if (dbConfig.AdditionalOptionList != null && dbConfig.AdditionalOptionList.Count > 0)
                                 {
                                     dbConfig.AdditionalOptionList.ForEach(c =>
@@ -114,7 +133,7 @@ namespace dackup
                         {
                             if (storageConfig.Type.ToLower().Trim() == "local")
                             {
-                                var task = new LocalStorage(storageConfig.OptionList.Find(c => c.Name.ToLower() == "path")?.Value);
+                                var task = new LocalStorage(storageConfig.OptionList?.Find(c => c.Name.ToLower() == "path")?.Value);
                                 if (storageConfig.OptionList.Find(c => c.Name.ToLower() == "remove_threshold") != null)
                                 {
                                     task.RemoveThreshold = Utils.ConvertRemoveThresholdToDateTime(storageConfig.OptionList.Find(c => c.Name.ToLower() == "remove_threshold").Value);
@@ -123,17 +142,15 @@ namespace dackup
                             }
                             if (storageConfig.Type.ToLower().Trim() == "s3")
                             {
-                                var region = storageConfig.OptionList.Find(c => c.Name.ToLower() == "region")?.Value;
-                                var accessKeyId = storageConfig.OptionList.Find(c => c.Name.ToLower() == "access_key_id")?.Value;
-                                var accessKeySecret = storageConfig.OptionList.Find(c => c.Name.ToLower() == "secret_access_key")?.Value;
-                                var bucket = storageConfig.OptionList.Find(c => c.Name.ToLower() == "bucket")?.Value;
+                                var region = storageConfig.OptionList?.Find(c => c.Name.ToLower() == "region")?.Value;
+                                var accessKeyId = storageConfig.OptionList?.Find(c => c.Name.ToLower() == "access_key_id")?.Value;
+                                var accessKeySecret = storageConfig.OptionList?.Find(c => c.Name.ToLower() == "secret_access_key")?.Value;
+                                var bucket = storageConfig.OptionList?.Find(c => c.Name.ToLower() == "bucket")?.Value;
 
                                 var task = new S3Storage(region, accessKeyId, accessKeySecret, bucket);
-                                if (storageConfig.OptionList.Find(c => c.Name.ToLower() == "path") != null)
-                                {
-                                    task.PathPrefix = storageConfig.OptionList.Find(c => c.Name.ToLower() == "path").Value.Trim('/').Trim('\\');
-                                }
-                                if (storageConfig.OptionList.Find(c => c.Name.ToLower() == "remove_threshold") != null)
+                                storageConfig.OptionList.TrySetTo(task.PathPrefix,"path");
+
+                                if (storageConfig.OptionList?.Find(c => c.Name.ToLower() == "remove_threshold") != null)
                                 {
                                     task.RemoveThreshold = Utils.ConvertRemoveThresholdToDateTime(storageConfig.OptionList.Find(c => c.Name.ToLower() == "remove_threshold").Value);
                                 }
@@ -141,17 +158,13 @@ namespace dackup
                             }
                             if (storageConfig.Type.ToLower().Trim() == "aliyun_oss")
                             {
-                                var endpoint = storageConfig.OptionList.Find(c => c.Name.ToLower() == "endpoint")?.Value;
-                                var accessKeyId = storageConfig.OptionList.Find(c => c.Name.ToLower() == "access_key_id")?.Value;
-                                var accessKeySecret = storageConfig.OptionList.Find(c => c.Name.ToLower() == "secret_access_key")?.Value;
-                                var bucket = storageConfig.OptionList.Find(c => c.Name.ToLower() == "bucket")?.Value;
-
+                                var endpoint = storageConfig.OptionList?.Find(c => c.Name.ToLower() == "endpoint")?.Value;
+                                var accessKeyId = storageConfig.OptionList?.Find(c => c.Name.ToLower() == "access_key_id")?.Value;
+                                var accessKeySecret = storageConfig.OptionList?.Find(c => c.Name.ToLower() == "secret_access_key")?.Value;
+                                var bucket = storageConfig.OptionList?.Find(c => c.Name.ToLower() == "bucket")?.Value;
                                 var task = new AliyunOssStorage(endpoint, accessKeyId, accessKeySecret, bucket);
-                                if (storageConfig.OptionList.Find(c => c.Name.ToLower() == "path") != null)
-                                {
-                                    task.PathPrefix = storageConfig.OptionList.Find(c => c.Name.ToLower() == "path").Value.Trim('/').Trim('\\');
-                                }
-                                if (storageConfig.OptionList.Find(c => c.Name.ToLower() == "remove_threshold") != null)
+                                storageConfig.OptionList.TrySetTo(task.PathPrefix,"path");
+                                if (storageConfig.OptionList?.Find(c => c.Name.ToLower() == "remove_threshold") != null)
                                 {
                                     task.RemoveThreshold = Utils.ConvertRemoveThresholdToDateTime(storageConfig.OptionList.Find(c => c.Name.ToLower() == "remove_threshold").Value);
                                 }
@@ -174,7 +187,7 @@ namespace dackup
                     {
                         if (cfg.Enable)
                         {
-                            var webhook_url = cfg.OptionList.Find(c => c.Name == "url")?.Value;
+                            var webhook_url = cfg.OptionList?.Find(c => c.Name == "url")?.Value;
                             var httpPost = new HttpPostNotify(webhook_url);
                             httpPost.Enable = cfg.Enable;
                             httpPost.OnFailure = cfg.OnFailure;
@@ -188,7 +201,7 @@ namespace dackup
                                     httpPost.Headers[header.Name] = header.Value;
                                 });
                             }
-                            var paramsList = cfg.OptionList.Where(c => c.Name.ToLower() != "url").ToList();
+                            var paramsList = cfg.OptionList?.Where(c => c.Name.ToLower() != "url")?.ToList();
                             if (paramsList != null)
                             {
                                 httpPost.Params = new NameValueCollection();
@@ -208,7 +221,7 @@ namespace dackup
                     {
                         if (cfg.Enable)
                         {
-                            var webhook_url = cfg.OptionList.Find(c => c.Name == "url")?.Value;
+                            var webhook_url = cfg.OptionList?.Find(c => c.Name == "url")?.Value;
                             var dingtalkRobot = new DingtalkRobotNotify(webhook_url);
                             dingtalkRobot.AtAll = cfg.AtAll;
                             dingtalkRobot.Enable = cfg.Enable;
@@ -235,18 +248,16 @@ namespace dackup
                     {
                         if (cfg.Enable)
                         {
-                            var webhook_url = cfg.OptionList.Find(c => c.Name == "webhook_url")?.Value;
+                            var webhook_url = cfg.OptionList?.Find(c => c.Name == "webhook_url")?.Value;
                             var slack = new SlackNotify(webhook_url);
                             slack.Enable = cfg.Enable;
                             slack.OnFailure = cfg.OnFailure;
                             slack.OnSuccess = cfg.OnSuccess;
                             slack.OnWarning = cfg.OnWarning;
+                            cfg.OptionList.TrySetTo(slack.Channel,"channel");
+                            cfg.OptionList.TrySetTo(slack.Icon_emoji,"icon_emoji");
+                            cfg.OptionList.TrySetTo(slack.UserName,"username");
 
-                            
-                                slack.Channel = cfg.OptionList.Find(c => c.Name.ToLower() == "channel")?.Value;
-                                slack.Icon_emoji = cfg.OptionList.Find(c => c.Name.ToLower() == "icon_emoji")?.Value;
-                                slack.UserName = cfg.OptionList.Find(c => c.Name.ToLower() == "username")?.Value;
-                            
                             tasks.Add(slack);
                         }
                     });
@@ -258,28 +269,28 @@ namespace dackup
                         if (cfg.Enable)
                         {
                             var deliveryMethod = cfg.DeliveryMethod;
-                            if (deliveryMethod.Trim().ToLower() == "smtp")
+                            if (!string.IsNullOrWhiteSpace(deliveryMethod) && deliveryMethod.Trim().ToLower() == "smtp")
                             {
-                                var from = cfg.OptionList.Find(c => c.Name == "from")?.Value;
-                                var to = cfg.OptionList.Find(c => c.Name == "to")?.Value;
-                                var address = cfg.OptionList.Find(c => c.Name == "address")?.Value;
-                                var port = cfg.OptionList.Find(c => c.Name == "port")?.Value;
-                                var domain = cfg.OptionList.Find(c => c.Name == "domain")?.Value;
-                                var userName = cfg.OptionList.Find(c => c.Name == "user_name")?.Value;
-                                var password = cfg.OptionList.Find(c => c.Name == "password")?.Value;
-                                var authentication = cfg.OptionList.Find(c => c.Name == "authentication")?.Value;
-                                var enableStarttls = cfg.OptionList.Find(c => c.Name == "enable_starttls")?.Value;
-                                var cc = cfg.OptionList.Find(c => c.Name == "cc")?.Value;
-                                var bcc = cfg.OptionList.Find(c => c.Name == "bcc")?.Value;
+                                var from = cfg.OptionList?.Find(c => c.Name == "from")?.Value;
+                                var to = cfg.OptionList?.Find(c => c.Name == "to")?.Value;
+                                var address = cfg.OptionList?.Find(c => c.Name == "address")?.Value;
+                                var port = cfg.OptionList?.Find(c => c.Name == "port")?.Value;
+                                var domain = cfg.OptionList?.Find(c => c.Name == "domain")?.Value;
+                                var userName = cfg.OptionList?.Find(c => c.Name == "user_name")?.Value;
+                                var password = cfg.OptionList?.Find(c => c.Name == "password")?.Value;
+                                var authentication = cfg.OptionList?.Find(c => c.Name == "authentication")?.Value;
+                                var enableStarttls = cfg.OptionList?.Find(c => c.Name == "enable_starttls")?.Value;
+                                var cc = cfg.OptionList?.Find(c => c.Name == "cc")?.Value;
+                                var bcc = cfg.OptionList?.Find(c => c.Name == "bcc")?.Value;
 
                                 var email = new EmailSmtpNotify(from, to, address, domain, userName, password,
-                                authentication, bool.Parse(enableStarttls), cc, bcc);
+                                                                authentication, bool.Parse(enableStarttls), cc, bcc);
 
                                 email.Enable = cfg.Enable;
                                 email.OnFailure = cfg.OnFailure;
                                 email.OnSuccess = cfg.OnSuccess;
                                 email.OnWarning = cfg.OnWarning;
-                                email.Port = int.Parse(cfg.OptionList.Find(c => c.Name.ToLower() == "port")?.Value);
+                                cfg.OptionList.TrySetTo(email.Port,"port");
                                 tasks.Add(email);
                             }
                         }
@@ -301,6 +312,31 @@ namespace dackup
                 {
                     resource.CopyTo(file);
                 }
+            }
+        }
+
+        public static void TrySetTo(this List<NameValueElement> list, string property, string name)
+        {
+            var value = list?.Find(c => c.Name.ToLower() == name.ToLower())?.Value;
+            if(string.IsNullOrWhiteSpace(value))
+            {
+                property = value;
+            }
+        }
+        public static void TrySetTo(this List<NameValueElement> list, int property, string name)
+        {
+            var value = list?.Find(c => c.Name.ToLower() == name.ToLower())?.Value;
+            if(string.IsNullOrWhiteSpace(value))
+            {
+                property = Convert.ToInt32(value);
+            }
+        }
+        public static void TrySetTo(this List<NameValueElement> list, bool property, string name)
+        {
+            var value = list?.Find(c => c.Name.ToLower() == name.ToLower())?.Value;
+            if(string.IsNullOrWhiteSpace(value))
+            {
+                property = Convert.ToBoolean(value);
             }
         }
     }
