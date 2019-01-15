@@ -24,10 +24,9 @@ namespace dackup
         {
             Log.Information($"Testing connection to 'mongodb://{UserName}@{Host}:{Port}/{Database}'...");
 
-            var client = new MongoClient($"mongodb://{UserName}:{Password}@{Host}:{Port}/{Database}");
+            var client = new MongoClient($"mongodb://{UserName}:{Password}@{Host}:{Port}");
             var database = client.GetDatabase(Database);
-            database.RunCommandAsync((Command<BsonDocument>)"{ping:1}").Wait();
-            
+
             Log.Information("Connection to DB established.");
         }
         private (string resultFileName, string resultContent) GenerateOptionsToCommand()

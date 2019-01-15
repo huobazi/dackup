@@ -267,3 +267,4 @@ local.config
 dist/
 
 run_release.sh
+publish_2_ubuntu.sh

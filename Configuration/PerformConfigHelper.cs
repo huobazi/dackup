@@ -62,12 +62,12 @@ namespace dackup
                             if (dbConfig.Type.ToLower().Trim() == "postgres")
                             {
                                 var task = new PostgresBackupTask();
-                                dbConfig.OptionList.TrySetTo(task.Host,"host");
-                                dbConfig.OptionList.TrySetTo(task.Database,"database");
-                                dbConfig.OptionList.TrySetTo(task.UserName,"username");
-                                dbConfig.OptionList.TrySetTo(task.Password,"password");
-                                dbConfig.OptionList.TrySetTo(task.Port,"port");
-                                dbConfig.OptionList.TrySetTo(task.PathToPgDump,"path_to_pg_dump");
+                                dbConfig.OptionList.NullSafeSetTo("host", s => task.Host = s);
+                                dbConfig.OptionList.NullSafeSetTo("port", s => task.Port = s);
+                                dbConfig.OptionList.NullSafeSetTo("database", s => task.Database = s);
+                                dbConfig.OptionList.NullSafeSetTo("username", s => task.UserName = s);
+                                dbConfig.OptionList.NullSafeSetTo("password", s => task.Password = s);
+                                dbConfig.OptionList.NullSafeSetTo("path_to_pg_dump", s => task.PathToPgDump = s);
                                 if (dbConfig.AdditionalOptionList != null && dbConfig.AdditionalOptionList.Count > 0)
                                 {
                                     dbConfig.AdditionalOptionList.ForEach(c =>
@@ -80,13 +80,12 @@ namespace dackup
                             else if (dbConfig.Type.ToLower().Trim() == "mysql")
                             {
                                 var task = new MySqlBackupTask();
-                                dbConfig.OptionList.TrySetTo(task.Host,"host");
-                                dbConfig.OptionList.TrySetTo(task.Database,"database");
-                                dbConfig.OptionList.TrySetTo(task.UserName,"username");
-                                dbConfig.OptionList.TrySetTo(task.Password,"password");
-                                dbConfig.OptionList.TrySetTo(task.Port,"port");
-                                dbConfig.OptionList.TrySetTo(task.PathToMysqlDump,"path_to_pg_dump");
-
+                                dbConfig.OptionList.NullSafeSetTo("host", s => task.Host = s);
+                                dbConfig.OptionList.NullSafeSetTo("port", s => task.Port = s);
+                                dbConfig.OptionList.NullSafeSetTo("database", s => task.Database = s);
+                                dbConfig.OptionList.NullSafeSetTo("username", s => task.UserName = s);
+                                dbConfig.OptionList.NullSafeSetTo("password", s => task.Password = s);
+                                dbConfig.OptionList.NullSafeSetTo("path_to_mysqldump", s => task.PathToMysqlDump = s);
                                 if (dbConfig.AdditionalOptionList != null && dbConfig.AdditionalOptionList.Count > 0)
                                 {
                                     dbConfig.AdditionalOptionList.ForEach(c =>
@@ -99,12 +98,12 @@ namespace dackup
                             else if (dbConfig.Type.ToLower().Trim() == "mongodb")
                             {
                                 var task = new MongoDBBackupTask();
-                                dbConfig.OptionList.TrySetTo(task.Host,"host");
-                                dbConfig.OptionList.TrySetTo(task.Database,"database");
-                                dbConfig.OptionList.TrySetTo(task.UserName,"username");
-                                dbConfig.OptionList.TrySetTo(task.Password,"password");
-                                dbConfig.OptionList.TrySetTo(task.Port,"port");
-                                dbConfig.OptionList.TrySetTo(task.PathToMongoDump,"path_to_pg_dump");
+                                dbConfig.OptionList.NullSafeSetTo("host", s => task.Host = s);
+                                dbConfig.OptionList.NullSafeSetTo("port", s => task.Port = s);
+                                dbConfig.OptionList.NullSafeSetTo("database", s => task.Database = s);
+                                dbConfig.OptionList.NullSafeSetTo("username", s => task.UserName = s);
+                                dbConfig.OptionList.NullSafeSetTo("password", s => task.Password = s);
+                                dbConfig.OptionList.NullSafeSetTo("path_to_mongodump", s => task.PathToMongoDump = s);
                                 if (dbConfig.AdditionalOptionList != null && dbConfig.AdditionalOptionList.Count > 0)
                                 {
                                     dbConfig.AdditionalOptionList.ForEach(c =>
@@ -148,7 +147,7 @@ namespace dackup
                                 var bucket = storageConfig.OptionList?.Find(c => c.Name.ToLower() == "bucket")?.Value;
 
                                 var task = new S3Storage(region, accessKeyId, accessKeySecret, bucket);
-                                storageConfig.OptionList.TrySetTo(task.PathPrefix,"path");
+                                storageConfig.OptionList.NullSafeSetTo("path", path => task.PathPrefix = path);
 
                                 if (storageConfig.OptionList?.Find(c => c.Name.ToLower() == "remove_threshold") != null)
                                 {
@@ -163,7 +162,8 @@ namespace dackup
                                 var accessKeySecret = storageConfig.OptionList?.Find(c => c.Name.ToLower() == "secret_access_key")?.Value;
                                 var bucket = storageConfig.OptionList?.Find(c => c.Name.ToLower() == "bucket")?.Value;
                                 var task = new AliyunOssStorage(endpoint, accessKeyId, accessKeySecret, bucket);
-                                storageConfig.OptionList.TrySetTo(task.PathPrefix,"path");
+                                storageConfig.OptionList.NullSafeSetTo("path", path => task.PathPrefix = path);
+
                                 if (storageConfig.OptionList?.Find(c => c.Name.ToLower() == "remove_threshold") != null)
                                 {
                                     task.RemoveThreshold = Utils.ConvertRemoveThresholdToDateTime(storageConfig.OptionList.Find(c => c.Name.ToLower() == "remove_threshold").Value);
@@ -254,9 +254,9 @@ namespace dackup
                             slack.OnFailure = cfg.OnFailure;
                             slack.OnSuccess = cfg.OnSuccess;
                             slack.OnWarning = cfg.OnWarning;
-                            cfg.OptionList.TrySetTo(slack.Channel,"channel");
-                            cfg.OptionList.TrySetTo(slack.Icon_emoji,"icon_emoji");
-                            cfg.OptionList.TrySetTo(slack.UserName,"username");
+                            cfg.OptionList.NullSafeSetTo("channel", channel => slack.Channel = channel);
+                            cfg.OptionList.NullSafeSetTo("icon_emoji", icon_emoji => slack.Icon_emoji = icon_emoji);
+                            cfg.OptionList.NullSafeSetTo("username", username => slack.UserName = username);
 
                             tasks.Add(slack);
                         }
@@ -274,7 +274,6 @@ namespace dackup
                                 var from = cfg.OptionList?.Find(c => c.Name == "from")?.Value;
                                 var to = cfg.OptionList?.Find(c => c.Name == "to")?.Value;
                                 var address = cfg.OptionList?.Find(c => c.Name == "address")?.Value;
-                                var port = cfg.OptionList?.Find(c => c.Name == "port")?.Value;
                                 var domain = cfg.OptionList?.Find(c => c.Name == "domain")?.Value;
                                 var userName = cfg.OptionList?.Find(c => c.Name == "user_name")?.Value;
                                 var password = cfg.OptionList?.Find(c => c.Name == "password")?.Value;
@@ -290,7 +289,8 @@ namespace dackup
                                 email.OnFailure = cfg.OnFailure;
                                 email.OnSuccess = cfg.OnSuccess;
                                 email.OnWarning = cfg.OnWarning;
-                                cfg.OptionList.TrySetTo(email.Port,"port");
+                                cfg.OptionList.NullSafeSetTo("port", port => email.Port = port);
+
                                 tasks.Add(email);
                             }
                         }
@@ -314,29 +314,20 @@ namespace dackup
                 }
             }
         }
-
-        public static void TrySetTo(this List<NameValueElement> list, string property, string name)
+        private static void NullSafeSetTo(this List<NameValueElement> list, string name, Action<string> setter)
         {
             var value = list?.Find(c => c.Name.ToLower() == name.ToLower())?.Value;
-            if(string.IsNullOrWhiteSpace(value))
+            if (value != null)
             {
-                property = value;
+                setter(value);
             }
         }
-        public static void TrySetTo(this List<NameValueElement> list, int property, string name)
+        private static void NullSafeSetTo(this List<NameValueElement> list, string name, Action<int> setter)
         {
             var value = list?.Find(c => c.Name.ToLower() == name.ToLower())?.Value;
-            if(string.IsNullOrWhiteSpace(value))
+            if (value != null)
             {
-                property = Convert.ToInt32(value);
-            }
-        }
-        public static void TrySetTo(this List<NameValueElement> list, bool property, string name)
-        {
-            var value = list?.Find(c => c.Name.ToLower() == name.ToLower())?.Value;
-            if(string.IsNullOrWhiteSpace(value))
-            {
-                property = Convert.ToBoolean(value);
+                setter(Convert.ToInt32(value));
             }
         }
     }
