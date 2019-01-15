@@ -33,14 +33,23 @@ namespace dackup
         }
         private (string resultFileName, string resultContent) GenerateOptionsToCommand()
         {
+            this.RemoveCommandOptions("--host");
+            this.RemoveCommandOptions("--h");
+            this.RemoveCommandOptions("--port");
+            this.RemoveCommandOptions("--P");
+            this.RemoveCommandOptions("--user");
+            this.RemoveCommandOptions("--u");
+            this.RemoveCommandOptions("--password");
+            this.RemoveCommandOptions("--P");
+
             var now = DateTime.Now;
             var defaultBackupSQLName = $"databases_{Database}_{now:yyyy_MM_dd_HH_mm_ss}.sql";
             var dumpFile = Path.Join(DackupContext.Current.TmpPath, defaultBackupSQLName);
-
             this.AddCommandOptions("--host", this.Host);
             this.AddCommandOptions("--port", this.Port.ToString());
             this.AddCommandOptions("--user", this.UserName);
             this.AddCommandOptions("--password", this.Password);
+
             if (!CommandOptions.ContainsKey("--databases") && !CommandOptions.ContainsKey("-B"))
             {
                 this.AddCommandOptions("--databases", this.Database);

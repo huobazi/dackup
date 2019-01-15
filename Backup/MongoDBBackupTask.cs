@@ -5,39 +5,38 @@ using System.Diagnostics;
 using System.Collections.Generic;
 
 using Serilog;
-using Npgsql;
+using MongoDB.Driver;
+using MongoDB.Bson;         
 
 namespace dackup
 {
-    public class PostgresBackupTask : DatabaseBackupTask
+    public class MongoDBBackupTask : DatabaseBackupTask
     {
-        public PostgresBackupTask() : base("postgres") { }
+        public MongoDBBackupTask() : base("mongodb") { }
 
-        public string PathToPgDump { get; set; } = "pg_dump";
+        public string PathToMongoDump { get; set; } = "mongodump";
         public string Host { get; set; } = "localhost";
-        public int Port { get; set; } = 5432;
-        public string UserName { get; set; } = "postgres";
+        public int Port { get; set; } = 27017;
+        public string UserName { get; set; } = "root";
         public string Password { get; set; }
         public string Database { get; set; }
 
         public override void CheckDbConnection()
         {
-            Log.Information($"Testing connection to '{UserName}@{Host}:{Port}/{Database}'...");
+            Log.Information($"Testing connection to 'mongodb://{UserName}@{Host}:{Port}/{Database}'...");
 
-            using (var connection = new NpgsqlConnection($"Server={Host};Port={Port};Database={Database};User Id={UserName};Password={Password};"))
-            {
-                connection.Open();
-            }
+            var client = new MongoClient($"mongodb://{UserName}:{Password}@{Host}:{Port}/{Database}");
+            var database = client.GetDatabase(Database);
+            database.RunCommandAsync((Command<BsonDocument>)"{ping:1}").Wait();
             Log.Information("Connection to DB established.");
         }
         private (string resultFileName, string resultContent) GenerateOptionsToCommand()
         {
+            this.RemoveCommandOptions("--out"); // only support --archive option
             this.RemoveCommandOptions("--host");
             this.RemoveCommandOptions("--h");
-            this.RemoveCommandOptions("--port");
-            this.RemoveCommandOptions("--p");
             this.RemoveCommandOptions("--username");
-            this.RemoveCommandOptions("--U");
+            this.RemoveCommandOptions("--password");
 
             var now = DateTime.Now;
             var defaultBackupFileName = $"databases_{Database}_{now:yyyy_MM_dd_HH_mm_ss}.backup";
@@ -46,36 +45,25 @@ namespace dackup
             this.AddCommandOptions("--host", this.Host);
             this.AddCommandOptions("--port", this.Port.ToString());
             this.AddCommandOptions("--username", this.UserName);
+            this.AddCommandOptions("--password", this.Password);
 
-            if (!CommandOptions.ContainsKey("--format") && !CommandOptions.ContainsKey("-F"))
+            if (!CommandOptions.ContainsKey("--db") )
             {
-                this.AddCommandOptions("--format", "custom");
+                this.AddCommandOptions("--db", this.Database);
             }
-            if (!CommandOptions.ContainsKey("--compress") && !CommandOptions.ContainsKey("-Z"))
+            if (!CommandOptions.ContainsKey("--gzip"))
             {
-                this.AddCommandOptions("--compress", "6");
+                this.AddCommandOptions("--gzip", "");
             }
-            if (!CommandOptions.ContainsKey("--dbname") && !CommandOptions.ContainsKey("-d"))
-            {
-                this.AddCommandOptions("--dbname", this.Database);
-            }
-            if (!CommandOptions.ContainsKey("--file") && !CommandOptions.ContainsKey("-f"))
+            if (!CommandOptions.ContainsKey("--archive") )
             {
                 dumpFile = Path.Join(DackupContext.Current.TmpPath, defaultBackupFileName);
-                this.AddCommandOptions("--file", dumpFile);
+                this.AddCommandOptions("--archive", dumpFile);
             }
             else
             {
-                if (CommandOptions.ContainsKey("--file"))
-                {
-                    dumpFile = Path.Join(DackupContext.Current.TmpPath, $"{now:yyyy_MM_dd_HH_mm_ss}_{CommandOptions["--file"]}");
-                    this.AddCommandOptions("--file", dumpFile);
-                }
-                else if (CommandOptions.ContainsKey("-f"))
-                {
-                    dumpFile = Path.Join(DackupContext.Current.TmpPath, $"{now:yyyy_MM_dd_HH_mm_ss}_{CommandOptions["-f"]}");
-                    this.AddCommandOptions("-f", dumpFile);
-                }
+                dumpFile = Path.Join(DackupContext.Current.TmpPath, $"{now:yyyy_MM_dd_HH_mm_ss}_{CommandOptions["--archive"]}");
+                this.AddCommandOptions("--archive", dumpFile);
             }
             var sb = new StringBuilder();
             foreach (var key in CommandOptions.Keys)
@@ -103,14 +91,13 @@ namespace dackup
         {
             var (backupFile , cmdOptions) = GenerateOptionsToCommand();
 
-            var processStartInfo = new ProcessStartInfo("bash", $"-c \"{PathToPgDump}  {cmdOptions} \"")
+            var processStartInfo = new ProcessStartInfo("bash", $"-c \"{PathToMongoDump}  {cmdOptions} \"")
             {
                 RedirectStandardOutput = true,
                 UseShellExecute = false,
                 CreateNoWindow = true
             };
 
-            processStartInfo.Environment.Add("PGPASSWORD", Password);
             var process = new Process { StartInfo = processStartInfo };
             process.Start();
 
@@ -129,17 +116,17 @@ namespace dackup
         }
         private bool CheckPgDump()
         {
-            Log.Information("Checking pg_dump existence...");
+            Log.Information("Checking mongodump existence...");
 
-            var process = Process.Start(PathToPgDump, "--help");
+            var process = Process.Start(PathToMongoDump, "--help");
             process.WaitForExit();
             if (process.ExitCode != 0)
             {
-                Log.Information($"pg_dump not found on path '{PathToPgDump}'.");
+                Log.Information($"mongodump not found on path '{PathToMongoDump}'.");
                 return false;
             }
 
-            Log.Information("pg_dump found");
+            Log.Information("mongodump found");
 
             return true;
         }

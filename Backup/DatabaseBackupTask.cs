@@ -36,5 +36,12 @@ namespace dackup
                 this.CommandOptions.Add(key, value);
             }
         }
+        public void RemoveCommandOptions(string key)
+        {
+            if (CommandOptions.ContainsKey(key))
+            {
+                CommandOptions.Remove(key);
+            }
+        }
     }
 }

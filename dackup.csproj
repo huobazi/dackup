@@ -10,6 +10,7 @@
   <ItemGroup>
       <PackageReference Include="Aliyun.OSS.SDK" Version="2.9.0" />
       <PackageReference Include="AWSSDK.S3" Version="3.3.31.6" />
+      <PackageReference Include="MongoDB.Driver" Version="2.7.2" />
       <PackageReference Include="MySql.Data" Version="8.0.13" />
       <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
       <PackageReference Include="Npgsql" Version="4.0.4" />
