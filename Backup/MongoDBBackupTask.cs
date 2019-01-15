@@ -13,7 +13,6 @@ namespace dackup
     public class MongoDBBackupTask : DatabaseBackupTask
     {
         public MongoDBBackupTask() : base("mongodb") { }
-
         public string PathToMongoDump { get; set; } = "mongodump";
         public string Host { get; set; } = "localhost";
         public int Port { get; set; } = 27017;
@@ -28,18 +27,19 @@ namespace dackup
             var client = new MongoClient($"mongodb://{UserName}:{Password}@{Host}:{Port}/{Database}");
             var database = client.GetDatabase(Database);
             database.RunCommandAsync((Command<BsonDocument>)"{ping:1}").Wait();
+            
             Log.Information("Connection to DB established.");
         }
         private (string resultFileName, string resultContent) GenerateOptionsToCommand()
         {
             this.RemoveCommandOptions("--out"); // only support --archive option
             this.RemoveCommandOptions("--host");
-            this.RemoveCommandOptions("--h");
+            this.RemoveCommandOptions("--port");
             this.RemoveCommandOptions("--username");
             this.RemoveCommandOptions("--password");
 
             var now = DateTime.Now;
-            var defaultBackupFileName = $"databases_{Database}_{now:yyyy_MM_dd_HH_mm_ss}.backup";
+            var defaultBackupFileName = $"databases_{Database}_{now:yyyy_MM_dd_HH_mm_ss}.gz";
             var dumpFile = Path.Join(DackupContext.Current.TmpPath, defaultBackupFileName);
 
             this.AddCommandOptions("--host", this.Host);
@@ -130,7 +130,5 @@ namespace dackup
 
             return true;
         }
-
-
     }
 }
