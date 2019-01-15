@@ -4,17 +4,17 @@ Dackup is a fullstack backup tool, Which is similar to [backup](https://github.c
 
 ## Features
 
-- Cross-Platform (win/osx/linux).
-- No Dependence.
-- Archive folder or files to tar.gz
-- Multiple Databases source support.
-- Multiple Storage type support.
-- Multiple Notifier type support.
+- [x] Cross-Platform (win/osx/linux).
+- [x] No Dependence.
+- [x] Archive folder or files to tar.gz
+- [x] Multiple Databases source support.
+- [x] Multiple Storage type support.
+- [x] Multiple Notifier type support.
 
 ### Databases
 
-- PostgreSQL
-- Mysql
+- [x] PostgreSQL
+- [x] Mysql
 - MongoDB (coming soon)
 - SQL Server (coming soon)
 
@@ -24,16 +24,16 @@ Archive files or folder into a `.tar.gz` file.
 
 ### Storages
 
-- Local
-- [Amazon S3](https://aws.amazon.com/s3)
-- [Alibaba Cloud Object Storage Service (OSS)](https://www.alibabacloud.com/product/oss)
+- [x] Local
+- [x] [Amazon S3](https://aws.amazon.com/s3)
+- [x] [Alibaba Cloud Object Storage Service (OSS)](https://www.alibabacloud.com/product/oss)
 
 ### Notifiers
 
-- Email
-- HttpPost
-- [Slack](https://slack.com/)
-- [DingTalk](https://www.dingtalk.com/)
+- [x] Email
+- [x] HttpPost
+- [x] [Slack](https://slack.com/)
+- [x] [DingTalk](https://www.dingtalk.com/)
 
 ## Usage
 
