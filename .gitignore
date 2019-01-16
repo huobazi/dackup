@@ -266,5 +266,5 @@ dackup*.log
 local.config
 dist/
 
-run_release.sh
+release_2_github.sh
 publish_2_ubuntu.sh
