@@ -113,7 +113,7 @@ $ crontab -l
 
 ## Install
 
-You can download binary from [release](https://github.com/huobazi/dackup/releases) page and place it in $PATH directory.
+You can download binary from [releases](https://github.com/huobazi/dackup/releases) page and place it in $PATH directory.
 
 ## Build
 
