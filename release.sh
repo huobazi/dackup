@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-readonly RELEASE_VERSION="0.0.1.beta-5"
+readonly RELEASE_VERSION="0.0.2.beta-1"
 
 usage()
 {
@@ -27,7 +27,7 @@ while [ "$1" != "" ]; do
     shift
 done
 
-
+readonly dotnet_core_app_version_folder="netcoreapp3.1"
 readonly BASE_PWD=$PWD
 readonly SCRIPT_PATH="$( cd "$(dirname "$0")" ; pwd -P )"
 
@@ -43,7 +43,7 @@ for rid in "${winOS[@]}"
 do
     dotnet publish $SCRIPT_PATH/dackup.csproj -r $rid -c release
     distFile="$SCRIPT_PATH/dist/dackup-$rid.zip"
-    cd $SCRIPT_PATH/bin/release/netcoreapp2.2/$rid/publish/
+    cd $SCRIPT_PATH/bin/release/$dotnet_core_app_version_folder/$rid/publish/
     zip -r $distFile .
     releaseFiles+=($distFile)
     cd $BASE_PWD
@@ -53,7 +53,7 @@ for rid in "${unixOS[@]}"
 do 
     distFile="$SCRIPT_PATH/dist/dackup-$rid.tar.gz"
     dotnet publish $SCRIPT_PATH/dackup.csproj -r $rid -c release
-    cd $SCRIPT_PATH/bin/release/netcoreapp2.2/$rid/publish/
+    cd $SCRIPT_PATH/bin/release/$dotnet_core_app_version_folder/$rid/publish/
     tar -cvzf  $distFile *
     releaseFiles+=($distFile)
     cd $BASE_PWD

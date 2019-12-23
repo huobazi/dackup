@@ -2,25 +2,26 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
         <RuntimeIdentifiers>win-x64;osx-x64;linux-x64;</RuntimeIdentifiers>
 
   </PropertyGroup>
 
   <ItemGroup>
-      <PackageReference Include="Aliyun.OSS.SDK" Version="2.9.0" />
-      <PackageReference Include="AWSSDK.S3" Version="3.3.31.6" />
-      <PackageReference Include="MongoDB.Driver" Version="2.7.2" />
-      <PackageReference Include="MySql.Data" Version="8.0.13" />
-      <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
-      <PackageReference Include="Npgsql" Version="4.0.4" />
-      <PackageReference Include="Serilog" Version="2.7.1" />
-      <PackageReference Include="Serilog.Sinks.Console" Version="3.1.2-dev-00779" />
-      <PackageReference Include="Serilog.Sinks.File" Version="4.0.1-dev-00801" />
-      <PackageReference Include="SharpZipLib" Version="1.1.0" />
+      <PackageReference Include="Aliyun.OSS.SDK.NetCore" Version="2.9.1" />
+      <PackageReference Include="AWSSDK.S3" Version="3.3.110.5" />
+      <PackageReference Include="MongoDB.Driver" Version="2.10.0" />
+      <PackageReference Include="MongoDB.Driver.Core" Version="2.10.0" />
+      <PackageReference Include="MySql.Data" Version="8.0.18" />
+      <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+      <PackageReference Include="Npgsql" Version="4.1.2" />
+      <PackageReference Include="Serilog" Version="2.9.1-dev-01154" />
+      <PackageReference Include="Serilog.Sinks.Console" Version="4.0.0-dev-00834" />
+      <PackageReference Include="Serilog.Sinks.File" Version="4.1.0" />
+      <PackageReference Include="SharpZipLib" Version="1.2.0" />
       <RuntimeHostConfigurationOption Include="System.Globalization.Invariant" Value="true" />
 
-    <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="2.3.0" />
+    <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="2.4.4" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="perform-config-mockup.config" />
