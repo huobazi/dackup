@@ -117,7 +117,7 @@ You can download binary from [releases](https://github.com/huobazi/dackup/releas
 
 ## Build
 
-Install dotnet core sdk 2.2 then
+Install dotnet core sdk 3.1 then
 
 ```bash
 dotnet publish -r win-x64 -c release;
