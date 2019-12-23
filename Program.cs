@@ -78,7 +78,6 @@ namespace dackup
                         var storageTasks = Task.WhenAll(storageUploadTasks, storagePurgeTasks);
 
                         // run notify                     
-
                         var notifyTasks = ApplicationHelper.RunNotify(performConfig, statistics);
 
                         // wait
