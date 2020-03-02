@@ -16,7 +16,7 @@ Dackup is a fullstack backup tool was written by .NET Core, Which is similar to 
 - [x] PostgreSQL
 - [x] Mysql
 - [x] MongoDB
-- [x] SQL Server (coming soon)
+- [x] SQL Server
 
 ### Archive
 
