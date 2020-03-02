@@ -113,6 +113,24 @@ namespace dackup
                                 }
                                 tasks.Add(task);
                             }
+                            else if (dbConfig.Type.ToLower().Trim() == "mssql")
+                            {
+                                var task = new MsSqlBackupTask();
+                                dbConfig.OptionList.NullSafeSetTo("host", s => task.Host = s);
+                                dbConfig.OptionList.NullSafeSetTo("port", s => task.Port = s);
+                                dbConfig.OptionList.NullSafeSetTo("database", s => task.Database = s);
+                                dbConfig.OptionList.NullSafeSetTo("username", s => task.UserName = s);
+                                dbConfig.OptionList.NullSafeSetTo("password", s => task.Password = s);
+                                dbConfig.OptionList.NullSafeSetTo("path_to_mssqldump", s => task.PathToMssqlDump = s);
+                                if (dbConfig.AdditionalOptionList != null && dbConfig.AdditionalOptionList.Count > 0)
+                                {
+                                    dbConfig.AdditionalOptionList.ForEach(c =>
+                                    {
+                                        task.AddCommandOptions(c.Name, c.Value);
+                                    });
+                                }
+                                tasks.Add(task);
+                            }
                         }
                     });
                 }
