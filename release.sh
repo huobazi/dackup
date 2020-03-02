@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-readonly RELEASE_VERSION="0.0.2.beta-1"
+readonly RELEASE_VERSION="0.0.3.beta-1"
 
 usage()
 {
