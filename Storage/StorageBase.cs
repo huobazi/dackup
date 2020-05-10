@@ -5,7 +5,7 @@ using Serilog;
 
 namespace dackup
 {
-    public abstract class StorageBase : IStorage
+    public abstract class StorageBase: IStorage
     {
         public virtual async Task<UploadResult> UploadAsync(string fileName)
         {            

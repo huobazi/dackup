@@ -11,7 +11,7 @@ using Amazon.S3.Transfer;
 
 namespace dackup
 {
-    public class S3Storage : StorageBase
+    public class S3Storage: StorageBase
     {
         private string region, bucket, accessKeyId, accessKeySecret;
         private S3Storage() { }
@@ -19,10 +19,10 @@ namespace dackup
         public string PathPrefix { get; set; }
         public S3Storage(string region, string accessKeyId, string accessKeySecret, string bucket)
         {
-            this.region = region;
-            this.accessKeyId = accessKeyId;
+            this.region          = region;
+            this.accessKeyId     = accessKeyId;
             this.accessKeySecret = accessKeySecret;
-            this.bucket = bucket;
+            this.bucket          = bucket;
         }
         public override async Task<UploadResult> UploadAsync(string fileName)
         {
@@ -33,7 +33,7 @@ namespace dackup
                 var fileTransferUtility = new TransferUtility(s3Client);
                 
                 string key = this.PathPrefix + $"/{DateTime.Now:yyyy_MM_dd_HH_mm_ss}/" + fileName.Replace(DackupContext.Current.TmpPath,string.Empty).TrimStart('/');
-                key = key.Trim('/');
+                       key = key.Trim('/');
             
                 Log.Information($"Upload to s3 file: {fileName} key: {key}");
 
@@ -54,8 +54,8 @@ namespace dackup
             {
                 var objectListing = s3Client.ListObjectsAsync(this.bucket, this.PathPrefix);
                 await objectListing;
-                var deleteRequest = new DeleteObjectsRequest();
-                deleteRequest.BucketName = this.bucket;
+                var deleteRequest            = new DeleteObjectsRequest();
+                    deleteRequest.BucketName = this.bucket;
 
                 foreach (var s3Object in objectListing.Result.S3Objects)
                 {

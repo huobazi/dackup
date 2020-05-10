@@ -6,7 +6,7 @@ using Serilog;
 
 namespace dackup
 {
-    public class SlackNotify : NotifyBase
+    public class SlackNotify: NotifyBase
     {
         private Uri webHookUri;
         public string Channel { get; set; }

@@ -23,16 +23,16 @@ namespace dackup
         public EmailSmtpNotify(string from, string to, string address, string domain, string userName, string password,
         string authentication, bool enableStarttls, string cc = null, string bcc = null)
         {
-            this.from = from;
-            this.to = to;
-            this.address = address;
-            this.domain = domain;
-            this.userName = userName;
-            this.password = password;
+            this.from           = from;
+            this.to             = to;
+            this.address        = address;
+            this.domain         = domain;
+            this.userName       = userName;
+            this.password       = password;
             this.authentication = authentication;
             this.enableStarttls = enableStarttls;
-            this.cc = cc;
-            this.bcc = bcc;
+            this.cc             = cc;
+            this.bcc            = bcc;
         }
         public override async Task<NotifyResult> NotifyAsync(Statistics statistics)
         {
@@ -45,18 +45,18 @@ namespace dackup
             sb.AppendLine($"Duration={statistics.FinishedAt - statistics.StartedAt}");
             string emailBody = sb.ToString();
 
-            SmtpClient client = new SmtpClient();
-            client.Host = this.address;
-            client.Port = this.Port;
+            SmtpClient client      = new SmtpClient();
+                       client.Host = this.address;
+                       client.Port = this.Port;
             // now dotnet core have no client domain settings
             // https://github.com/dotnet/corefx/issues/33123
             //client.ClientDomain = this.domain;
-            client.EnableSsl = this.enableStarttls;
+            client.EnableSsl             = this.enableStarttls;
             client.UseDefaultCredentials = false;
-            client.Credentials = new NetworkCredential(this.userName, this.password);
+            client.Credentials           = new NetworkCredential(this.userName, this.password);
 
-            MailMessage mailMessage = new MailMessage();
-            mailMessage.From = new MailAddress(this.from);
+            MailMessage mailMessage      = new MailMessage();
+                        mailMessage.From = new MailAddress(this.from);
             this.to.Split(';').ToList().ForEach(to =>
             {
                 if (!string.IsNullOrEmpty(to))
@@ -79,7 +79,7 @@ namespace dackup
                 }
             });
 
-            mailMessage.Body = emailBody;
+            mailMessage.Body    = emailBody;
             mailMessage.Subject = $"Backup [{statistics.ModelName}] Completed Successfully!";
 
             client.SendCompleted += (s, e) =>

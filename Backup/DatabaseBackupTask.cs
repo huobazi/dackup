@@ -8,13 +8,13 @@ using Serilog;
 
 namespace dackup
 {
-    public abstract class DatabaseBackupTask : BackupTaskBase
+    public abstract class DatabaseBackupTask: BackupTaskBase
     {
         private string dbType;
         public Dictionary<string, string> CommandOptions { get; private set; }
         public DatabaseBackupTask(string dbType)
         {
-            this.dbType = dbType;
+            this.dbType         = dbType;
             this.CommandOptions = new Dictionary<string, string>();
         }
         public abstract void CheckDbConnection();

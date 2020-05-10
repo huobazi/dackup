@@ -21,7 +21,7 @@ namespace dackup
             try
             {
                 XmlSerializer serializer = new XmlSerializer(typeof(PerformConfig));
-                fs = new FileStream(fileName, FileMode.Open, FileAccess.Read);
+                              fs         = new FileStream(fileName, FileMode.Open, FileAccess.Read);
                 return (PerformConfig)serializer.Deserialize(fs);
             }
             catch (Exception exception)
@@ -200,11 +200,11 @@ namespace dackup
 
         private static AliyunOssStorage PopulateAliyunOssStorage(Storage storageConfig)
         {
-            var endpoint = storageConfig.OptionList?.Find(c => c.Name.ToLower() == "endpoint")?.Value;
-            var accessKeyId = storageConfig.OptionList?.Find(c => c.Name.ToLower() == "access_key_id")?.Value;
+            var endpoint        = storageConfig.OptionList?.Find(c => c.Name.ToLower() == "endpoint")?.Value;
+            var accessKeyId     = storageConfig.OptionList?.Find(c => c.Name.ToLower() == "access_key_id")?.Value;
             var accessKeySecret = storageConfig.OptionList?.Find(c => c.Name.ToLower() == "secret_access_key")?.Value;
-            var bucket = storageConfig.OptionList?.Find(c => c.Name.ToLower() == "bucket")?.Value;
-            var task = new AliyunOssStorage(endpoint, accessKeyId, accessKeySecret, bucket);
+            var bucket          = storageConfig.OptionList?.Find(c => c.Name.ToLower() == "bucket")?.Value;
+            var task            = new AliyunOssStorage(endpoint, accessKeyId, accessKeySecret, bucket);
             storageConfig.OptionList.NullSafeSetTo("path", path => task.PathPrefix = path);
 
             if (storageConfig.OptionList?.Find(c => c.Name.ToLower() == "remove_threshold") != null)
@@ -216,10 +216,10 @@ namespace dackup
         }
         private static S3Storage PopulateS3Storage(Storage storageConfig)
         {
-            var region = storageConfig.OptionList?.Find(c => c.Name.ToLower() == "region")?.Value;
-            var accessKeyId = storageConfig.OptionList?.Find(c => c.Name.ToLower() == "access_key_id")?.Value;
+            var region          = storageConfig.OptionList?.Find(c => c.Name.ToLower() == "region")?.Value;
+            var accessKeyId     = storageConfig.OptionList?.Find(c => c.Name.ToLower() == "access_key_id")?.Value;
             var accessKeySecret = storageConfig.OptionList?.Find(c => c.Name.ToLower() == "secret_access_key")?.Value;
-            var bucket = storageConfig.OptionList?.Find(c => c.Name.ToLower() == "bucket")?.Value;
+            var bucket          = storageConfig.OptionList?.Find(c => c.Name.ToLower() == "bucket")?.Value;
 
             var task = new S3Storage(region, accessKeyId, accessKeySecret, bucket);
             storageConfig.OptionList.NullSafeSetTo("path", path => task.PathPrefix = path);
@@ -234,10 +234,10 @@ namespace dackup
 
         private static ArchiveBackupTask PopulateArchiveBackupTask(Archive cfg)
         {
-            var name = cfg.Name;
+            var name         = cfg.Name;
             var includesList = cfg.Includes;
             var excludesList = cfg.Excludes;
-            var task = new ArchiveBackupTask(name, includesList, excludesList);
+            var task         = new ArchiveBackupTask(name, includesList, excludesList);
 
             return task;
         }
@@ -319,21 +319,21 @@ namespace dackup
         }
         private static EmailSmtpNotify PopulateEmailSmtpNotify(Email cfg)
         {
-            var from = cfg.OptionList?.Find(c => c.Name == "from")?.Value;
-            var to = cfg.OptionList?.Find(c => c.Name == "to")?.Value;
-            var address = cfg.OptionList?.Find(c => c.Name == "address")?.Value;
-            var domain = cfg.OptionList?.Find(c => c.Name == "domain")?.Value;
-            var userName = cfg.OptionList?.Find(c => c.Name == "user_name")?.Value;
-            var password = cfg.OptionList?.Find(c => c.Name == "password")?.Value;
+            var from           = cfg.OptionList?.Find(c => c.Name == "from")?.Value;
+            var to             = cfg.OptionList?.Find(c => c.Name == "to")?.Value;
+            var address        = cfg.OptionList?.Find(c => c.Name == "address")?.Value;
+            var domain         = cfg.OptionList?.Find(c => c.Name == "domain")?.Value;
+            var userName       = cfg.OptionList?.Find(c => c.Name == "user_name")?.Value;
+            var password       = cfg.OptionList?.Find(c => c.Name == "password")?.Value;
             var authentication = cfg.OptionList?.Find(c => c.Name == "authentication")?.Value;
             var enableStarttls = cfg.OptionList?.Find(c => c.Name == "enable_starttls")?.Value;
-            var cc = cfg.OptionList?.Find(c => c.Name == "cc")?.Value;
-            var bcc = cfg.OptionList?.Find(c => c.Name == "bcc")?.Value;
+            var cc             = cfg.OptionList?.Find(c => c.Name == "cc")?.Value;
+            var bcc            = cfg.OptionList?.Find(c => c.Name == "bcc")?.Value;
 
             var email = new EmailSmtpNotify(from, to, address, domain, userName, password,
                                             authentication, bool.Parse(enableStarttls), cc, bcc);
 
-            email.Enable = cfg.Enable;
+            email.Enable    = cfg.Enable;
             email.OnFailure = cfg.OnFailure;
             email.OnSuccess = cfg.OnSuccess;
             email.OnWarning = cfg.OnWarning;
@@ -343,12 +343,12 @@ namespace dackup
         }
         private static SlackNotify PopulateSlackNotify(Slack cfg)
         {
-            var webhook_url = cfg.OptionList?.Find(c => c.Name == "webhook_url")?.Value;
-            var slack = new SlackNotify(webhook_url);
-            slack.Enable = cfg.Enable;
-            slack.OnFailure = cfg.OnFailure;
-            slack.OnSuccess = cfg.OnSuccess;
-            slack.OnWarning = cfg.OnWarning;
+            var webhook_url     = cfg.OptionList?.Find(c => c.Name == "webhook_url")?.Value;
+            var slack           = new SlackNotify(webhook_url);
+                slack.Enable    = cfg.Enable;
+                slack.OnFailure = cfg.OnFailure;
+                slack.OnSuccess = cfg.OnSuccess;
+                slack.OnWarning = cfg.OnWarning;
             cfg.OptionList.NullSafeSetTo("channel", channel => slack.Channel = channel);
             cfg.OptionList.NullSafeSetTo("icon_emoji", icon_emoji => slack.Icon_emoji = icon_emoji);
             cfg.OptionList.NullSafeSetTo("username", username => slack.UserName = username);
@@ -357,13 +357,13 @@ namespace dackup
         }
         private static DingtalkRobotNotify PopulateDingtalkRobotNotify(DingtalkRobot cfg)
         {
-            var webhook_url = cfg.OptionList?.Find(c => c.Name == "url")?.Value;
-            var dingtalkRobot = new DingtalkRobotNotify(webhook_url);
-            dingtalkRobot.AtAll = cfg.AtAll;
-            dingtalkRobot.Enable = cfg.Enable;
-            dingtalkRobot.OnFailure = cfg.OnFailure;
-            dingtalkRobot.OnSuccess = cfg.OnSuccess;
-            dingtalkRobot.OnWarning = cfg.OnWarning;
+            var webhook_url             = cfg.OptionList?.Find(c => c.Name == "url")?.Value;
+            var dingtalkRobot           = new DingtalkRobotNotify(webhook_url);
+                dingtalkRobot.AtAll     = cfg.AtAll;
+                dingtalkRobot.Enable    = cfg.Enable;
+                dingtalkRobot.OnFailure = cfg.OnFailure;
+                dingtalkRobot.OnSuccess = cfg.OnSuccess;
+                dingtalkRobot.OnWarning = cfg.OnWarning;
             if (cfg.AtMobiles != null && cfg.AtMobiles.Count > 0)
             {
                 dingtalkRobot.AtMobiles = new List<string>();
@@ -378,12 +378,12 @@ namespace dackup
         }
         private static HttpPostNotify PopulateHttpPostNotify(HttpPost cfg)
         {
-            var webhook_url = cfg.OptionList?.Find(c => c.Name == "url")?.Value;
-            var httpPost = new HttpPostNotify(webhook_url);
-            httpPost.Enable = cfg.Enable;
-            httpPost.OnFailure = cfg.OnFailure;
-            httpPost.OnSuccess = cfg.OnSuccess;
-            httpPost.OnWarning = cfg.OnWarning;
+            var webhook_url        = cfg.OptionList?.Find(c => c.Name == "url")?.Value;
+            var httpPost           = new HttpPostNotify(webhook_url);
+                httpPost.Enable    = cfg.Enable;
+                httpPost.OnFailure = cfg.OnFailure;
+                httpPost.OnSuccess = cfg.OnSuccess;
+                httpPost.OnWarning = cfg.OnWarning;
             if (cfg.Headers != null)
             {
                 httpPost.Headers = new NameValueCollection();

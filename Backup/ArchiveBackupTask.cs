@@ -7,7 +7,7 @@ using Serilog;
 
 namespace dackup
 {
-    public class ArchiveBackupTask : BackupTaskBase
+    public class ArchiveBackupTask: BackupTaskBase
     {
         private string name;
         private List<string> includePathList;
@@ -16,7 +16,7 @@ namespace dackup
 
         public ArchiveBackupTask(string name, List<string> includePathList, List<string> excludePathList)
         {
-            this.name = name;
+            this.name            = name;
             this.includePathList = includePathList;
             this.excludePathList = excludePathList;
         }
@@ -26,7 +26,7 @@ namespace dackup
             {
                 return new BackupTaskResult
                 {
-                    Result = false,
+                    Result  = false,
                     Message = "No archives files setting"
                 };
             }
@@ -48,7 +48,7 @@ namespace dackup
                 }
                 else
                 {
-                    var destFile = Path.Combine(directory, file.TrimStart('/'));
+                    var destFile      = Path.Combine(directory, file.TrimStart('/'));
                     var destDirectory = destFile.Substring(0, destFile.LastIndexOf('/') + 1);
                     Directory.CreateDirectory(destDirectory);
                     Utils.FileCopy(file, destFile, excludePathList);
@@ -61,7 +61,7 @@ namespace dackup
 
             return new BackupTaskResult
             {
-                Result = true,
+                Result    = true,
                 FilesList = new List<string> { tgzFileName },
             };
         }

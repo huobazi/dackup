@@ -19,19 +19,19 @@ namespace dackup
                 throw new InvalidOperationException($"Invalid value for option: remove_threshold '{timeSpan}'");
             }
 
-            var l = timeSpan.Length - 1;
+            var l     = timeSpan.Length - 1;
             var value = timeSpan.Substring(0, l);
-            var type = timeSpan.Substring(l, 1);
+            var type  = timeSpan.Substring(l, 1);
 
             switch (type)
             {
-                case "d": return TimeSpan.FromDays(double.Parse(value));
-                case "h": return TimeSpan.FromHours(double.Parse(value));
-                case "m": return TimeSpan.FromMinutes(double.Parse(value));
-                case "s": return TimeSpan.FromSeconds(double.Parse(value));
-                case "f": return TimeSpan.FromMilliseconds(double.Parse(value));
-                case "z": return TimeSpan.FromTicks(long.Parse(value));
-                default: throw new InvalidOperationException($"Invalid value for remove_threshold option: '{timeSpan}'");
+                case "d"    : return TimeSpan.FromDays(double.Parse(value));
+                case "h"    : return TimeSpan.FromHours(double.Parse(value));
+                case "m"    : return TimeSpan.FromMinutes(double.Parse(value));
+                case "s"    : return TimeSpan.FromSeconds(double.Parse(value));
+                case "f"    : return TimeSpan.FromMilliseconds(double.Parse(value));
+                case "z"    : return TimeSpan.FromTicks(long.Parse(value));
+                     default: throw new InvalidOperationException($"Invalid value for remove_threshold option: '{timeSpan}'");
             }
         }
         public static DateTime ConvertRemoveThresholdToDateTime(string timeSpan)
@@ -108,8 +108,8 @@ namespace dackup
         // https://github.com/icsharpcode/SharpZipLib/wiki/GZip-and-Tar-Samples#createTGZ
         public static void CreateTarGZ(string tgzFilename, string sourceDirectory)
         {
-            Stream outStream = File.Create(tgzFilename);
-            Stream gzoStream = new GZipOutputStream(outStream);
+            Stream     outStream  = File.Create(tgzFilename);
+            Stream     gzoStream  = new GZipOutputStream(outStream);
             TarArchive tarArchive = TarArchive.CreateOutputTarArchive(gzoStream);
 
             tarArchive.RootPath = sourceDirectory.Replace('\\', '/');
@@ -156,8 +156,8 @@ namespace dackup
                         foreach (string filename in sourceFileList)
                         {
                             {
-                                TarEntry tarEntry = TarEntry.CreateEntryFromFile(filename);
-                                tarEntry.Name = Path.GetFileName(filename);
+                                TarEntry tarEntry      = TarEntry.CreateEntryFromFile(filename);
+                                         tarEntry.Name = Path.GetFileName(filename);
                                 tarArchive.WriteEntry(tarEntry, false);
                             }
                         }
@@ -168,7 +168,7 @@ namespace dackup
         public static string FlattenException(Exception exception)
         {
             var stringBuilder = new StringBuilder();
-            var footprints = GetAllFootprints(exception);
+            var footprints    = GetAllFootprints(exception);
 
             while (exception != null)
             {
@@ -185,8 +185,8 @@ namespace dackup
                 {
                     return string.Empty;
                 }
-                var st = new StackTrace(ex, true);
-                var frames = st.GetFrames();
+                var st          = new StackTrace(ex, true);
+                var frames      = st.GetFrames();
                 var traceString = new StringBuilder();
 
                 foreach (var frame in frames)
@@ -212,7 +212,7 @@ namespace dackup
             }
             try
             {
-                IPAddress[] hostIPs = Dns.GetHostAddresses(hostNameOrAddress);
+                IPAddress[] hostIPs  = Dns.GetHostAddresses(hostNameOrAddress);
                 IPAddress[] localIPs = Dns.GetHostAddresses(Dns.GetHostName());
                 foreach (IPAddress hostIP in hostIPs)
                 {

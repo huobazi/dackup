@@ -21,7 +21,7 @@ namespace dackup
             using (var webClient = new WebClient())
             {
                 webClient.Headers.Add("Content-Type", "application/x-www-form-urlencoded");
-                byte[] request = System.Text.Encoding.UTF8.GetBytes("payload=" + JsonConvert.SerializeObject(message));
+                byte[] request  = System.Text.Encoding.UTF8.GetBytes("payload=" + JsonConvert.SerializeObject(message));
                 byte[] response = webClient.UploadData(this.webHookUri, "POST", request);
             }
         }

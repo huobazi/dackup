@@ -17,12 +17,12 @@ namespace dackup
     {
         public static int Main(string[] args)
         {
-            var statistics = new Statistics();
-            statistics.StartedAt = DateTime.Now;
+            var statistics           = new Statistics();
+                statistics.StartedAt = DateTime.Now;
 
             var app = new CommandLineApplication
             {
-                Name = "dackup",
+                Name        = "dackup",
                 Description = "A backup app for your server or database or desktop",
             };
 
@@ -71,11 +71,11 @@ namespace dackup
                         var backupTasks = ApplicationHelper.RunBackup(performConfig);
                         backupTasks.Wait();
                         
-                        statistics.FinishedAt = DateTime.Now;  
+                        statistics.FinishedAt = DateTime.Now;
 
                         // run store
                         var (storageUploadTasks, storagePurgeTasks) = ApplicationHelper.RunStorage(performConfig);
-                        var storageTasks = Task.WhenAll(storageUploadTasks, storagePurgeTasks);
+                        var storageTasks                            = Task.WhenAll(storageUploadTasks, storagePurgeTasks);
 
                         // run notify                     
                         var notifyTasks = ApplicationHelper.RunNotify(performConfig, statistics);

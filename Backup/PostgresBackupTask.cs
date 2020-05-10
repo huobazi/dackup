@@ -9,14 +9,14 @@ using Npgsql;
 
 namespace dackup
 {
-    public class PostgresBackupTask : DatabaseBackupTask
+    public class PostgresBackupTask: DatabaseBackupTask
     {
-        public PostgresBackupTask() : base("postgres") { }
+        public PostgresBackupTask(): base("postgres") { }
 
         public string PathToPgDump { get; set; } = "pg_dump";
-        public string Host { get; set; } = "localhost";
-        public int Port { get; set; } = 5432;
-        public string UserName { get; set; } = "postgres";
+        public string Host { get; set; }         = "localhost";
+        public int Port { get; set; }            = 5432;
+        public string UserName { get; set; }     = "postgres";
         public string Password { get; set; }
         public string Database { get; set; }
 
@@ -39,9 +39,9 @@ namespace dackup
             this.RemoveCommandOptions("--username");
             this.RemoveCommandOptions("--U");
 
-            var now = DateTime.Now;
+            var now                   = DateTime.Now;
             var defaultBackupFileName = $"databases_{Database}_{now:yyyy_MM_dd_HH_mm_ss}.backup";
-            var dumpFile = Path.Join(DackupContext.Current.TmpPath, defaultBackupFileName);
+            var dumpFile              = Path.Join(DackupContext.Current.TmpPath, defaultBackupFileName);
 
             this.AddCommandOptions("--host", this.Host);
             this.AddCommandOptions("--port", this.Port.ToString());
@@ -106,8 +106,8 @@ namespace dackup
             var processStartInfo = new ProcessStartInfo("bash", $"-c \"{PathToPgDump}  {cmdOptions} \"")
             {
                 RedirectStandardOutput = true,
-                UseShellExecute = false,
-                CreateNoWindow = true
+                UseShellExecute        = false,
+                CreateNoWindow         = true
             };
 
             processStartInfo.Environment.Add("PGPASSWORD", Password);
@@ -121,7 +121,7 @@ namespace dackup
 
             var result = new BackupTaskResult
             {
-                Result = true,
+                Result    = true,
                 FilesList = new List<string> { backupFile },
             };
 

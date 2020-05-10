@@ -11,13 +11,13 @@ using MySql.Data.MySqlClient;
 
 namespace dackup
 {
-    public class MySqlBackupTask : DatabaseBackupTask
+    public class MySqlBackupTask: DatabaseBackupTask
     {
-        public MySqlBackupTask() : base("mysql") { }
+        public MySqlBackupTask(): base("mysql") { }
         public string PathToMysqlDump { get; set; } = "mysqldump";
-        public string Host { get; set; } = "localhost";
-        public int Port { get; set; } = 3306;
-        public string UserName { get; set; } = "root";
+        public string Host { get; set; }            = "localhost";
+        public int Port { get; set; }               = 3306;
+        public string UserName { get; set; }        = "root";
         public string Password { get; set; }
         public string Database { get; set; }
 
@@ -42,9 +42,9 @@ namespace dackup
             this.RemoveCommandOptions("--password");
             this.RemoveCommandOptions("--P");
 
-            var now = DateTime.Now;
+            var now                  = DateTime.Now;
             var defaultBackupSQLName = $"databases_{Database}_{now:yyyy_MM_dd_HH_mm_ss}.sql";
-            var dumpFile = Path.Join(DackupContext.Current.TmpPath, defaultBackupSQLName);
+            var dumpFile             = Path.Join(DackupContext.Current.TmpPath, defaultBackupSQLName);
             this.AddCommandOptions("--host", this.Host);
             this.AddCommandOptions("--port", this.Port.ToString());
             this.AddCommandOptions("--user", this.UserName);
@@ -104,12 +104,12 @@ namespace dackup
         public override BackupTaskResult CreateNewBackup()
         {
             var (dumpfile, cmdOptions) = GenerateOptionsToCommand();
-            var dumpTGZFileName = dumpfile + ".tar.gz";
-            var processStartInfo = new ProcessStartInfo("bash", $"-c \"{PathToMysqlDump} {cmdOptions} \"")
+            var dumpTGZFileName        = dumpfile + ".tar.gz";
+            var processStartInfo       = new ProcessStartInfo("bash", $"-c \"{PathToMysqlDump} {cmdOptions} \"")
             {
                 RedirectStandardOutput = true,
-                UseShellExecute = false,
-                CreateNoWindow = true
+                UseShellExecute        = false,
+                CreateNoWindow         = true
             };
 
             var process = new Process { StartInfo = processStartInfo };
@@ -123,7 +123,7 @@ namespace dackup
 
             var result = new BackupTaskResult
             {
-                Result = true,
+                Result    = true,
                 FilesList = new List<string> { dumpTGZFileName },
             };
 

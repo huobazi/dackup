@@ -12,7 +12,7 @@ using Newtonsoft.Json.Linq;
 
 namespace dackup
 {
-    public class HttpPostNotify : NotifyBase
+    public class HttpPostNotify: NotifyBase
     {
         private Uri webHookUri;
         public NameValueCollection Params { get; set; }
@@ -25,16 +25,16 @@ namespace dackup
         {
             Log.Information($"Dackup start [{this.GetType().Name }.NotifyAsync]");
 
-            dynamic msg = new JObject();
-            msg.Title = "Backup Completed Successfully!";
-            msg.ModelName = statistics.ModelName;
-            msg.StartedAt = statistics.StartedAt;
-            msg.FinishedAt = statistics.FinishedAt;
-            msg.Duration = statistics.FinishedAt - statistics.StartedAt;        
-            msg.Tags = new JArray("Dackup", "OnSale");
+            dynamic msg            = new JObject();
+                    msg.Title      = "Backup Completed Successfully!";
+                    msg.ModelName  = statistics.ModelName;
+                    msg.StartedAt  = statistics.StartedAt;
+                    msg.FinishedAt = statistics.FinishedAt;
+                    msg.Duration   = statistics.FinishedAt - statistics.StartedAt;
+                    msg.Tags       = new JArray("Dackup", "OnSale");
 
-            var nv = new NameValueCollection(this.Params);
-            nv["msg"] = JsonConvert.SerializeObject(msg);
+            var nv     = new NameValueCollection(this.Params);
+            nv ["msg"] = JsonConvert.SerializeObject(msg);
 
             var client = new WebClient();
             if (this.Headers != null && this.Headers.Count > 0)
@@ -45,7 +45,7 @@ namespace dackup
                 }
             }
             var method = "POST";
-            var data = await client.UploadValuesTaskAsync(this.webHookUri, method, nv);
+            var data   = await client.UploadValuesTaskAsync(this.webHookUri, method, nv);
             return new NotifyResult();
         }
     }

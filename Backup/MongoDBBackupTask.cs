@@ -10,13 +10,13 @@ using MongoDB.Bson;
 
 namespace dackup
 {
-    public class MongoDBBackupTask : DatabaseBackupTask
+    public class MongoDBBackupTask: DatabaseBackupTask
     {
-        public MongoDBBackupTask() : base("mongodb") { }
+        public MongoDBBackupTask(): base("mongodb") { }
         public string PathToMongoDump { get; set; } = "mongodump";
-        public string Host { get; set; } = "localhost";
-        public int Port { get; set; } = 27017;
-        public string UserName { get; set; } = "root";
+        public string Host { get; set; }            = "localhost";
+        public int Port { get; set; }               = 27017;
+        public string UserName { get; set; }        = "root";
         public string Password { get; set; }
         public string Database { get; set; }
 
@@ -24,7 +24,7 @@ namespace dackup
         {
             Log.Information($"Testing connection to 'mongodb://{UserName}@{Host}:{Port}/{Database}'...");
 
-            var client = new MongoClient($"mongodb://{UserName}:{Password}@{Host}:{Port}");
+            var client   = new MongoClient($"mongodb://{UserName}:{Password}@{Host}:{Port}");
             var database = client.GetDatabase(Database);
 
             Log.Information("Connection to DB established.");
@@ -37,9 +37,9 @@ namespace dackup
             this.RemoveCommandOptions("--username");
             this.RemoveCommandOptions("--password");
 
-            var now = DateTime.Now;
+            var now                   = DateTime.Now;
             var defaultBackupFileName = $"databases_{Database}_{now:yyyy_MM_dd_HH_mm_ss}.gz";
-            var dumpFile = Path.Join(DackupContext.Current.TmpPath, defaultBackupFileName);
+            var dumpFile              = Path.Join(DackupContext.Current.TmpPath, defaultBackupFileName);
 
             this.AddCommandOptions("--host", this.Host);
             this.AddCommandOptions("--port", this.Port.ToString());
@@ -93,8 +93,8 @@ namespace dackup
             var processStartInfo = new ProcessStartInfo("bash", $"-c \"{PathToMongoDump}  {cmdOptions} \"")
             {
                 RedirectStandardOutput = true,
-                UseShellExecute = false,
-                CreateNoWindow = true
+                UseShellExecute        = false,
+                CreateNoWindow         = true
             };
 
             var process = new Process { StartInfo = processStartInfo };
@@ -107,7 +107,7 @@ namespace dackup
 
             var result = new BackupTaskResult
             {
-                Result = true,
+                Result    = true,
                 FilesList = new List<string> { backupFile },
             };
 

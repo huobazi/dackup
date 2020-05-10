@@ -8,7 +8,7 @@ using Aliyun.OSS;
 
 namespace dackup
 {
-    public class AliyunOssStorage : StorageBase
+    public class AliyunOssStorage: StorageBase
     {
         private string endpoint, accessKeyId, accessKeySecret, bucketName;
         private AliyunOssStorage() { }
@@ -16,16 +16,16 @@ namespace dackup
         public DateTime? RemoveThreshold{get;set;}
         public AliyunOssStorage(string endpoint, string accessKeyId, string accessKeySecret, string bucketName)
         {
-            this.endpoint = endpoint;
-            this.accessKeyId = accessKeyId;
+            this.endpoint        = endpoint;
+            this.accessKeyId     = accessKeyId;
             this.accessKeySecret = accessKeySecret;
-            this.bucketName = bucketName;
+            this.bucketName      = bucketName;
         }
         protected override UploadResult Upload(string fileName)
         {
             OssClient client = new OssClient(endpoint, accessKeyId, accessKeySecret);
-            string key = this.PathPrefix + $"/{DateTime.Now:yyyy_MM_dd_HH_mm_ss}/" + fileName.Replace(DackupContext.Current.TmpPath,string.Empty).TrimStart('/');
-            key = key.Trim('/');
+            string    key    = this.PathPrefix + $"/{DateTime.Now:yyyy_MM_dd_HH_mm_ss}/" + fileName.Replace(DackupContext.Current.TmpPath,string.Empty).TrimStart('/');
+                      key    = key.Trim('/');
             
             Log.Information($"Upload to aliyun file: {fileName} key: {key} pathPrefix: {this.PathPrefix}");
 
@@ -41,8 +41,8 @@ namespace dackup
 
             Log.Information($"Purge to aliyun  removeThreshold: {RemoveThreshold}");
 
-            OssClient client = new OssClient(endpoint, accessKeyId, accessKeySecret);
-            var objectListing = client.ListObjects(bucketName, this.PathPrefix);
+            OssClient client        = new OssClient(endpoint, accessKeyId, accessKeySecret);
+            var       objectListing = client.ListObjects(bucketName, this.PathPrefix);
 
             var objectsToDelete = new List<string>();
 

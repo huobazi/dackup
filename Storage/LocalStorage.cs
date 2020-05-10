@@ -7,7 +7,7 @@ using Serilog;
 
 namespace dackup
 {
-    public class LocalStorage : StorageBase
+    public class LocalStorage: StorageBase
     {   
         private string path;
         public DateTime? RemoveThreshold {get;set;} 

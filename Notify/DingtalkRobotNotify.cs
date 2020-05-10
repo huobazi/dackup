@@ -34,25 +34,23 @@ namespace dackup
 
             dynamic msg = new JObject();
 
-            msg.msgtype = "markdown";
-            msg.markdown = new JObject();
+            msg.msgtype        = "markdown";
+            msg.markdown       = new JObject();
             msg.markdown.title = $"Backup [{statistics.ModelName}] Completed Successfully!";
-            msg.markdown.text = markdownBody;
-            msg.at = new JObject();
-            msg.at.isAtAll = false;
+            msg.markdown.text  = markdownBody;
+            msg.at             = new JObject();
+            msg.at.isAtAll     = false;
             if (this.AtMobiles != null)
             {
                 msg.at.atMobiles = new JArray(this.AtMobiles.ToArray());
             }
 
-            var payload = JsonConvert.SerializeObject(msg);
-
-            var client = new WebClient();
-            client.Encoding = System.Text.Encoding.UTF8;
+            var payload         = JsonConvert.SerializeObject(msg);
+            var client          = new WebClient();
+                client.Encoding = System.Text.Encoding.UTF8;
             client.Headers.Add("Content-Type", "application/json");
-            var method = "POST";
 
-            var data = await client.UploadStringTaskAsync(this.webHookUri, method, payload);
+            var data = await client.UploadStringTaskAsync(this.webHookUri, "POSST", payload);
 
             return new NotifyResult();
         }
