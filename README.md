@@ -1,6 +1,6 @@
 # Dackup
 
-Dackup is a fullstack backup tool was written by .NET Core, Which is similar to [backup](https://github.com/backup/backup).
+Dackup is a fullstack backup tool was written by .NET Core, that is fast, efficient and secure. It supports the three major operating systems (Linux, macOS, Windows)
 
 ## Features
 
