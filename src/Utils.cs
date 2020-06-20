@@ -14,9 +14,10 @@ namespace dackup
     {
         public static TimeSpan ConvertRemoveThresholdToTimeSpan(string timeSpan)
         {
+            var invalidTimeSpanExceptionMessage = $"Invalid value for remove_threshold option: '{timeSpan}'";
             if (timeSpan.Length < 2)
             {
-                throw new InvalidOperationException($"Invalid value for option: remove_threshold '{timeSpan}'");
+                throw new InvalidOperationException(invalidTimeSpanExceptionMessage);
             }
 
             var l     = timeSpan.Length - 1;
@@ -31,7 +32,7 @@ namespace dackup
                 case "s"    : return TimeSpan.FromSeconds(double.Parse(value));
                 case "f"    : return TimeSpan.FromMilliseconds(double.Parse(value));
                 case "z"    : return TimeSpan.FromTicks(long.Parse(value));
-                     default: throw new InvalidOperationException($"Invalid value for remove_threshold option: '{timeSpan}'");
+                     default: throw new InvalidOperationException(invalidTimeSpanExceptionMessage);
             }
         }
         public static DateTime ConvertRemoveThresholdToDateTime(string timeSpan)
