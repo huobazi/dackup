@@ -265,6 +265,12 @@ __pycache__/
 dackup*.log
 local.config
 dist/
+src/tmp
+src/tmp/*
+src/bin
+src/bin/*
+src/obj
+src/obj/*
 
 release_2_github.sh
 publish_2_ubuntu.sh
