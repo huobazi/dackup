@@ -1,17 +1,20 @@
-
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-using Serilog;
+using Microsoft.Extensions.Logging;
 
 namespace dackup
 {
     public abstract class BackupTaskBase : IBackupTask
     {
+        protected abstract ILogger Logger
+        {
+            get;
+        }
         public async Task<BackupTaskResult> BackupAsync()
         {
-            Log.Information($"Dackup start [{this.GetType().Name }.BackupAsync]");
+            Logger.LogInformation($"Dackup start [{this.GetType().Name }.BackupAsync]");
 
             var task = Task.Run(() =>
             {

@@ -2,24 +2,30 @@ using System;
 using System.Threading.Tasks;
 using System.Text;
 
-using Serilog;
+using Microsoft.Extensions.Logging;
 
 namespace dackup
 {
     public class SlackNotify: NotifyBase
     {
         private Uri webHookUri;
+        private readonly ILogger logger;
+        protected override ILogger Logger
+        {
+            get{ return this.logger;}
+        }
         public string Channel { get; set; }
         public string UserName { get; set; }
         public string Icon_emoji { get; set; } = ":ghost:";
 
-        public SlackNotify(string webHookUrl)
+        public SlackNotify(ILogger logger,string webHookUrl)
         {
+            this.logger     = logger;
             this.webHookUri = new Uri(webHookUrl);
         }
         protected override NotifyResult Notify(Statistics statistics)
         {
-            Log.Information($"Dackup start [{this.GetType().Name }.NotifyAsync]");
+            logger.LogInformation($"Dackup start [{this.GetType().Name }.NotifyAsync]");
             
             var markdownBody = $@"Backup Completed Successfully!" + System.Environment.NewLine +
                  $"> Model: {statistics.ModelName} " + System.Environment.NewLine +

@@ -1,5 +1,5 @@
-
 using System;
+using System.IO;
 using System.Linq;
 using System.Collections.Generic;
 
@@ -14,7 +14,7 @@ namespace dackup
         private DackupContext(string logFile, string tmpPath)
         {
             this.LogFile = logFile;
-            this.TmpPath = tmpPath;
+            this.TmpPath = Path.Combine(tmpPath, $"dackup-tmp-{DateTime.UtcNow:s}");
         }
         public static DackupContext Create(string logFile, string tmpPath)
         {

@@ -4,31 +4,39 @@ using System.Data.SqlClient;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
-using Serilog;
+using Microsoft.Extensions.Logging;
 
 namespace dackup
 {
-    public class MsSqlBackupTask: DatabaseBackupTask
+    public class MsSqlBackupTask : DatabaseBackupTask
     {
-        public MsSqlBackupTask(): base("mssql") { }
+        private readonly ILogger logger;
+
+        public MsSqlBackupTask(ILogger<MsSqlBackupTask> logger) : base("mssql")
+        {
+            this.logger = logger;
+        }
 
         public string PathToMssqlDump { get; set; } = "sqlcmd";
-        public string Host { get; set; }            = "localhost";
-        public int Port { get; set; }               = 1433;
-        public string UserName { get; set; }        = "sa";
+        public string Host { get; set; } = "localhost";
+        public int Port { get; set; } = 1433;
+        public string UserName { get; set; } = "sa";
         public string Password { get; set; }
         public string Database { get; set; }
-
+        protected override ILogger Logger
+        {
+            get { return this.logger; }
+        }
 
         public override void CheckDbConnection()
         {
-            Log.Information($"Testing connection to '{UserName}@{Host}:{Port}/{Database}'...");
+            logger.LogInformation($"Testing connection to '{UserName}@{Host}:{Port}/{Database}'...");
 
             using (var connection = new SqlConnection($"Data Source={Host},{Port};Initial Catalog={Database};User Id={UserName};Password={Password};"))
             {
                 connection.Open();
             }
-            Log.Information("Connection to DB established.");
+            logger.LogInformation("Connection to DB established.");
         }
 
         private (string resultFileName, string resultContent) GenerateOptionsToCommand()
@@ -44,9 +52,9 @@ namespace dackup
             RemoveCommandOptions("--database");
             RemoveCommandOptions("--D");
 
-            var now                  = DateTime.Now;
+            var now = DateTime.Now;
             var defaultBackupSqlName = $"databases_{Database}_{now:yyyy_MM_dd_HH_mm_ss}.bak";
-            var dumpFile             = Path.Join(DackupContext.Current.TmpPath, defaultBackupSqlName);
+            var dumpFile = Path.Join(DackupContext.Current.TmpPath, defaultBackupSqlName);
             AddCommandOptions("-S", Host + "," + Port);
             if (!CommandOptions.ContainsKey("-E"))
             {
@@ -66,12 +74,12 @@ namespace dackup
         public override BackupTaskResult CreateNewBackup()
         {
             var (dumpfile, cmdOptions) = GenerateOptionsToCommand();
-            var dumpTgzFileName        = dumpfile + ".tar.gz";
-            var processStartInfo       = new ProcessStartInfo("bash", $"-c \"{PathToMssqlDump} {cmdOptions} \"")
+            var dumpTgzFileName = dumpfile + ".tar.gz";
+            var processStartInfo = new ProcessStartInfo("bash", $"-c \"{PathToMssqlDump} {cmdOptions} \"")
             {
                 RedirectStandardOutput = true,
-                UseShellExecute        = false,
-                CreateNoWindow         = true
+                UseShellExecute = false,
+                CreateNoWindow = true
             };
 
             var process = new Process { StartInfo = processStartInfo };
@@ -81,11 +89,11 @@ namespace dackup
 
             Utils.CreateTarGZ(new List<string> { dumpfile, }, dumpTgzFileName);
 
-            Log.Information($"{Database} backup completed. dump files : {dumpTgzFileName}");
+            logger.LogInformation($"{Database} backup completed. dump files : {dumpTgzFileName}");
 
             var result = new BackupTaskResult
             {
-                Result    = true,
+                Result = true,
                 FilesList = new List<string> { dumpTgzFileName },
             };
 

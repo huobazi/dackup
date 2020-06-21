@@ -1,15 +1,19 @@
 using System;
 using System.Threading.Tasks;
 
-using Serilog;
+using Microsoft.Extensions.Logging;
 
 namespace dackup
 {
     public abstract class StorageBase: IStorage
     {
+        protected abstract ILogger Logger
+        {
+            get;
+        }
         public virtual async Task<UploadResult> UploadAsync(string fileName)
         {            
-            Log.Information($"Dackup start [{this.GetType().Name }.UploadAsync]");
+            Logger.LogInformation($"Dackup start [{this.GetType().Name }.UploadAsync]");
 
             var task = Task.Run(() => Upload(fileName));
             return await task;
@@ -17,7 +21,7 @@ namespace dackup
 
         public virtual async Task<PurgeResult> PurgeAsync()
         {
-            Log.Information($"Dackup start [{this.GetType().Name }.PurgeAsync]");
+            Logger.LogInformation($"Dackup start [{this.GetType().Name }.PurgeAsync]");
 
             var task = Task.Run(() => Purge());
             return await task;

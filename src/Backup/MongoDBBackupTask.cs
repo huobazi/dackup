@@ -4,30 +4,39 @@ using System.Text;
 using System.Diagnostics;
 using System.Collections.Generic;
 
-using Serilog;
+using Microsoft.Extensions.Logging;
+
 using MongoDB.Driver;
-using MongoDB.Bson;         
+using MongoDB.Bson;
 
 namespace dackup
 {
-    public class MongoDBBackupTask: DatabaseBackupTask
+    public class MongoDBBackupTask : DatabaseBackupTask
     {
-        public MongoDBBackupTask(): base("mongodb") { }
+        private readonly ILogger logger;
+
+        public MongoDBBackupTask(ILogger<MongoDBBackupTask> logger) : base("mongodb")
+        {
+            this.logger = logger;
+        }
         public string PathToMongoDump { get; set; } = "mongodump";
-        public string Host { get; set; }            = "localhost";
-        public int Port { get; set; }               = 27017;
-        public string UserName { get; set; }        = "root";
+        public string Host { get; set; } = "localhost";
+        public int Port { get; set; } = 27017;
+        public string UserName { get; set; } = "root";
         public string Password { get; set; }
         public string Database { get; set; }
-
+        protected override ILogger Logger
+        {
+            get { return this.logger; }
+        }
         public override void CheckDbConnection()
         {
-            Log.Information($"Testing connection to 'mongodb://{UserName}@{Host}:{Port}/{Database}'...");
+            logger.LogInformation($"Testing connection to 'mongodb://{UserName}@{Host}:{Port}/{Database}'...");
 
-            var client   = new MongoClient($"mongodb://{UserName}:{Password}@{Host}:{Port}");
+            var client = new MongoClient($"mongodb://{UserName}:{Password}@{Host}:{Port}");
             var database = client.GetDatabase(Database);
 
-            Log.Information("Connection to DB established.");
+            logger.LogInformation("Connection to DB established.");
         }
         private (string resultFileName, string resultContent) GenerateOptionsToCommand()
         {
@@ -37,16 +46,16 @@ namespace dackup
             this.RemoveCommandOptions("--username");
             this.RemoveCommandOptions("--password");
 
-            var now                   = DateTime.Now;
+            var now = DateTime.Now;
             var defaultBackupFileName = $"databases_{Database}_{now:yyyy_MM_dd_HH_mm_ss}.gz";
-            var dumpFile              = Path.Join(DackupContext.Current.TmpPath, defaultBackupFileName);
+            var dumpFile = Path.Join(DackupContext.Current.TmpPath, defaultBackupFileName);
 
             this.AddCommandOptions("--host", this.Host);
             this.AddCommandOptions("--port", this.Port.ToString());
             this.AddCommandOptions("--username", this.UserName);
             this.AddCommandOptions("--password", this.Password);
 
-            if (!CommandOptions.ContainsKey("--db") )
+            if (!CommandOptions.ContainsKey("--db"))
             {
                 this.AddCommandOptions("--db", this.Database);
             }
@@ -54,7 +63,7 @@ namespace dackup
             {
                 this.AddCommandOptions("--gzip", "");
             }
-            if (!CommandOptions.ContainsKey("--archive") )
+            if (!CommandOptions.ContainsKey("--archive"))
             {
                 dumpFile = Path.Join(DackupContext.Current.TmpPath, defaultBackupFileName);
                 this.AddCommandOptions("--archive", dumpFile);
@@ -84,17 +93,17 @@ namespace dackup
                     }
                 }
             }
-            return (dumpFile, sb.ToString()); 
+            return (dumpFile, sb.ToString());
         }
         public override BackupTaskResult CreateNewBackup()
         {
-            var (backupFile , cmdOptions) = GenerateOptionsToCommand();
+            var (backupFile, cmdOptions) = GenerateOptionsToCommand();
 
             var processStartInfo = new ProcessStartInfo("bash", $"-c \"{PathToMongoDump}  {cmdOptions} \"")
             {
                 RedirectStandardOutput = true,
-                UseShellExecute        = false,
-                CreateNoWindow         = true
+                UseShellExecute = false,
+                CreateNoWindow = true
             };
 
             var process = new Process { StartInfo = processStartInfo };
@@ -103,11 +112,11 @@ namespace dackup
             process.WaitForExit();
             var code = process.ExitCode;
 
-            Log.Information($"{Database} backup completed. dump files : {backupFile}");
+            logger.LogInformation($"{Database} backup completed. dump files : {backupFile}");
 
             var result = new BackupTaskResult
             {
-                Result    = true,
+                Result = true,
                 FilesList = new List<string> { backupFile },
             };
 
@@ -115,17 +124,17 @@ namespace dackup
         }
         private bool CheckPgDump()
         {
-            Log.Information("Checking mongodump existence...");
+            logger.LogInformation("Checking mongodump existence...");
 
             var process = Process.Start(PathToMongoDump, "--help");
             process.WaitForExit();
             if (process.ExitCode != 0)
             {
-                Log.Information($"mongodump not found on path '{PathToMongoDump}'.");
+                logger.LogInformation($"mongodump not found on path '{PathToMongoDump}'.");
                 return false;
             }
 
-            Log.Information("mongodump found");
+            logger.LogInformation("mongodump found");
 
             return true;
         }

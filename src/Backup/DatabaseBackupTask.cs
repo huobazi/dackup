@@ -4,13 +4,17 @@ using System.Text;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-using Serilog;
+using Microsoft.Extensions.Logging;
 
 namespace dackup
 {
-    public abstract class DatabaseBackupTask: BackupTaskBase
+    public abstract class DatabaseBackupTask : BackupTaskBase
     {
         private string dbType;
+        protected override ILogger Logger
+        {
+            get;
+        }
         public Dictionary<string, string> CommandOptions { get; private set; }
         public DatabaseBackupTask(string dbType)
         {

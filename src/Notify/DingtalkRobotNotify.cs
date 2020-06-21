@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Net;
 using System.Text;
 
-using Serilog;
+using Microsoft.Extensions.Logging;
 
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -18,13 +18,20 @@ namespace dackup
         public bool AtAll { get; set; }
         public List<string> AtMobiles { get; set; }
         private Uri webHookUri;
-        public DingtalkRobotNotify(string url)
+        private readonly ILogger logger;
+        protected override ILogger Logger
         {
+            get{ return this.logger;}
+        }
+        private DingtalkRobotNotify(){}
+        public DingtalkRobotNotify(ILogger logger, string url)
+        {
+            this.logger     = logger;
             this.webHookUri = new Uri(url);
         }
         public override async Task<NotifyResult> NotifyAsync(Statistics statistics)
         {
-            Log.Information($"Dackup start [{this.GetType().Name }.NotifyAsync]");
+            Logger.LogInformation($"Dackup start [{this.GetType().Name }.NotifyAsync]");
 
             var markdownBody = $@"### Backup Completed Successfully!" + System.Environment.NewLine + System.Environment.NewLine +
                  $"> Model: {statistics.ModelName} " + System.Environment.NewLine + System.Environment.NewLine +

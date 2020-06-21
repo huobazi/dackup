@@ -149,4 +149,24 @@ namespace dackup.Configuration
         [XmlAttribute(AttributeName = "name")]
         public string Name { get; set; }
     }
+
+    public static class NameValueElemenListExtensions 
+    { 
+        public static void NullSafeSetTo(this List<NameValueElement> list, string name, Action<string> setter)
+        {
+            var value = list?.Find(c => c.Name.ToLower() == name.ToLower())?.Value;
+            if (value != null)
+            {
+                setter(value);
+            }
+        }
+        public static void NullSafeSetTo(this List<NameValueElement> list, string name, Action<int> setter)
+        {
+            var value = list?.Find(c => c.Name.ToLower() == name.ToLower())?.Value;
+            if (value != null)
+            {
+                setter(Convert.ToInt32(value));
+            }
+        }
+    }
 }

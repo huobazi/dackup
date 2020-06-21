@@ -1,109 +1,149 @@
-using System;
-using System.IO;
-using System.Linq;
-using System.Collections.Specialized;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+// using System;
+// using System.IO;
+// using System.Linq;
+// using System.Collections.Specialized;
+// using System.Collections.Generic;
+// using System.Threading.Tasks;
 
-using Serilog;
+// using Serilog;
 
-using dackup.Configuration;
+// using dackup.Configuration;
 
-namespace dackup
-{
-    public static class ApplicationHelper
-    {
-        public static PerformConfig PrepaireConfig(string configfile, string logPath, string tmpPath)
-        {
-            if (string.IsNullOrEmpty(logPath))
-            {
-                logPath = "log";
-            }
-            if (string.IsNullOrEmpty(tmpPath))
-            {
-                tmpPath = "tmp";
-            }
+// namespace dackup
+// {
+//     public class DackupApplication
+//     {
+//         private readonly string configFilePath;
+//         private readonly string logPath;
+//         private readonly string tmpPath;
+//         public DackupApplication(string configFilePath, string logPath, string tmpPath)
+//         {
+//             this.configFilePath = configFilePath;
+//             this.logPath        = logPath;
+//             this.tmpPath        = tmpPath;
+//         }
+//         public async Task Run()
+//         {      
+//             var statistics           = new Statistics();
+//                 statistics.StartedAt = DateTime.Now;
+//             var performConfig        = PrepaireConfig(configFilePath,logPath,tmpPath);
+//                 statistics.ModelName = performConfig.Name;
 
-            var tmpWorkDirPath = Path.Combine(tmpPath, $"dackup-tmp-{DateTime.UtcNow:s}");
-            DackupContext.Create(Path.Join(logPath, "dackup.log"), tmpWorkDirPath);
+//             Directory.CreateDirectory(DackupContext.Current.TmpPath);
 
-            Log.Logger = new LoggerConfiguration()
-            .MinimumLevel.Information()
-            .WriteTo.Console()
-            .WriteTo.File(DackupContext.Current.LogFile, rollingInterval: RollingInterval.Month, rollOnFileSizeLimit: true)
-            .CreateLogger();
+//             // run backup
+//             var backupTasks = RunBackup(performConfig);
+//             await backupTasks;
+            
+//             statistics.FinishedAt = DateTime.Now;
 
-            AppDomain.CurrentDomain.UnhandledException += (s, e) => Log.Error("*** Crash! ***", "UnhandledException");
-            TaskScheduler.UnobservedTaskException += (s, e) => Log.Error("*** Crash! ***", "UnobservedTaskException");
+//             // run store
+//             var (storageUploadTasks, storagePurgeTasks) = RunStorage(performConfig);
 
-            return PerformConfigHelper.LoadFrom(configfile);
+//             // run notify                     
+//             var notifyTasks = RunNotify(performConfig, statistics);
 
-        }
-        public static Task<BackupTaskResult[]> RunBackup(PerformConfig cfg)
-        {
-            Log.Information("Dackup start backup task ");
+//             // wait
+//             await storageUploadTasks;
+//             await storagePurgeTasks;
 
-            var backupTaskList = PerformConfigHelper.ParseBackupTaskFromConfig(cfg);
-            var backupTaskResult = new List<Task<BackupTaskResult>>();
-            backupTaskList.ForEach(task =>
-            {
-                backupTaskResult.Add(task.BackupAsync());
-            });
-            return Task.WhenAll(backupTaskResult.ToArray());
-        }
-        public static (Task<UploadResult[]>, Task<PurgeResult[]>) RunStorage(PerformConfig cfg)
-        {
-            Log.Information("Dackup start storage task ");
+//             Clean();
+            
+//             await notifyTasks;
 
-            var storageList = PerformConfigHelper.ParseStorageFromConfig(cfg);
-            var storageUploadResultList = new List<Task<UploadResult>>();
-            var storagePurgeResultList = new List<Task<PurgeResult>>();
+//             Log.Information("Dackup done ");
+//         }
+//         private PerformConfig PrepaireConfig(string configfile, string logPath, string tmpPath)
+//         {
+//             if (string.IsNullOrEmpty(logPath))
+//             {
+//                 logPath = "log";
+//             }
+//             if (string.IsNullOrEmpty(tmpPath))
+//             {
+//                 tmpPath = "tmp";
+//             }
 
-            storageList.ForEach(storage =>
-            {
-                DackupContext.Current.GenerateFilesList.ForEach(file =>
-                {
-                    storageUploadResultList.Add(storage.UploadAsync(file));
-                });
-                storagePurgeResultList.Add(storage.PurgeAsync());
-            });
+//             var tmpWorkDirPath = Path.Combine(tmpPath, $"dackup-tmp-{DateTime.UtcNow:s}");
+//             DackupContext.Create(Path.Join(logPath, "dackup.log"), tmpWorkDirPath);
 
-            var storageUploadTasks = Task.WhenAll(storageUploadResultList.ToArray());
-            var storagePurgeTasks = Task.WhenAll(storagePurgeResultList.ToArray());
+//             Log.Logger = new LoggerConfiguration()
+//             .MinimumLevel.Information()
+//             .WriteTo.Console()
+//             .WriteTo.File(DackupContext.Current.LogFile, rollingInterval: RollingInterval.Month, rollOnFileSizeLimit: true)
+//             .CreateLogger();
 
-            return (storageUploadTasks, storagePurgeTasks);
-        }
-        public static Task<NotifyResult[]> RunNotify(PerformConfig cfg, Statistics statistics)
-        {
-            Log.Information("Dackup start notify task ");
+//             AppDomain.CurrentDomain.UnhandledException += (s, e) => Log.Error("*** Crash! ***", "UnhandledException");
+//             TaskScheduler.UnobservedTaskException += (s, e) => Log.Error("*** Crash! ***", "UnobservedTaskException");
 
-            var notifyList = PerformConfigHelper.ParseNotifyFromConfig(cfg);
+//             return PerformConfigHelper.LoadFrom(configfile);
 
-            var notifyResultList = new List<Task<NotifyResult>>();
+//         }
+//         public Task<BackupTaskResult[]> RunBackup(PerformConfig cfg)
+//         {
+//             Log.Information("Dackup start backup task ");
 
-            notifyList.ForEach(notify =>
-            {
-                notifyResultList.Add(notify.NotifyAsync(statistics));
-            });
+//             var backupTaskList = PerformConfigHelper.ParseBackupTaskFromConfig(cfg);
+//             var backupTaskResult = new List<Task<BackupTaskResult>>();
+//             backupTaskList.ForEach(task =>
+//             {
+//                 backupTaskResult.Add(task.BackupAsync());
+//             });
+//             return Task.WhenAll(backupTaskResult.ToArray());
+//         }
+//         public (Task<UploadResult[]>, Task<PurgeResult[]>) RunStorage(PerformConfig cfg)
+//         {
+//             Log.Information("Dackup start storage task ");
 
-            return Task.WhenAll(notifyResultList.ToArray());
-        }
-        public static void Clean()
-        {
-            Log.Information("Dackup clean tmp folder ");
+//             var storageList = PerformConfigHelper.ParseStorageFromConfig(cfg);
+//             var storageUploadResultList = new List<Task<UploadResult>>();
+//             var storagePurgeResultList = new List<Task<PurgeResult>>();
 
-            var di = new DirectoryInfo(DackupContext.Current.TmpPath);
-            foreach (var file in di.GetFiles())
-            {
-                file.Delete();
-            }
-            foreach (var dir in di.GetDirectories())
-            {
-                dir.Delete(true);
-            }
+//             storageList.ForEach(storage =>
+//             {
+//                 DackupContext.Current.GenerateFilesList.ForEach(file =>
+//                 {
+//                     storageUploadResultList.Add(storage.UploadAsync(file));
+//                 });
+//                 storagePurgeResultList.Add(storage.PurgeAsync());
+//             });
 
-            Directory.Delete(DackupContext.Current.TmpPath);
+//             var storageUploadTasks = Task.WhenAll(storageUploadResultList.ToArray());
+//             var storagePurgeTasks = Task.WhenAll(storagePurgeResultList.ToArray());
 
-        }
-    }
-}
+//             return (storageUploadTasks, storagePurgeTasks);
+//         }
+//         public Task<NotifyResult[]> RunNotify(PerformConfig cfg, Statistics statistics)
+//         {
+//             Log.Information("Dackup start notify task ");
+
+//             var notifyList = PerformConfigHelper.ParseNotifyFromConfig(cfg);
+
+//             var notifyResultList = new List<Task<NotifyResult>>();
+
+//             notifyList.ForEach(notify =>
+//             {
+//                 notifyResultList.Add(notify.NotifyAsync(statistics));
+//             });
+
+//             return Task.WhenAll(notifyResultList.ToArray());
+//         }
+//         public void Clean()
+//         {
+//             Log.Information("Dackup clean tmp folder ");
+
+//             var di = new DirectoryInfo(DackupContext.Current.TmpPath);
+//             foreach (var file in di.GetFiles())
+//             {
+//                 file.Delete();
+//             }
+//             foreach (var dir in di.GetDirectories())
+//             {
+//                 dir.Delete(true);
+//             }
+
+//             Directory.Delete(DackupContext.Current.TmpPath);
+
+//         }
+//     }
+// }

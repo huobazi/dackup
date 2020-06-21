@@ -7,22 +7,28 @@ using System.Net.Mail;
 using System.Text;
 using System.Linq;
 
-using Serilog;
+using Microsoft.Extensions.Logging;
 
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace dackup
 {
-    public class EmailSmtpNotify : NotifyBase
+    public class SmtpEmailNotify : NotifyBase
     {
         private string from, to, cc, bcc, address, domain, userName, password, authentication;
         private bool enableStarttls;
+        private readonly ILogger logger;
+        protected override ILogger Logger
+        {
+            get{ return this.logger;}
+        }
         public int Port { get; set; } = 25;
-        private EmailSmtpNotify() { }
-        public EmailSmtpNotify(string from, string to, string address, string domain, string userName, string password,
+        private SmtpEmailNotify() { }
+        public SmtpEmailNotify(ILogger logger,string from, string to, string address, string domain, string userName, string password,
         string authentication, bool enableStarttls, string cc = null, string bcc = null)
         {
+            this.logger         = logger;
             this.from           = from;
             this.to             = to;
             this.address        = address;
@@ -36,7 +42,7 @@ namespace dackup
         }
         public override async Task<NotifyResult> NotifyAsync(Statistics statistics)
         {
-            Log.Information($"Dackup start [{this.GetType().Name }.NotifyAsync]");
+            logger.LogInformation($"Dackup start [{this.GetType().Name }.NotifyAsync]");
             var sb = new StringBuilder();
             sb.AppendLine($"Backup Completed Successfully!");
             sb.AppendLine($"Model={statistics.ModelName}");

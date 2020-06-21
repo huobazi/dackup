@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Text;
 
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Serilog;
 using McMaster.Extensions.CommandLineUtils;
 
@@ -13,13 +15,11 @@ using dackup.Configuration;
 
 namespace dackup
 {
+    [Command(UnrecognizedArgumentHandling = UnrecognizedArgumentHandling.Throw)]
     class Program
     {
-        public static int Main(string[] args)
+        public static void Main(string[] args)
         {
-            var statistics           = new Statistics();
-                statistics.StartedAt = DateTime.Now;
-
             var app = new CommandLineApplication
             {
                 Name        = "dackup",
@@ -30,15 +30,13 @@ namespace dackup
 
             app.Command("new", newCmd =>
             {
-                newCmd.Description = "Generate a config file";
-
-                var modelName = newCmd.Argument("model", "Name of the model").IsRequired();
+                    newCmd.Description = "Generate a config file";
+                var modelName          = newCmd.Argument("model", "Name of the model").IsRequired();
 
                 newCmd.OnExecute(() =>
                 {
                     var fileName = Path.Combine(Environment.CurrentDirectory, modelName.Value + ".config");
                     PerformConfigHelper.GenerateMockupConfig(fileName);
-                    return 1;
                 });
             });
 
@@ -54,63 +52,38 @@ namespace dackup
 
                 performCmd.OnExecute(() =>
                 {
-                    try
+                    var logPath        = logPathConfig.Value();
+                    var tmpPath        = tmpPathConfig.Value();
+                    var configFilePath = configFile.Value();
+
+                    if (string.IsNullOrEmpty(logPath))
                     {
-                        var logPath = logPathConfig.Value();
-                        var tmpPath = tmpPathConfig.Value();
-                        
-                        var configFilePath = configFile.Value();
-
-                        var performConfig = ApplicationHelper.PrepaireConfig(configFilePath,logPath,tmpPath);
-
-                        statistics.ModelName = performConfig.Name;
-
-                        Directory.CreateDirectory(DackupContext.Current.TmpPath);
-
-                        // run backup
-                        var backupTasks = ApplicationHelper.RunBackup(performConfig);
-                        backupTasks.Wait();
-                        
-                        statistics.FinishedAt = DateTime.Now;
-
-                        // run store
-                        var (storageUploadTasks, storagePurgeTasks) = ApplicationHelper.RunStorage(performConfig);
-                        var storageTasks                            = Task.WhenAll(storageUploadTasks, storagePurgeTasks);
-
-                        // run notify                     
-                        var notifyTasks = ApplicationHelper.RunNotify(performConfig, statistics);
-
-                        // wait
-                        storageTasks.Wait();
-
-                        ApplicationHelper.Clean();
-                        
-                        notifyTasks.Wait();
-
-                        Log.Information("Dackup done ");
-
+                        logPath = "log";
                     }
-                    catch (Exception exception)
+                    if (string.IsNullOrEmpty(tmpPath))
                     {
-                        Log.Error(Utils.FlattenException(exception));
+                        tmpPath = "tmp";
                     }
-                    finally
-                    {
-                        Log.CloseAndFlush();
-                    }
-                    return 1;
+
+                    DackupContext.Create(Path.Join(logPath, "dackup.log"), tmpPath);
+
+                    var serviceProvider = ServiceProviderFactory.ServiceProvider;
+
+                    var logger = serviceProvider.GetService<ILogger<Program>>();
+                    AppDomain.CurrentDomain.UnhandledException += (s, args) => logger.LogError(args.ExceptionObject as Exception, "*** Crash! ***", "UnhandledException");
+                    TaskScheduler.UnobservedTaskException += (s, args) => logger.LogError(args.Exception, "*** Crash! ***", "UnobservedTaskException");
+
+                    var app = serviceProvider.GetService<DackupApplication>();
+                    app.Run(configFilePath).Wait();
                 });
-
             });
 
             app.OnExecute(() =>
             {
                 app.ShowHelp();
-                return 1;
             });
 
-            return app.Execute(args);
+            app.Execute(args);
         }
-
     }
 }

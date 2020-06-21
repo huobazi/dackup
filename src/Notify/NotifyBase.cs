@@ -1,19 +1,20 @@
 using System;
 using System.Threading.Tasks;
 
-using Serilog;
+using Microsoft.Extensions.Logging;
 
 namespace dackup
 {
-    public class NotifyBase : INotify
+    public abstract class NotifyBase : INotify
     {
         public bool OnSuccess { get; set; }
         public bool OnWarning { get; set; }
         public bool OnFailure { get; set; }
         public bool Enable { get; set; }
+        protected abstract ILogger Logger{ get; }
         public virtual async Task<NotifyResult> NotifyAsync(Statistics statistics)
         {
-            Log.Information($"Dackup start [{this.GetType().Name }.NotifyAsync]");
+            Logger.LogInformation($"Dackup start [{this.GetType().Name }.NotifyAsync]");
 
             var task = Task.Run(() => Notify(statistics));
             return await task;

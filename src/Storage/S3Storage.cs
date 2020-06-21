@@ -2,7 +2,7 @@ using System;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
-using Serilog;
+using Microsoft.Extensions.Logging;
 
 using Amazon;
 using Amazon.S3;
@@ -13,12 +13,18 @@ namespace dackup
 {
     public class S3Storage: StorageBase
     {
+        private ILogger logger;
         private string region, bucket, accessKeyId, accessKeySecret;
         private S3Storage() { }
         public DateTime? RemoveThreshold { get; set; }
         public string PathPrefix { get; set; }
-        public S3Storage(string region, string accessKeyId, string accessKeySecret, string bucket)
+        protected override ILogger Logger
         {
+            get { return logger; }
+        }
+        public S3Storage(ILogger logger,string region, string accessKeyId, string accessKeySecret, string bucket)
+        {
+            this.logger          = logger;
             this.region          = region;
             this.accessKeyId     = accessKeyId;
             this.accessKeySecret = accessKeySecret;
@@ -26,7 +32,7 @@ namespace dackup
         }
         public override async Task<UploadResult> UploadAsync(string fileName)
         {
-            Log.Information($"Dackup start [{this.GetType().Name }.UploadAsync]");
+            logger.LogInformation($"Dackup start [{this.GetType().Name }.UploadAsync]");
 
             using (var s3Client = new AmazonS3Client(this.accessKeyId, this.accessKeySecret, RegionEndpoint.GetBySystemName(this.region)))
             {
@@ -35,7 +41,7 @@ namespace dackup
                 string key = this.PathPrefix + $"/{DateTime.Now:yyyy_MM_dd_HH_mm_ss}/" + fileName.Replace(DackupContext.Current.TmpPath,string.Empty).TrimStart('/');
                        key = key.Trim('/');
             
-                Log.Information($"Upload to s3 file: {fileName} key: {key}");
+                logger.LogInformation($"Upload to s3 file: {fileName} key: {key}");
 
                 await fileTransferUtility.UploadAsync(fileName, this.bucket, key);
                 return new UploadResult();
@@ -43,7 +49,7 @@ namespace dackup
         }
         public override async Task<PurgeResult> PurgeAsync()
         {           
-            Log.Information($"Purge to s3  removeThreshold: {RemoveThreshold}");
+            logger.LogInformation($"Purge to s3  removeThreshold: {RemoveThreshold}");
 
             if (RemoveThreshold == null || RemoveThreshold.Value > DateTime.Now)
             {
@@ -67,18 +73,18 @@ namespace dackup
 
                 if (deleteRequest.Objects.Count == 0)
                 {
-                    Log.Information("Nothing to purge.");
+                    logger.LogInformation("Nothing to purge.");
                 }
                 else
                 {
                     deleteRequest.Objects.ForEach(item =>
                     {
-                        Log.Information($"Prepare to purge: {item.Key}");
+                        logger.LogInformation($"Prepare to purge: {item.Key}");
                     });
 
                     await s3Client.DeleteObjectsAsync(deleteRequest);
 
-                    Log.Information("S3 purge done.");
+                    logger.LogInformation("S3 purge done.");
                 }
 
                 return new PurgeResult();

@@ -3,32 +3,41 @@ using System.IO;
 using System.Text;
 using System.Diagnostics;
 using System.Collections.Generic;
+using Microsoft.Extensions.Logging;
 
-using Serilog;
 using Npgsql;
 
 namespace dackup
 {
-    public class PostgresBackupTask: DatabaseBackupTask
+    public class PostgresBackupTask : DatabaseBackupTask
     {
-        public PostgresBackupTask(): base("postgres") { }
+        private readonly ILogger logger;
+        public PostgresBackupTask(ILogger<PostgresBackupTask> logger) : base("postgres")
+        {
+            this.logger = logger;
+        }
 
         public string PathToPgDump { get; set; } = "pg_dump";
-        public string Host { get; set; }         = "localhost";
-        public int Port { get; set; }            = 5432;
-        public string UserName { get; set; }     = "postgres";
+        public string Host { get; set; } = "localhost";
+        public int Port { get; set; } = 5432;
+        public string UserName { get; set; } = "postgres";
         public string Password { get; set; }
         public string Database { get; set; }
-
+        protected override ILogger Logger
+        {
+            get { return this.logger; }
+        }
         public override void CheckDbConnection()
         {
-            Log.Information($"Testing connection to '{UserName}@{Host}:{Port}/{Database}'...");
+            logger.LogInformation($"Testing connection to '{UserName}@{Host}:{Port}/{Database}'...");
 
-            using (var connection = new NpgsqlConnection($"Server={Host};Port={Port};Database={Database};User Id={UserName};Password={Password};"))
+            var connectionString = $"Server={Host};Port={Port};User Id={UserName};Password={Password};Database={Database};";
+            using (var connection = new NpgsqlConnection(connectionString))
             {
                 connection.Open();
             }
-            Log.Information("Connection to DB established.");
+
+            logger.LogInformation("Connection to DB established.");
         }
         private (string resultFileName, string resultContent) GenerateOptionsToCommand()
         {
@@ -39,9 +48,9 @@ namespace dackup
             this.RemoveCommandOptions("--username");
             this.RemoveCommandOptions("--U");
 
-            var now                   = DateTime.Now;
+            var now = DateTime.Now;
             var defaultBackupFileName = $"databases_{Database}_{now:yyyy_MM_dd_HH_mm_ss}.backup";
-            var dumpFile              = Path.Join(DackupContext.Current.TmpPath, defaultBackupFileName);
+            var dumpFile = Path.Join(DackupContext.Current.TmpPath, defaultBackupFileName);
 
             this.AddCommandOptions("--host", this.Host);
             this.AddCommandOptions("--port", this.Port.ToString());
@@ -97,17 +106,17 @@ namespace dackup
                     }
                 }
             }
-            return (dumpFile, sb.ToString()); 
+            return (dumpFile, sb.ToString());
         }
         public override BackupTaskResult CreateNewBackup()
         {
-            var (backupFile , cmdOptions) = GenerateOptionsToCommand();
+            var (backupFile, cmdOptions) = GenerateOptionsToCommand();
 
             var processStartInfo = new ProcessStartInfo("bash", $"-c \"{PathToPgDump}  {cmdOptions} \"")
             {
                 RedirectStandardOutput = true,
-                UseShellExecute        = false,
-                CreateNoWindow         = true
+                UseShellExecute = false,
+                CreateNoWindow = true
             };
 
             processStartInfo.Environment.Add("PGPASSWORD", Password);
@@ -117,11 +126,11 @@ namespace dackup
             process.WaitForExit();
             var code = process.ExitCode;
 
-            Log.Information($"{Database} backup completed. dump files : {backupFile}");
+            logger.LogInformation($"{Database} backup completed. dump files : {backupFile}");
 
             var result = new BackupTaskResult
             {
-                Result    = true,
+                Result = true,
                 FilesList = new List<string> { backupFile },
             };
 
@@ -129,17 +138,17 @@ namespace dackup
         }
         private bool CheckPgDump()
         {
-            Log.Information("Checking pg_dump existence...");
+            logger.LogInformation("Checking pg_dump existence...");
 
             var process = Process.Start(PathToPgDump, "--help");
             process.WaitForExit();
             if (process.ExitCode != 0)
             {
-                Log.Information($"pg_dump not found on path '{PathToPgDump}'.");
+                logger.LogInformation($"pg_dump not found on path '{PathToPgDump}'.");
                 return false;
             }
 
-            Log.Information("pg_dump found");
+            logger.LogInformation("pg_dump found");
 
             return true;
         }

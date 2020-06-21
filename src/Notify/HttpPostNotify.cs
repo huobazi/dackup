@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using System.Net;
 using System.Text;
 
-using Serilog;
+using Microsoft.Extensions.Logging;
 
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -15,15 +15,21 @@ namespace dackup
     public class HttpPostNotify: NotifyBase
     {
         private Uri webHookUri;
+        private readonly ILogger logger;
+        protected override ILogger Logger
+        {
+            get{ return this.logger;}
+        }
         public NameValueCollection Params { get; set; }
         public NameValueCollection Headers { get; set; }
-        public HttpPostNotify(string url)
-        {
+        public HttpPostNotify(ILogger logger,string url)
+        {            
+            this.logger     = logger;
             this.webHookUri = new Uri(url);
         }
         public override async Task<NotifyResult> NotifyAsync(Statistics statistics)
         {
-            Log.Information($"Dackup start [{this.GetType().Name }.NotifyAsync]");
+            logger.LogInformation($"Dackup start [{this.GetType().Name }.NotifyAsync]");
 
             dynamic msg            = new JObject();
                     msg.Title      = "Backup Completed Successfully!";
