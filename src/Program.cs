@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
+using System.Reflection;
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -29,7 +30,7 @@ namespace dackup
                 newCmd.OnExecute(() =>
                 {
                     var fileName = Path.Combine(Environment.CurrentDirectory, modelName.Value + ".config");
-                    PerformConfigHelper.GenerateMockupConfig(fileName);
+                    GenerateMockupConfig(fileName);
                 });
             });
 
@@ -77,6 +78,22 @@ namespace dackup
             });
 
             app.Execute(args);
+        }
+
+        private static void GenerateMockupConfig(string fileName)
+        {
+            WriteResourceToFile("dackup.perform-config-mockup.config", fileName);
+        }
+        private static void WriteResourceToFile(string resourceName, string fileName)
+        {
+            Console.WriteLine($"====> Write mockup file to {fileName}");
+            using (var resource = Assembly.GetExecutingAssembly().GetManifestResourceStream(resourceName))
+            {
+                using (var file = new FileStream(fileName, FileMode.Create, FileAccess.Write))
+                {
+                    resource.CopyTo(file);
+                }
+            }
         }
     }
 }

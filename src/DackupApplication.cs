@@ -4,6 +4,7 @@ using System.Linq;
 using System.Collections.Specialized;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,8 +24,11 @@ namespace dackup
             var statistics           = new Statistics();
                 statistics.StartedAt = DateTime.Now;
             var performConfig        = PrepaireConfig(configFilePath);
-                statistics.ModelName = performConfig.Name;
-
+            if(performConfig == null)
+            {
+                return;
+            }
+            statistics.ModelName = performConfig.Name;
             Directory.CreateDirectory(DackupContext.Current.TmpPath);
 
             // run backup
@@ -48,7 +52,25 @@ namespace dackup
         }
         private PerformConfig PrepaireConfig(string configfile)
         {
-            return PerformConfigHelper.LoadFrom(configfile);
+            FileStream fs = null;
+            try
+            {
+                XmlSerializer serializer = new XmlSerializer(typeof(PerformConfig));
+                              fs         = new FileStream(configfile, FileMode.Open, FileAccess.Read);
+                return (PerformConfig)serializer.Deserialize(fs);
+            }
+            catch (Exception exception)
+            {
+                logger.LogError(exception, "[exception]: on DackupApplication.PrepaireConfig");
+                return null;
+            }
+            finally
+            {
+                if (fs != null)
+                {
+                    fs.Close();
+                }
+            }
         }
         private Task<BackupTaskResult[]> RunBackup(PerformConfig cfg)
         {
