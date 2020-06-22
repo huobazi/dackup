@@ -1,17 +1,10 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
-using System.Collections.Specialized;
-using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Text;
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Serilog;
 using McMaster.Extensions.CommandLineUtils;
-
-using dackup.Configuration;
 
 namespace dackup
 {

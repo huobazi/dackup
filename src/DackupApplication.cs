@@ -30,22 +30,19 @@ namespace dackup
             // run backup
             var backupTasks = RunBackup(performConfig);
             await backupTasks;
-            
-            statistics.FinishedAt = DateTime.Now;
 
             // run store
-            var (storageUploadTasks, storagePurgeTasks) = RunStorage(performConfig);
+            var (storageUploadTasks, storagePurgeTasks) = RunStorage(performConfig);     
+            await storageUploadTasks;
+            statistics.FinishedAt = DateTime.Now;
 
             // run notify                     
             var notifyTasks = RunNotify(performConfig, statistics);
 
-            // wait
-            await storageUploadTasks;
-            await storagePurgeTasks;
-
             Clean();
             
             await notifyTasks;
+            await storagePurgeTasks;
 
             logger.LogInformation("Dackup done ");
         }
@@ -53,7 +50,7 @@ namespace dackup
         {
             return PerformConfigHelper.LoadFrom(configfile);
         }
-        public Task<BackupTaskResult[]> RunBackup(PerformConfig cfg)
+        private Task<BackupTaskResult[]> RunBackup(PerformConfig cfg)
         {
             logger.LogInformation("Dackup start backup task ");
 
@@ -67,7 +64,7 @@ namespace dackup
 
             return Task.WhenAll(backupTaskResult.ToArray());
         }
-        public (Task<UploadResult[]>, Task<PurgeResult[]>) RunStorage(PerformConfig cfg)
+        private (Task<UploadResult[]>, Task<PurgeResult[]>) RunStorage(PerformConfig cfg)
         {
             logger.LogInformation("Dackup start storage task ");
 
@@ -89,7 +86,7 @@ namespace dackup
 
             return (storageUploadTasks, storagePurgeTasks);
         }
-        public Task<NotifyResult[]> RunNotify(PerformConfig cfg, Statistics statistics)
+        private Task<NotifyResult[]> RunNotify(PerformConfig cfg, Statistics statistics)
         {
             logger.LogInformation("Dackup start notify task ");
 
@@ -103,7 +100,7 @@ namespace dackup
 
             return Task.WhenAll(notifyResultList.ToArray());
         }
-        public void Clean()
+        private void Clean()
         {
             logger.LogInformation("Dackup clean tmp folder ");
 
