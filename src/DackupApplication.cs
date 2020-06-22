@@ -296,7 +296,7 @@ namespace dackup
             var name         = cfg.Name;
             var includesList = cfg.Includes;
             var excludesList = cfg.Excludes;
-            var task         = ServiceProviderFactory.ServiceProvider.GetService<BackupTaskFactory>().CreateLocalStorage(name,includesList,excludesList);
+            var task         = ServiceProviderFactory.ServiceProvider.GetService<BackupTaskFactory>().CreateArchiveBackupTask(name,includesList,excludesList);
 
             return task;
         }

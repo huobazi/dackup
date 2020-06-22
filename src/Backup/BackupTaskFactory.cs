@@ -12,7 +12,7 @@ namespace dackup
             this.logger = logger;
         }
 
-        public ArchiveBackupTask CreateLocalStorage(string name, List<string> includePathList, List<string> excludePathList)
+        public ArchiveBackupTask CreateArchiveBackupTask(string name, List<string> includePathList, List<string> excludePathList)
         {
             return new ArchiveBackupTask(this.logger, name, includePathList, excludePathList);
         }

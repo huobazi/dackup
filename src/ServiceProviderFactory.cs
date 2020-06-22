@@ -9,7 +9,6 @@ namespace dackup
     public static class ServiceProviderFactory
     {
         public static IServiceProvider ServiceProvider { get; private set; }
-
         static ServiceProviderFactory()
         {
             var serviceCollection = new ServiceCollection();
@@ -30,18 +29,18 @@ namespace dackup
                 builder.AddSerilog(logger: serilogLogger, dispose: true);
             });
 
-            services.AddScoped<BackupTaskFactory>();
+            services.AddSingleton<BackupTaskFactory>();
             
-            services.AddScoped<MongoDBBackupTask>();
-            services.AddScoped<MsSqlBackupTask>();
-            services.AddScoped<MySqlBackupTask>();
-            services.AddScoped<PostgresBackupTask>();
+            services.AddTransient<MongoDBBackupTask>();
+            services.AddTransient<MsSqlBackupTask>();
+            services.AddTransient<MySqlBackupTask>();
+            services.AddTransient<PostgresBackupTask>();
 
-            services.AddScoped<StorageFactory>();
-            services.AddScoped<NotifyFactory>();
+            services.AddSingleton<StorageFactory>();
+            services.AddSingleton<NotifyFactory>();
 
             // add dackup app
-            services.AddTransient<DackupApplication>();
+            services.AddSingleton<DackupApplication>();
         }
     }
 }
