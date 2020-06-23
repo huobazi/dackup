@@ -28,15 +28,24 @@ namespace dackup
             get { return this.logger; }
         }
 
-        public override void CheckDbConnection()
+        protected override bool CheckDbConnection()
         {
             logger.LogInformation($"Testing connection to '{UserName}@{Host}:{Port}/{Database}'...");
 
             using (var connection = new SqlConnection($"Data Source={Host},{Port};Initial Catalog={Database};User Id={UserName};Password={Password};"))
             {
-                connection.Open();
+                try
+                {
+                    connection.Open();
+                }
+                catch(Exception exception)
+                {
+                    logger.LogError(exception, "Can not connection !!!");
+                    return false;
+                }
             }
             logger.LogInformation("Connection to DB established.");
+            return true;
         }
 
         private (string resultFileName, string resultContent) GenerateOptionsToCommand()
@@ -71,7 +80,7 @@ namespace dackup
             }
             return (dumpFile, sb.ToString());
         }
-        public override BackupTaskResult CreateNewBackup()
+        protected override BackupTaskResult CreateNewBackup()
         {
             var (dumpfile, cmdOptions) = GenerateOptionsToCommand();
             var dumpTgzFileName = dumpfile + ".tar.gz";
@@ -99,5 +108,28 @@ namespace dackup
 
             return result;
         }
+        protected override bool CheckDbBackupCommand()
+        {
+            logger.LogInformation("Checking sqlcmd existence...");
+
+            var processStartInfo = new ProcessStartInfo("bash", $"-c \"{PathToMssqlDump} -? \"")
+            {
+                RedirectStandardOutput = true,
+                UseShellExecute        = false,
+                CreateNoWindow         = true
+            };
+
+            var process = new Process { StartInfo = processStartInfo };
+            process.Start();
+            process.WaitForExit();
+            if (process.ExitCode != 0)
+            {
+                logger.LogError($"sqlcmd not found on path '{PathToMssqlDump}'.");
+                return false;
+            }
+
+            logger.LogInformation("sqlcmd found");
+
+            return true;        }
     }
 }

@@ -21,13 +21,22 @@ namespace dackup
             this.dbType         = dbType;
             this.CommandOptions = new Dictionary<string, string>();
         }
-        public abstract void CheckDbConnection();
-        public abstract BackupTaskResult CreateNewBackup();
+        protected abstract bool CheckDbConnection();
+        protected abstract bool CheckDbBackupCommand();
+        protected abstract BackupTaskResult CreateNewBackup();
         protected override BackupTaskResult Backup()
         {
-            CheckDbConnection();
-            var result = CreateNewBackup();
-            return result;
+            if (CheckDbConnection() && CheckDbBackupCommand())
+            {
+                return CreateNewBackup();
+            }
+            else
+            {
+                return new BackupTaskResult
+                {
+                    Result = false,
+                };
+            }
         }
         public void AddCommandOptions(string key, string value)
         {
@@ -40,7 +49,7 @@ namespace dackup
                 this.CommandOptions.Add(key, value);
             }
         }
-        public void RemoveCommandOptions(string key)
+        protected void RemoveCommandOptions(string key)
         {
             if (CommandOptions.ContainsKey(key))
             {

@@ -27,17 +27,26 @@ namespace dackup
         {
             get { return this.logger; }
         }
-        public override void CheckDbConnection()
+        protected override bool CheckDbConnection()
         {
             logger.LogInformation($"Testing connection to '{UserName}@{Host}:{Port}/{Database}'...");
 
             var connectionString = $"Server={Host};Port={Port};User Id={UserName};Password={Password};Database={Database};";
             using (var connection = new NpgsqlConnection(connectionString))
             {
-                connection.Open();
+                try
+                {
+                    connection.Open();
+                }
+                catch(Exception exception)
+                {
+                    logger.LogError(exception, "Can not connection !!!");
+                    return false;
+                }            
             }
 
             logger.LogInformation("Connection to DB established.");
+            return true;
         }
         private (string resultFileName, string resultContent) GenerateOptionsToCommand()
         {
@@ -108,7 +117,7 @@ namespace dackup
             }
             return (dumpFile, sb.ToString());
         }
-        public override BackupTaskResult CreateNewBackup()
+        protected override BackupTaskResult CreateNewBackup()
         {
             var (backupFile, cmdOptions) = GenerateOptionsToCommand();
 
@@ -136,15 +145,23 @@ namespace dackup
 
             return result;
         }
-        private bool CheckPgDump()
+        protected override bool CheckDbBackupCommand()
         {
             logger.LogInformation("Checking pg_dump existence...");
 
-            var process = Process.Start(PathToPgDump, "--help");
+            var processStartInfo = new ProcessStartInfo("bash", $"-c \"{PathToPgDump} --help \"")
+            {
+                RedirectStandardOutput = true,
+                UseShellExecute        = false,
+                CreateNoWindow         = true
+            };
+
+            var process = new Process { StartInfo = processStartInfo };
+            process.Start();
             process.WaitForExit();
             if (process.ExitCode != 0)
             {
-                logger.LogInformation($"pg_dump not found on path '{PathToPgDump}'.");
+                logger.LogError($"pg_dump not found on path '{PathToPgDump}'.");
                 return false;
             }
 

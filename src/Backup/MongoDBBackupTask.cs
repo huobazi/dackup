@@ -29,14 +29,21 @@ namespace dackup
         {
             get { return this.logger; }
         }
-        public override void CheckDbConnection()
+        protected override bool CheckDbConnection()
         {
             logger.LogInformation($"Testing connection to 'mongodb://{UserName}@{Host}:{Port}/{Database}'...");
-
-            var client = new MongoClient($"mongodb://{UserName}:{Password}@{Host}:{Port}");
-            var database = client.GetDatabase(Database);
-
+            try
+            {
+                var client = new MongoClient($"mongodb://{UserName}:{Password}@{Host}:{Port}");
+                var database = client.GetDatabase(Database);
+            }
+            catch(Exception exception)
+            {
+                logger.LogError(exception, "Can not connection !!!");
+                return false;
+            }
             logger.LogInformation("Connection to DB established.");
+            return true;
         }
         private (string resultFileName, string resultContent) GenerateOptionsToCommand()
         {
@@ -95,7 +102,7 @@ namespace dackup
             }
             return (dumpFile, sb.ToString());
         }
-        public override BackupTaskResult CreateNewBackup()
+        protected override BackupTaskResult CreateNewBackup()
         {
             var (backupFile, cmdOptions) = GenerateOptionsToCommand();
 
@@ -122,15 +129,23 @@ namespace dackup
 
             return result;
         }
-        private bool CheckPgDump()
+        protected override bool CheckDbBackupCommand()
         {
             logger.LogInformation("Checking mongodump existence...");
 
-            var process = Process.Start(PathToMongoDump, "--help");
+            var processStartInfo = new ProcessStartInfo("bash", $"-c \"{PathToMongoDump} --help \"")
+            {
+                RedirectStandardOutput = true,
+                UseShellExecute        = false,
+                CreateNoWindow         = true
+            };
+
+            var process = new Process { StartInfo = processStartInfo };
+            process.Start();
             process.WaitForExit();
             if (process.ExitCode != 0)
             {
-                logger.LogInformation($"mongodump not found on path '{PathToMongoDump}'.");
+                logger.LogError($"mongodump not found on path '{PathToMongoDump}'.");
                 return false;
             }
 
