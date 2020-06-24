@@ -27,10 +27,12 @@ while [ "$1" != "" ]; do
     shift
 done
 
-readonly dotnet_core_app_version_folder="netcoreapp3.1"
 readonly BASE_PWD=$PWD
 readonly SCRIPT_PATH="$( cd "$(dirname "$0")" ; pwd -P )"
 readonly SRC_PATH=$SCRIPT_PATH/src
+readonly PROJECT_PATH=$SRC_PATH/dackup.csproj
+readonly DOTNET_CORE_APP_VERSION_FOLDER=$SRC_PATH/bin/release/netcoreapp3.1
+
 
 rm -rf $SCRIPT_PATH/dist 
 mkdir $SCRIPT_PATH/dist
@@ -42,9 +44,9 @@ declare -a releaseFiles=()
 
 for rid in "${winOS[@]}"
 do
-    dotnet publish $SRC_PATH/dackup.csproj -r $rid -c release
     distFile="$SCRIPT_PATH/dist/dackup-$rid.zip"
-    cd $SRC_PATH/bin/release/$dotnet_core_app_version_folder/$rid/publish/
+    dotnet publish $PROJECT_PATH -r $rid -c release
+    cd $DOTNET_CORE_APP_VERSION_FOLDER/$rid/publish/
     zip -r $distFile .
     releaseFiles+=($distFile)
     cd $BASE_PWD
@@ -52,9 +54,9 @@ done
 
 for rid in "${unixOS[@]}"
 do 
-    distFile="$SRC_PATH/dist/dackup-$rid.tar.gz"
-    dotnet publish $SCRIPT_PATH/dackup.csproj -r $rid -c release
-    cd $SRC_PATH/bin/release/$dotnet_core_app_version_folder/$rid/publish/
+    distFile="$SCRIPT_PATH/dist/dackup-$rid.zip"
+    dotnet publish $PROJECT_PATH -r $rid -c release
+    cd $DOTNET_CORE_APP_VERSION_FOLDER/$rid/publish/
     tar -cvzf  $distFile *
     releaseFiles+=($distFile)
     cd $BASE_PWD
