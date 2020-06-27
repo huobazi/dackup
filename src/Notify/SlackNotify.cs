@@ -8,12 +8,12 @@ namespace dackup
 {
     public class SlackNotify: NotifyBase
     {
-        private Uri webHookUri;
         private readonly ILogger logger;
         protected override ILogger Logger
         {
             get{ return this.logger;}
         }
+        public string WebHookUrl { get; set; }
         public string Channel { get; set; }
         public string UserName { get; set; }
         public string Icon_emoji { get; set; } = ":ghost:";
@@ -21,7 +21,6 @@ namespace dackup
         public SlackNotify(ILogger logger,string webHookUrl)
         {
             this.logger     = logger;
-            this.webHookUri = new Uri(webHookUrl);
         }
         protected override NotifyResult Notify(Statistics statistics)
         {
@@ -45,7 +44,7 @@ namespace dackup
             message.Text = markdownBody;
             message.Icon = this.Icon_emoji;
 
-            var client = new SlackClient(this.webHookUri);
+            var client = new SlackClient(new Uri(this.WebHookUrl));
             client.SendSlackMessage(message);
 
             return new NotifyResult();

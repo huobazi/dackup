@@ -15,9 +15,10 @@ namespace dackup
     {
         private readonly ILogger logger;
 
-        public MySqlBackupTask(ILogger<MySqlBackupTask> logger): base("mysql") {
+        public MySqlBackupTask(ILogger<MySqlBackupTask> logger): base("mysql") 
+        {
             this.logger = logger;
-         }
+        }
         public string PathToMysqlDump { get; set; } = "mysqldump";
         public string Host { get; set; }            = "localhost";
         public int Port { get; set; }               = 3306;
@@ -45,6 +46,7 @@ namespace dackup
                 }            
             }
             logger.LogInformation("Connection to DB established.");
+            
             return true;
         }
         private (string resultFileName, string resultContent) GenerateOptionsToCommand()
@@ -115,6 +117,7 @@ namespace dackup
                     }
                 }
             }
+
             return (dumpFile, sb.ToString());
         }
         protected override BackupTaskResult CreateNewBackup()

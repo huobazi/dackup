@@ -11,7 +11,10 @@ namespace dackup
     public class AliyunOssStorage : StorageBase
     {
         private ILogger logger;
-        private string endpoint, accessKeyId, accessKeySecret, bucketName;
+        public string Endpoint { get; set; }
+        public string AccessKeyId { get; set; }
+        public string AccessKeySecret { get; set; }
+        public string BucketName { get; set; }
         private AliyunOssStorage() { }
         public string PathPrefix { get; set; }
         public DateTime? RemoveThreshold { get; set; }
@@ -19,23 +22,20 @@ namespace dackup
         {
             get { return logger; }
         }
-        public AliyunOssStorage(ILogger logger,string endpoint, string accessKeyId, string accessKeySecret, string bucketName)
+        public AliyunOssStorage(ILogger logger)
         {
             this.logger = logger;
-            this.endpoint = endpoint;
-            this.accessKeyId = accessKeyId;
-            this.accessKeySecret = accessKeySecret;
-            this.bucketName = bucketName;
         }
         protected override UploadResult Upload(string fileName)
         {
-            OssClient client = new OssClient(endpoint, accessKeyId, accessKeySecret);
+            OssClient client = new OssClient(Endpoint, AccessKeyId, AccessKeySecret);
             string key = this.PathPrefix + $"/{DateTime.Now:yyyy_MM_dd_HH_mm_ss}/" + fileName.Replace(DackupContext.Current.TmpPath, string.Empty).TrimStart('/');
             key = key.Trim('/');
 
             logger.LogInformation($"Upload to aliyun file: {fileName} key: {key} pathPrefix: {this.PathPrefix}");
 
-            client.PutObject(bucketName, key, fileName);
+            client.PutObject(BucketName, key, fileName);
+            
             return new UploadResult();
         }
         protected override PurgeResult Purge()
@@ -47,8 +47,8 @@ namespace dackup
 
             logger.LogInformation($"Purge to aliyun  removeThreshold: {RemoveThreshold}");
 
-            OssClient client = new OssClient(endpoint, accessKeyId, accessKeySecret);
-            var objectListing = client.ListObjects(bucketName, this.PathPrefix);
+            OssClient client = new OssClient(Endpoint, AccessKeyId, AccessKeySecret);
+            var objectListing = client.ListObjects(BucketName, this.PathPrefix);
 
             var objectsToDelete = new List<string>();
 
@@ -71,11 +71,12 @@ namespace dackup
                     logger.LogInformation($"Prepare to purge: {item}");
                 });
 
-                DeleteObjectsRequest request = new DeleteObjectsRequest(bucketName, objectsToDelete);
+                DeleteObjectsRequest request = new DeleteObjectsRequest(BucketName, objectsToDelete);
                 client.DeleteObjects(request);
 
                 logger.LogInformation("Aliyun oss purge done.");
             }
+
             return new PurgeResult();
         }
     }

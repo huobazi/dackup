@@ -14,27 +14,26 @@ namespace dackup
     public class S3Storage: StorageBase
     {
         private ILogger logger;
-        private string region, bucket, accessKeyId, accessKeySecret;
         private S3Storage() { }
+        public string Region { get; set; }
+        public string BucketName { get; set; }
+        public string AccessKeyId { get; set; }
+        public string AccessKeySecret { get; set; }
         public DateTime? RemoveThreshold { get; set; }
         public string PathPrefix { get; set; }
         protected override ILogger Logger
         {
             get { return logger; }
         }
-        public S3Storage(ILogger logger,string region, string accessKeyId, string accessKeySecret, string bucket)
+        public S3Storage(ILogger logger)
         {
             this.logger          = logger;
-            this.region          = region;
-            this.accessKeyId     = accessKeyId;
-            this.accessKeySecret = accessKeySecret;
-            this.bucket          = bucket;
         }
         public override async Task<UploadResult> UploadAsync(string fileName)
         {
             logger.LogInformation($"Dackup start [{this.GetType().Name }.UploadAsync]");
 
-            using (var s3Client = new AmazonS3Client(this.accessKeyId, this.accessKeySecret, RegionEndpoint.GetBySystemName(this.region)))
+            using (var s3Client = new AmazonS3Client(this.AccessKeyId, this.AccessKeySecret, RegionEndpoint.GetBySystemName(this.Region)))
             {
                 var fileTransferUtility = new TransferUtility(s3Client);
                 
@@ -43,7 +42,8 @@ namespace dackup
             
                 logger.LogInformation($"Upload to s3 file: {fileName} key: {key}");
 
-                await fileTransferUtility.UploadAsync(fileName, this.bucket, key);
+                await fileTransferUtility.UploadAsync(fileName, this.BucketName, key);
+                
                 return new UploadResult();
             }
         }
@@ -56,12 +56,12 @@ namespace dackup
                 return new PurgeResult();
             }
 
-            using (var s3Client = new AmazonS3Client(this.accessKeyId, this.accessKeySecret, RegionEndpoint.GetBySystemName(this.region)))
+            using (var s3Client = new AmazonS3Client(this.AccessKeyId, this.AccessKeySecret, RegionEndpoint.GetBySystemName(this.Region)))
             {
-                var objectListing = s3Client.ListObjectsAsync(this.bucket, this.PathPrefix);
+                var objectListing = s3Client.ListObjectsAsync(this.BucketName, this.PathPrefix);
                 await objectListing;
                 var deleteRequest            = new DeleteObjectsRequest();
-                    deleteRequest.BucketName = this.bucket;
+                    deleteRequest.BucketName = this.BucketName;
 
                 foreach (var s3Object in objectListing.Result.S3Objects)
                 {
@@ -90,7 +90,6 @@ namespace dackup
                 return new PurgeResult();
             }
         }
-
         protected override UploadResult Upload(string fileName)
         {
             throw new NotImplementedException();

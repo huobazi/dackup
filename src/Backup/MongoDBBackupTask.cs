@@ -43,6 +43,7 @@ namespace dackup
                 return false;
             }
             logger.LogInformation("Connection to DB established.");
+            
             return true;
         }
         private (string resultFileName, string resultContent) GenerateOptionsToCommand()
@@ -100,6 +101,7 @@ namespace dackup
                     }
                 }
             }
+            
             return (dumpFile, sb.ToString());
         }
         protected override BackupTaskResult CreateNewBackup()

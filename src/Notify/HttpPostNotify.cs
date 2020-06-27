@@ -14,18 +14,17 @@ namespace dackup
 {
     public class HttpPostNotify: NotifyBase
     {
-        private Uri webHookUri;
         private readonly ILogger logger;
         protected override ILogger Logger
         {
             get{ return this.logger;}
         }
+        public string WebHookUrl { get; set; }
         public NameValueCollection Params { get; set; }
         public NameValueCollection Headers { get; set; }
-        public HttpPostNotify(ILogger logger,string url)
+        public HttpPostNotify(ILogger logger)
         {            
-            this.logger     = logger;
-            this.webHookUri = new Uri(url);
+            this.logger = logger;
         }
         public override async Task<NotifyResult> NotifyAsync(Statistics statistics)
         {
@@ -51,7 +50,8 @@ namespace dackup
                 }
             }
             var method = "POST";
-            var data   = await client.UploadValuesTaskAsync(this.webHookUri, method, nv);
+            var data   = await client.UploadValuesTaskAsync(this.WebHookUrl, method, nv);
+            
             return new NotifyResult();
         }
     }

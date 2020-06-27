@@ -10,8 +10,7 @@ namespace dackup
     public class LocalStorage : StorageBase
     {
         private readonly ILogger logger;
-
-        private string path;
+        public string Path { get; set; }
         public DateTime? RemoveThreshold { get; set; }
         protected override ILogger Logger
         {
@@ -21,25 +20,30 @@ namespace dackup
             }
         }
         private LocalStorage(){}
-        public LocalStorage(ILogger logger, string path)
+        public LocalStorage(ILogger logger)
         {
             this.logger = logger;
-            if (string.IsNullOrWhiteSpace(path))
-            {
-                throw new ArgumentException("path can not be null or empty.");
-            }
-            this.path = path;
         }
         protected override UploadResult Upload(string fileName)
         {
+            if (string.IsNullOrWhiteSpace(Path))
+            {
+                throw new ArgumentException("Path can not be null or empty.");
+            }
+
             var fileInfo = new FileInfo(fileName);
-            System.IO.Directory.CreateDirectory(this.path);
-            System.IO.File.Copy(fileName, Path.Combine(this.path, fileInfo.Name));
+            System.IO.Directory.CreateDirectory(this.Path);
+            System.IO.File.Copy(fileName, System.IO.Path.Combine(this.Path, fileInfo.Name));
 
             return new UploadResult();
         }
         protected override PurgeResult Purge()
         {
+            if (string.IsNullOrWhiteSpace(Path))
+            {
+                throw new ArgumentException("Path can not be null or empty.");
+            }
+
             if (RemoveThreshold == null || RemoveThreshold.Value > DateTime.Now)
             {
                 return new PurgeResult();
@@ -47,7 +51,7 @@ namespace dackup
 
             logger.LogInformation($"Purge to local  removeThreshold: {RemoveThreshold}");
 
-            System.IO.DirectoryInfo di = new DirectoryInfo(path);
+            System.IO.DirectoryInfo di = new DirectoryInfo(Path);
 
             foreach (FileInfo file in di.GetFiles())
             {

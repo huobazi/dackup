@@ -15,10 +15,10 @@ namespace dackup
 {
     public class DingtalkRobotNotify : NotifyBase
     {
+        private readonly ILogger logger;
         public bool AtAll { get; set; }
         public List<string> AtMobiles { get; set; }
-        private Uri webHookUri;
-        private readonly ILogger logger;
+        public string WebHookUrl { get; set; }
         protected override ILogger Logger
         {
             get{ return this.logger;}
@@ -26,8 +26,7 @@ namespace dackup
         private DingtalkRobotNotify(){}
         public DingtalkRobotNotify(ILogger logger, string url)
         {
-            this.logger     = logger;
-            this.webHookUri = new Uri(url);
+            this.logger = logger;
         }
         public override async Task<NotifyResult> NotifyAsync(Statistics statistics)
         {
@@ -57,7 +56,7 @@ namespace dackup
                 client.Encoding = System.Text.Encoding.UTF8;
             client.Headers.Add("Content-Type", "application/json");
 
-            var data = await client.UploadStringTaskAsync(this.webHookUri, "POSST", payload);
+            var data = await client.UploadStringTaskAsync(this.WebHookUrl, "POSST", payload);
 
             return new NotifyResult();
         }

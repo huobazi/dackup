@@ -45,6 +45,7 @@ namespace dackup
                 }
             }
             logger.LogInformation("Connection to DB established.");
+            
             return true;
         }
 
@@ -78,6 +79,7 @@ namespace dackup
                 var value = CommandOptions[key];
                 sb.Append(string.IsNullOrWhiteSpace(value) ? $" {key} " : $" {key} {value} ");
             }
+
             return (dumpFile, sb.ToString());
         }
         protected override BackupTaskResult CreateNewBackup()
@@ -130,6 +132,7 @@ namespace dackup
 
             logger.LogInformation("sqlcmd found");
 
-            return true;        }
+            return true;        
+        }
     }
 }

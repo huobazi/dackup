@@ -10,17 +10,14 @@ namespace dackup
     public class ArchiveBackupTask : BackupTaskBase
     {
         private readonly ILogger logger;
-        private readonly string name;
-        private readonly List<string> includePathList;
-        private readonly List<string> excludePathList;
+        public string Name { get; set; }
+        public List<string> IncludePathList { get; set; }
+        public List<string> ExcludePathList { get; set; }
         private ArchiveBackupTask() { }
 
-        public ArchiveBackupTask(ILogger logger, string name, List<string> includePathList, List<string> excludePathList)
+        public ArchiveBackupTask(ILogger logger)
         {
             this.logger          = logger;
-            this.name            = name;
-            this.includePathList = includePathList;
-            this.excludePathList = excludePathList;
         }
         protected override ILogger Logger
         {
@@ -31,7 +28,7 @@ namespace dackup
         }
         protected override BackupTaskResult Backup()
         {
-            if (includePathList == null || includePathList.Count <= 0)
+            if (IncludePathList == null || IncludePathList.Count <= 0)
             {
                 return new BackupTaskResult
                 {
@@ -45,7 +42,7 @@ namespace dackup
             var directory = Path.Combine(DackupContext.Current.TmpPath, "archives");
             Directory.CreateDirectory(directory);
 
-            this.includePathList.ForEach(file =>
+            this.IncludePathList.ForEach(file =>
             {
                 logger.LogInformation($"Archive backup : {file}");
 
@@ -53,18 +50,18 @@ namespace dackup
                 if (attr.HasFlag(FileAttributes.Directory))
                 {
                     var destDirectory = Path.Combine(directory, file.TrimStart('/'));
-                    Utils.DirectoryCopy(file, destDirectory, excludePathList);
+                    Utils.DirectoryCopy(file, destDirectory, ExcludePathList);
                 }
                 else
                 {
                     var destFile = Path.Combine(directory, file.TrimStart('/'));
                     var destDirectory = destFile.Substring(0, destFile.LastIndexOf('/') + 1);
                     Directory.CreateDirectory(destDirectory);
-                    Utils.FileCopy(file, destFile, excludePathList);
+                    Utils.FileCopy(file, destFile, ExcludePathList);
                 }
             });
 
-            var tgzFileName = Path.Combine(Path.Combine(DackupContext.Current.TmpPath, $"archives_{this.name}_{DateTime.Now:yyyy_MM_dd_HH_mm_ss}.tar.gz"));
+            var tgzFileName = Path.Combine(Path.Combine(DackupContext.Current.TmpPath, $"archives_{this.Name}_{DateTime.Now:yyyy_MM_dd_HH_mm_ss}.tar.gz"));
 
             Utils.CreateTarGZ(tgzFileName, directory);
 

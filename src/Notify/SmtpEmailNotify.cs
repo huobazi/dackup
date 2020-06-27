@@ -16,29 +16,26 @@ namespace dackup
 {
     public class SmtpEmailNotify : NotifyBase
     {
-        private string from, to, cc, bcc, address, domain, userName, password, authentication;
-        private bool enableStarttls;
         private readonly ILogger logger;
         protected override ILogger Logger
         {
             get{ return this.logger;}
         }
+        public string From { get; set; }
+        public string To { get; set; }
+        public string CC { get; set; }
+        public string BCC { get; set; }
+        public string Address { get; set; }
+        public string Domain { get; set; }
+        public string UserName { get; set; }
+        public string Password { get; set; }
+        public string Authentication { get; set; }
+        public bool EnableStarttls { get; set; }
         public int Port { get; set; } = 25;
         private SmtpEmailNotify() { }
-        public SmtpEmailNotify(ILogger logger,string from, string to, string address, string domain, string userName, string password,
-        string authentication, bool enableStarttls, string cc = null, string bcc = null)
+        public SmtpEmailNotify(ILogger logger)
         {
             this.logger         = logger;
-            this.from           = from;
-            this.to             = to;
-            this.address        = address;
-            this.domain         = domain;
-            this.userName       = userName;
-            this.password       = password;
-            this.authentication = authentication;
-            this.enableStarttls = enableStarttls;
-            this.cc             = cc;
-            this.bcc            = bcc;
         }
         public override async Task<NotifyResult> NotifyAsync(Statistics statistics)
         {
@@ -52,32 +49,32 @@ namespace dackup
             string emailBody = sb.ToString();
 
             SmtpClient client      = new SmtpClient();
-                       client.Host = this.address;
+                       client.Host = this.Address;
                        client.Port = this.Port;
             // now dotnet core have no client domain settings
             // https://github.com/dotnet/corefx/issues/33123
             //client.ClientDomain = this.domain;
-            client.EnableSsl             = this.enableStarttls;
+            client.EnableSsl             = this.EnableStarttls;
             client.UseDefaultCredentials = false;
-            client.Credentials           = new NetworkCredential(this.userName, this.password);
+            client.Credentials           = new NetworkCredential(this.UserName, this.Password);
 
             MailMessage mailMessage      = new MailMessage();
-                        mailMessage.From = new MailAddress(this.from);
-            this.to.Split(';').ToList().ForEach(to =>
+                        mailMessage.From = new MailAddress(this.From);
+            this.To.Split(';').ToList().ForEach(to =>
             {
                 if (!string.IsNullOrEmpty(to))
                 {
                     mailMessage.To.Add(to);
                 }
             });
-            this.cc.Split(';').ToList().ForEach(to =>
+            this.CC.Split(';').ToList().ForEach(to =>
             {
                 if (!string.IsNullOrEmpty(to))
                 {
                     mailMessage.CC.Add(to);
                 }
             });
-            this.bcc.Split(';').ToList().ForEach(to =>
+            this.BCC.Split(';').ToList().ForEach(to =>
             {
                 if (!string.IsNullOrEmpty(to))
                 {

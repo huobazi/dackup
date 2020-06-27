@@ -168,5 +168,13 @@ namespace dackup.Configuration
                 setter(Convert.ToInt32(value));
             }
         }
+        public static void NullSafeSetTo(this List<NameValueElement> list, string name, Action<bool> setter)
+        {
+            var value = list?.Find(c => c.Name.ToLower() == name.ToLower())?.Value;
+            if (value != null)
+            {
+                setter(Convert.ToBoolean(value));
+            }
+        }
     }
 }

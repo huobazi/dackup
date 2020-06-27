@@ -29,15 +29,23 @@ namespace dackup
                 builder.AddSerilog(logger: serilogLogger, dispose: true);
             });
 
-            services.AddSingleton<BackupTaskFactory>();
-            
+            // add backup tasks
+            services.AddTransient<ArchiveBackupTask>();
             services.AddTransient<MongoDBBackupTask>();
             services.AddTransient<MsSqlBackupTask>();
             services.AddTransient<MySqlBackupTask>();
             services.AddTransient<PostgresBackupTask>();
+            
+            // add storage tasks
+            services.AddTransient<LocalStorage>();
+            services.AddTransient<AliyunOssStorage>();
+            services.AddTransient<S3Storage>();
 
-            services.AddSingleton<StorageFactory>();
-            services.AddSingleton<NotifyFactory>();
+            // add notify tasks
+            services.AddTransient<DingtalkRobotNotify>();
+            services.AddTransient<HttpPostNotify>();
+            services.AddTransient<SlackNotify>();
+            services.AddTransient<SmtpEmailNotify>();
 
             // add dackup app
             services.AddSingleton<DackupApplication>();

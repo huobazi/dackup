@@ -17,6 +17,7 @@ namespace dackup
             Logger.LogInformation($"Dackup start [{this.GetType().Name }.NotifyAsync]");
 
             var task = Task.Run(() => Notify(statistics));
+            
             return await task;
         }
         protected virtual NotifyResult Notify(Statistics statistics)

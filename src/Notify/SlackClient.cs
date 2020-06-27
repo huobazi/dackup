@@ -10,7 +10,6 @@ namespace dackup
 {
     public sealed class SlackClient
     {
-        public static readonly Uri DefaultWebHookUri = new Uri("https://hooks.slack.com/services/.../.../...");
         private readonly Uri webHookUri;
         public SlackClient(Uri webHookUri)
         {
