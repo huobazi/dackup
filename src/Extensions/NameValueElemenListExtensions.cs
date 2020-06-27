@@ -22,9 +22,5 @@ namespace dackup.Extensions
                 setter((T)Convert.ChangeType(value, typeof(T)));
             }
         }
-        // public static void NullSafeSetTo<T>(this NameValueElementList list, string name, Action<T> setter)
-        // {
-        //     NullSafeSetTo<T>(list, setter, name);
-        // }
     }
 }
