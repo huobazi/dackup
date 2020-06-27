@@ -24,7 +24,7 @@ namespace dackup
             get{ return this.logger;}
         }
         private DingtalkRobotNotify(){}
-        public DingtalkRobotNotify(ILogger logger, string url)
+        public DingtalkRobotNotify(ILogger<DingtalkRobotNotify> logger, string url)
         {
             this.logger = logger;
         }

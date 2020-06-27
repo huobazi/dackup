@@ -15,7 +15,7 @@ namespace dackup
         public List<string> ExcludePathList { get; set; }
         private ArchiveBackupTask() { }
 
-        public ArchiveBackupTask(ILogger logger)
+        public ArchiveBackupTask(ILogger<ArchiveBackupTask> logger)
         {
             this.logger          = logger;
         }

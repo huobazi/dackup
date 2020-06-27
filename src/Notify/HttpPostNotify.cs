@@ -22,7 +22,7 @@ namespace dackup
         public string WebHookUrl { get; set; }
         public NameValueCollection Params { get; set; }
         public NameValueCollection Headers { get; set; }
-        public HttpPostNotify(ILogger logger)
+        public HttpPostNotify(ILogger<HttpPostNotify> logger)
         {            
             this.logger = logger;
         }

@@ -18,7 +18,7 @@ namespace dackup
         public string UserName { get; set; }
         public string Icon_emoji { get; set; } = ":ghost:";
 
-        public SlackNotify(ILogger logger,string webHookUrl)
+        public SlackNotify(ILogger<SlackNotify> logger,string webHookUrl)
         {
             this.logger     = logger;
         }

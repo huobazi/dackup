@@ -22,7 +22,7 @@ namespace dackup
         {
             get { return logger; }
         }
-        public AliyunOssStorage(ILogger logger)
+        public AliyunOssStorage(ILogger<AliyunOssStorage> logger)
         {
             this.logger = logger;
         }

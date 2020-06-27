@@ -33,7 +33,7 @@ namespace dackup
         public bool EnableStarttls { get; set; }
         public int Port { get; set; } = 25;
         private SmtpEmailNotify() { }
-        public SmtpEmailNotify(ILogger logger)
+        public SmtpEmailNotify(ILogger<SmtpEmailNotify> logger)
         {
             this.logger         = logger;
         }

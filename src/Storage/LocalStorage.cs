@@ -20,7 +20,7 @@ namespace dackup
             }
         }
         private LocalStorage(){}
-        public LocalStorage(ILogger logger)
+        public LocalStorage(ILogger<LocalStorage> logger)
         {
             this.logger = logger;
         }

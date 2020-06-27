@@ -25,9 +25,9 @@ namespace dackup
         {
             get { return logger; }
         }
-        public S3Storage(ILogger logger)
+        public S3Storage(ILogger<S3Storage> logger)
         {
-            this.logger          = logger;
+            this.logger = logger;
         }
         public override async Task<UploadResult> UploadAsync(string fileName)
         {
