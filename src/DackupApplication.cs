@@ -8,7 +8,9 @@ using System.Xml.Serialization;
 
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
+
 using dackup.Configuration;
+using dackup.Extensions;
 
 namespace dackup
 {
@@ -20,11 +22,11 @@ namespace dackup
             this.logger = logger;
         }
         public async Task Run(string configFilePath)
-        {      
+        {
             var statistics           = new Statistics();
                 statistics.StartedAt = DateTime.Now;
             var performConfig        = PrepaireConfig(configFilePath);
-            if(performConfig == null)
+            if (performConfig == null)
             {
                 return;
             }
@@ -36,7 +38,7 @@ namespace dackup
             await backupTasks;
 
             // run store
-            var (storageUploadTasks, storagePurgeTasks) = RunStorage(performConfig);     
+            var (storageUploadTasks, storagePurgeTasks) = RunStorage(performConfig);
             await storageUploadTasks;
             statistics.FinishedAt = DateTime.Now;
 
@@ -44,7 +46,7 @@ namespace dackup
             var notifyTasks = RunNotify(performConfig, statistics);
 
             Clean();
-            
+
             await notifyTasks;
             await storagePurgeTasks;
 
@@ -56,7 +58,7 @@ namespace dackup
             try
             {
                 XmlSerializer serializer = new XmlSerializer(typeof(PerformConfig));
-                              fs         = new FileStream(configfile, FileMode.Open, FileAccess.Read);
+                fs = new FileStream(configfile, FileMode.Open, FileAccess.Read);
                 return (PerformConfig)serializer.Deserialize(fs);
             }
             catch (Exception exception)
@@ -90,9 +92,9 @@ namespace dackup
         {
             logger.LogInformation("Dackup start storage task ");
 
-            var storageList = ParseStorageFromConfig(cfg);
+            var storageList             = ParseStorageFromConfig(cfg);
             var storageUploadResultList = new List<Task<UploadResult>>();
-            var storagePurgeResultList = new List<Task<PurgeResult>>();
+            var storagePurgeResultList  = new List<Task<PurgeResult>>();
 
             storageList.ForEach(storage =>
             {
@@ -104,7 +106,7 @@ namespace dackup
             });
 
             var storageUploadTasks = Task.WhenAll(storageUploadResultList.ToArray());
-            var storagePurgeTasks  = Task.WhenAll(storagePurgeResultList.ToArray());
+            var storagePurgeTasks = Task.WhenAll(storagePurgeResultList.ToArray());
 
             return (storageUploadTasks, storagePurgeTasks);
         }
@@ -115,10 +117,7 @@ namespace dackup
             var notifyList       = ParseNotifyFromConfig(cfg);
             var notifyResultList = new List<Task<NotifyResult>>();
 
-            notifyList.ForEach(notify =>
-            {
-                notifyResultList.Add(notify.NotifyAsync(statistics));
-            });
+            notifyList.ForEach(notify =>notifyResultList.Add(notify.NotifyAsync(statistics)));
 
             return Task.WhenAll(notifyResultList.ToArray());
         }
@@ -198,10 +197,10 @@ namespace dackup
                             if (storageConfig.Type.ToLower().Trim() == "local")
                             {
                                 var task = ServiceProviderFactory.ServiceProvider.GetService<LocalStorage>();
-                                storageConfig.OptionList.NullSafeSetTo("path", s => task.Path = s);
-                                if (storageConfig.OptionList.Find(c => c.Name.ToLower() == "remove_threshold") != null)
+                                storageConfig.OptionList.NullSafeSetTo<string>(s => task.Path = s, "path");
+                                if (storageConfig.OptionList.ToList().Find(c => c.Name.ToLower() == "remove_threshold") != null)
                                 {
-                                    task.RemoveThreshold = Utils.ConvertRemoveThresholdToDateTime(storageConfig.OptionList.Find(c => c.Name.ToLower() == "remove_threshold").Value);
+                                    task.RemoveThreshold = Utils.ConvertRemoveThresholdToDateTime(storageConfig.OptionList.ToList().Find(c => c.Name.ToLower() == "remove_threshold").Value);
                                 }
                                 tasks.Add(task);
                             }
@@ -219,7 +218,7 @@ namespace dackup
                     });
                 }
             }
-            
+
             return tasks;
         }
         private List<INotify> ParseNotifyFromConfig(PerformConfig config)
@@ -282,24 +281,18 @@ namespace dackup
             return tasks;
         }
         private AliyunOssStorage PopulateAliyunOssStorage(Storage storageConfig)
-        {            
-            var task            = ServiceProviderFactory.ServiceProvider.GetService<AliyunOssStorage>();
+        {
+            var task = ServiceProviderFactory.ServiceProvider.GetService<AliyunOssStorage>();
 
-            var endpoint        = storageConfig.OptionList?.Find(c => c.Name.ToLower() == "endpoint")?.Value;
-            var accessKeyId     = storageConfig.OptionList?.Find(c => c.Name.ToLower() == "access_key_id")?.Value;
-            var accessKeySecret = storageConfig.OptionList?.Find(c => c.Name.ToLower() == "secret_access_key")?.Value;
-            var bucketName          = storageConfig.OptionList?.Find(c => c.Name.ToLower() == "bucket")?.Value;
-            
-            storageConfig.OptionList.NullSafeSetTo("endpoint", s => task.Endpoint = s);
-            storageConfig.OptionList.NullSafeSetTo("access_key_id", s => task.AccessKeyId = s);
-            storageConfig.OptionList.NullSafeSetTo("secret_access_key", s => task.AccessKeySecret = s);
-            storageConfig.OptionList.NullSafeSetTo("bucket", s => task.BucketName = s);
-            storageConfig.OptionList.NullSafeSetTo("path", s => task.PathPrefix = s);
+            storageConfig.OptionList.NullSafeSetTo<string>(s => task.Endpoint = s, "endpoint");
+            storageConfig.OptionList.NullSafeSetTo<string>(s => task.AccessKeyId = s, "access_key_id");
+            storageConfig.OptionList.NullSafeSetTo<string>(s => task.AccessKeySecret = s, "access_key_secret", "secret_access_key");
+            storageConfig.OptionList.NullSafeSetTo<string>(s => task.BucketName = s, "bucket");
+            storageConfig.OptionList.NullSafeSetTo<string>(s => task.PathPrefix = s, "path");
 
-
-            if (storageConfig.OptionList?.Find(c => c.Name.ToLower() == "remove_threshold") != null)
+            if (storageConfig.OptionList?.ToList().Find(c => c.Name.ToLower() == "remove_threshold") != null)
             {
-                task.RemoveThreshold = Utils.ConvertRemoveThresholdToDateTime(storageConfig.OptionList.Find(c => c.Name.ToLower() == "remove_threshold").Value);
+                task.RemoveThreshold = Utils.ConvertRemoveThresholdToDateTime(storageConfig.OptionList.ToList().Find(c => c.Name.ToLower() == "remove_threshold").Value);
             }
 
             return task;
@@ -307,23 +300,23 @@ namespace dackup
         private S3Storage PopulateS3Storage(Storage storageConfig)
         {
             var task = ServiceProviderFactory.ServiceProvider.GetService<S3Storage>();
-            
-            storageConfig.OptionList.NullSafeSetTo("path", s => task.PathPrefix = s);
-            storageConfig.OptionList.NullSafeSetTo("region", s => task.Region = s);
-            storageConfig.OptionList.NullSafeSetTo("access_key_id", s => task.AccessKeyId = s);
-            storageConfig.OptionList.NullSafeSetTo("secret_access_key", s => task.AccessKeySecret = s);
-            storageConfig.OptionList.NullSafeSetTo("bucket", s => task.BucketName = s);
 
-            if (storageConfig.OptionList?.Find(c => c.Name.ToLower() == "remove_threshold") != null)
+            storageConfig.OptionList.NullSafeSetTo<string>(s => task.PathPrefix = s, "path");
+            storageConfig.OptionList.NullSafeSetTo<string>(s => task.Region = s, "region");
+            storageConfig.OptionList.NullSafeSetTo<string>(s => task.AccessKeyId = s, "access_key_id");
+            storageConfig.OptionList.NullSafeSetTo<string>(s => task.AccessKeySecret = s, "secret_access_key");
+            storageConfig.OptionList.NullSafeSetTo<string>(s => task.BucketName = s, "bucket");
+
+            if (storageConfig.OptionList?.ToList().Find(c => c.Name.ToLower() == "remove_threshold") != null)
             {
-                task.RemoveThreshold = Utils.ConvertRemoveThresholdToDateTime(storageConfig.OptionList.Find(c => c.Name.ToLower() == "remove_threshold").Value);
+                task.RemoveThreshold = Utils.ConvertRemoveThresholdToDateTime(storageConfig.OptionList.ToList().Find(c => c.Name.ToLower() == "remove_threshold").Value);
             }
 
             return task;
         }
         private ArchiveBackupTask PopulateArchiveBackupTask(Archive cfg)
         {
-            var task = ServiceProviderFactory.ServiceProvider.GetService<ArchiveBackupTask>();
+            var task             = ServiceProviderFactory.ServiceProvider.GetService<ArchiveBackupTask>();
 
             task.Name            = cfg.Name;
             task.IncludePathList = cfg.Includes;
@@ -334,15 +327,15 @@ namespace dackup
         private PostgresBackupTask PopulatePostgresBackupTask(Database dbConfig)
         {
             var task = ServiceProviderFactory.ServiceProvider.GetService<PostgresBackupTask>();
-            dbConfig.OptionList.NullSafeSetTo("host", s => task.Host = s);
-            dbConfig.OptionList.NullSafeSetTo("port", s => task.Port = s);
-            dbConfig.OptionList.NullSafeSetTo("database", s => task.Database = s);
-            dbConfig.OptionList.NullSafeSetTo("username", s => task.UserName = s);
-            dbConfig.OptionList.NullSafeSetTo("password", s => task.Password = s);
-            dbConfig.OptionList.NullSafeSetTo("path_to_pg_dump", s => task.PathToPgDump = s);
+            dbConfig.OptionList.NullSafeSetTo<string>(s => task.Host = s, "host");
+            dbConfig.OptionList.NullSafeSetTo<int>(s => task.Port = s, "port");
+            dbConfig.OptionList.NullSafeSetTo<string>(s => task.Database = s, "database");
+            dbConfig.OptionList.NullSafeSetTo<string>(s => task.UserName = s, "username");
+            dbConfig.OptionList.NullSafeSetTo<string>(s => task.Password = s, "password");
+            dbConfig.OptionList.NullSafeSetTo<string>(s => task.PathToPgDump = s, "path_to_pg_dump");
             if (dbConfig.AdditionalOptionList != null && dbConfig.AdditionalOptionList.Count > 0)
             {
-                dbConfig.AdditionalOptionList.ForEach(c =>
+                dbConfig.AdditionalOptionList.ToList().ForEach(c =>
                 {
                     task.AddCommandOptions(c.Name, c.Value);
                 });
@@ -353,15 +346,15 @@ namespace dackup
         private MySqlBackupTask PopulateMysqlBuckupTask(Database dbConfig)
         {
             var task = ServiceProviderFactory.ServiceProvider.GetService<MySqlBackupTask>();
-            dbConfig.OptionList.NullSafeSetTo("host", s => task.Host = s);
-            dbConfig.OptionList.NullSafeSetTo("port", s => task.Port = s);
-            dbConfig.OptionList.NullSafeSetTo("database", s => task.Database = s);
-            dbConfig.OptionList.NullSafeSetTo("username", s => task.UserName = s);
-            dbConfig.OptionList.NullSafeSetTo("password", s => task.Password = s);
-            dbConfig.OptionList.NullSafeSetTo("path_to_mysqldump", s => task.PathToMysqlDump = s);
+            dbConfig.OptionList.NullSafeSetTo<string>(s => task.Host = s, "host");
+            dbConfig.OptionList.NullSafeSetTo<int>(s => task.Port = s, "port");
+            dbConfig.OptionList.NullSafeSetTo<string>(s => task.Database = s, "database");
+            dbConfig.OptionList.NullSafeSetTo<string>(s => task.UserName = s, "username");
+            dbConfig.OptionList.NullSafeSetTo<string>(s => task.Password = s, "password");
+            dbConfig.OptionList.NullSafeSetTo<string>(s => task.PathToMysqlDump = s, "path_to_mysqldump");
             if (dbConfig.AdditionalOptionList != null && dbConfig.AdditionalOptionList.Count > 0)
             {
-                dbConfig.AdditionalOptionList.ForEach(c =>
+                dbConfig.AdditionalOptionList.ToList().ForEach(c =>
                 {
                     task.AddCommandOptions(c.Name, c.Value);
                 });
@@ -372,15 +365,15 @@ namespace dackup
         private MongoDBBackupTask PopulateMongoDBBackupTask(Database dbConfig)
         {
             var task = ServiceProviderFactory.ServiceProvider.GetService<MongoDBBackupTask>();
-            dbConfig.OptionList.NullSafeSetTo("host", s => task.Host = s);
-            dbConfig.OptionList.NullSafeSetTo("port", s => task.Port = s);
-            dbConfig.OptionList.NullSafeSetTo("database", s => task.Database = s);
-            dbConfig.OptionList.NullSafeSetTo("username", s => task.UserName = s);
-            dbConfig.OptionList.NullSafeSetTo("password", s => task.Password = s);
-            dbConfig.OptionList.NullSafeSetTo("path_to_mongodump", s => task.PathToMongoDump = s);
+            dbConfig.OptionList.NullSafeSetTo<string>(s => task.Host = s, "host");
+            dbConfig.OptionList.NullSafeSetTo<int>(s => task.Port = s, "port");
+            dbConfig.OptionList.NullSafeSetTo<string>(s => task.Database = s, "database");
+            dbConfig.OptionList.NullSafeSetTo<string>(s => task.UserName = s, "username");
+            dbConfig.OptionList.NullSafeSetTo<string>(s => task.Password = s, "password");
+            dbConfig.OptionList.NullSafeSetTo<string>(s => task.PathToMongoDump = s, "path_to_mongodump");
             if (dbConfig.AdditionalOptionList != null && dbConfig.AdditionalOptionList.Count > 0)
             {
-                dbConfig.AdditionalOptionList.ForEach(c =>
+                dbConfig.AdditionalOptionList.ToList().ForEach(c =>
                 {
                     task.AddCommandOptions(c.Name, c.Value);
                 });
@@ -391,15 +384,15 @@ namespace dackup
         private MsSqlBackupTask PopulateMsSqlBackupTask(Database dbConfig)
         {
             var task = ServiceProviderFactory.ServiceProvider.GetService<MsSqlBackupTask>();
-            dbConfig.OptionList.NullSafeSetTo("host", s => task.Host = s);
-            dbConfig.OptionList.NullSafeSetTo("port", s => task.Port = s);
-            dbConfig.OptionList.NullSafeSetTo("database", s => task.Database = s);
-            dbConfig.OptionList.NullSafeSetTo("username", s => task.UserName = s);
-            dbConfig.OptionList.NullSafeSetTo("password", s => task.Password = s);
-            dbConfig.OptionList.NullSafeSetTo("path_to_mssqldump", s => task.PathToMssqlDump = s);
+            dbConfig.OptionList.NullSafeSetTo<string>(s => task.Host = s, "host");
+            dbConfig.OptionList.NullSafeSetTo<int>(s => task.Port = s, "port");
+            dbConfig.OptionList.NullSafeSetTo<string>(s => task.Database = s, "database");
+            dbConfig.OptionList.NullSafeSetTo<string>(s => task.UserName = s, "username");
+            dbConfig.OptionList.NullSafeSetTo<string>(s => task.Password = s, "password");
+            dbConfig.OptionList.NullSafeSetTo<string>(s => task.PathToMssqlDump = s, "path_to_mssqldump");
             if (dbConfig.AdditionalOptionList != null && dbConfig.AdditionalOptionList.Count > 0)
             {
-                dbConfig.AdditionalOptionList.ForEach(c =>
+                dbConfig.AdditionalOptionList.ToList().ForEach(c =>
                 {
                     task.AddCommandOptions(c.Name, c.Value);
                 });
@@ -410,42 +403,46 @@ namespace dackup
         private SmtpEmailNotify PopulateEmailSmtpNotify(Email cfg)
         {
             var emailNotify       = ServiceProviderFactory.ServiceProvider.GetService<SmtpEmailNotify>();
+            
             emailNotify.Enable    = cfg.Enable;
             emailNotify.OnFailure = cfg.OnFailure;
             emailNotify.OnSuccess = cfg.OnSuccess;
             emailNotify.OnWarning = cfg.OnWarning;
-            cfg.OptionList.NullSafeSetTo("from", s => emailNotify.From = s);
-            cfg.OptionList.NullSafeSetTo("to", s => emailNotify.To = s);
-            cfg.OptionList.NullSafeSetTo("address", s => emailNotify.Address = s);
-            cfg.OptionList.NullSafeSetTo("domain", s => emailNotify.Domain = s);
-            cfg.OptionList.NullSafeSetTo("user_name", s => emailNotify.UserName = s);
-            cfg.OptionList.NullSafeSetTo("password", s => emailNotify.Password = s);
-            cfg.OptionList.NullSafeSetTo("authentication", s => emailNotify.Authentication = s);
-            cfg.OptionList.NullSafeSetTo("enable_starttls", s => emailNotify.EnableStarttls = s);
-            cfg.OptionList.NullSafeSetTo("cc", s => emailNotify.CC = s);
-            cfg.OptionList.NullSafeSetTo("bcc", s => emailNotify.BCC = s);
-            cfg.OptionList.NullSafeSetTo("port", port => emailNotify.Port = port);
+
+            cfg.OptionList.NullSafeSetTo<string>(s => emailNotify.From = s, "from");
+            cfg.OptionList.NullSafeSetTo<string>(s => emailNotify.To = s, "to");
+            cfg.OptionList.NullSafeSetTo<string>(s => emailNotify.Address = s, "address");
+            cfg.OptionList.NullSafeSetTo<string>(s => emailNotify.Domain = s, "domain");
+            cfg.OptionList.NullSafeSetTo<string>(s => emailNotify.UserName = s, "user_name");
+            cfg.OptionList.NullSafeSetTo<string>(s => emailNotify.Password = s, "password");
+            cfg.OptionList.NullSafeSetTo<string>(s => emailNotify.Authentication = s, "authentication");
+            cfg.OptionList.NullSafeSetTo<bool>(s => emailNotify.EnableStarttls = s, "enable_starttls");
+            cfg.OptionList.NullSafeSetTo<string>(s => emailNotify.CC = s, "cc");
+            cfg.OptionList.NullSafeSetTo<string>(s => emailNotify.BCC = s, "bcc");
+            cfg.OptionList.NullSafeSetTo<int>(port => emailNotify.Port = port, "port");
 
             return emailNotify;
         }
         private SlackNotify PopulateSlackNotify(Slack cfg)
         {
             var slackNotify       = ServiceProviderFactory.ServiceProvider.GetService<SlackNotify>();
+           
             slackNotify.Enable    = cfg.Enable;
             slackNotify.OnFailure = cfg.OnFailure;
             slackNotify.OnSuccess = cfg.OnSuccess;
             slackNotify.OnWarning = cfg.OnWarning;
-            cfg.OptionList.NullSafeSetTo("webhook_url", s => slackNotify.WebHookUrl = s);
-            cfg.OptionList.NullSafeSetTo("channel", s => slackNotify.Channel = s);
-            cfg.OptionList.NullSafeSetTo("icon_emoji", s => slackNotify.Icon_emoji = s);
-            cfg.OptionList.NullSafeSetTo("username", s => slackNotify.UserName = s);
+
+            cfg.OptionList.NullSafeSetTo<string>(s => slackNotify.WebHookUrl = s, "webhook_url");
+            cfg.OptionList.NullSafeSetTo<string>(s => slackNotify.Channel = s, "channel");
+            cfg.OptionList.NullSafeSetTo<string>(s => slackNotify.Icon_emoji = s, "icon_emoji");
+            cfg.OptionList.NullSafeSetTo<string>(s => slackNotify.UserName = s, "username");
 
             return slackNotify;
         }
         private DingtalkRobotNotify PopulateDingtalkRobotNotify(DingtalkRobot cfg)
         {
-            var dingtalkRobotNotify       = ServiceProviderFactory.ServiceProvider.GetService<DingtalkRobotNotify>();
-            cfg.OptionList.NullSafeSetTo("url", s => dingtalkRobotNotify.WebHookUrl = s);
+            var dingtalkRobotNotify = ServiceProviderFactory.ServiceProvider.GetService<DingtalkRobotNotify>();
+            cfg.OptionList.NullSafeSetTo<string>(s => dingtalkRobotNotify.WebHookUrl = s, "url");
             dingtalkRobotNotify.AtAll     = cfg.AtAll;
             dingtalkRobotNotify.Enable    = cfg.Enable;
             dingtalkRobotNotify.OnFailure = cfg.OnFailure;
@@ -455,7 +452,7 @@ namespace dackup
             if (cfg.AtMobiles != null && cfg.AtMobiles.Count > 0)
             {
                 dingtalkRobotNotify.AtMobiles = new List<string>();
-                cfg.AtMobiles.ForEach(header =>
+                cfg.AtMobiles.ToList().ForEach(header =>
                 {
                     dingtalkRobotNotify.AtMobiles.AddRange(header.Value.Split(';', StringSplitOptions.RemoveEmptyEntries));
                 });
@@ -466,16 +463,18 @@ namespace dackup
         }
         private HttpPostNotify PopulateHttpPostNotify(HttpPost cfg)
         {
-            var httpPostNotify       = ServiceProviderFactory.ServiceProvider.GetService<HttpPostNotify>();
-            cfg.OptionList.NullSafeSetTo("url", s => httpPostNotify.WebHookUrl = s);
+            var httpPostNotify = ServiceProviderFactory.ServiceProvider.GetService<HttpPostNotify>();
+            cfg.OptionList.NullSafeSetTo<string>(s => httpPostNotify.WebHookUrl = s, "url");
+            
             httpPostNotify.Enable    = cfg.Enable;
             httpPostNotify.OnFailure = cfg.OnFailure;
             httpPostNotify.OnSuccess = cfg.OnSuccess;
             httpPostNotify.OnWarning = cfg.OnWarning;
+
             if (cfg.Headers != null)
             {
                 httpPostNotify.Headers = new NameValueCollection();
-                cfg.Headers.ForEach(header =>
+                cfg.Headers.ToList().ForEach(header =>
                 {
                     httpPostNotify.Headers[header.Name] = header.Value;
                 });

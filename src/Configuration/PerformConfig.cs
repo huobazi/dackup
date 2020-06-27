@@ -2,7 +2,12 @@
 using System;
 using System.Xml;
 using System.Xml.Serialization;
+using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
+
+using dackup.Extensions;
 
 namespace dackup.Configuration
 {
@@ -14,6 +19,14 @@ namespace dackup.Configuration
 
         [XmlAttribute(AttributeName = "value")]
         public string Value { get; set; }
+    }
+    [Serializable]
+    public class NameValueElementList : KeyedCollection<string, NameValueElement>
+    {
+        protected override string GetKeyForItem(NameValueElement item)
+        {
+            return item.Name;
+        }
     }
     [Serializable]
     public class Archive
@@ -33,10 +46,10 @@ namespace dackup.Configuration
     public class Database
     {
         [XmlElement(ElementName = "option")]
-        public List<NameValueElement> OptionList { get; set; }
+        public NameValueElementList OptionList { get; set; }
 
         [XmlElement(ElementName = "additional_option")]
-        public List<NameValueElement> AdditionalOptionList { get; set; }
+        public NameValueElementList AdditionalOptionList { get; set; }
 
         [XmlAttribute(AttributeName = "type")]
         public string Type { get; set; }
@@ -51,7 +64,7 @@ namespace dackup.Configuration
     public class Storage
     {
         [XmlElement(ElementName = "option")]
-        public List<NameValueElement> OptionList { get; set; }
+        public NameValueElementList OptionList { get; set; }
 
         [XmlAttribute(AttributeName = "type")]
         public string Type { get; set; }
@@ -67,7 +80,7 @@ namespace dackup.Configuration
     public class NotifyBase
     {
         [XmlElement(ElementName = "option")]
-        public List<NameValueElement> OptionList { get; set; }
+        public NameValueElementList OptionList { get; set; }
 
         [XmlAttribute(AttributeName = "on_success")]
         public bool OnSuccess { get; set; }
@@ -89,7 +102,7 @@ namespace dackup.Configuration
     public class HttpPost : NotifyBase
     {
         [XmlElement(ElementName = "header")]
-        public List<NameValueElement> Headers { get; set; }
+        public NameValueElementList Headers { get; set; }
     }
     public class DingtalkRobot : NotifyBase
     {
@@ -97,7 +110,7 @@ namespace dackup.Configuration
         public bool AtAll { get; set; }
 
         [XmlElement(ElementName = "at")]
-        public List<NameValueElement> AtMobiles { get; set; }
+        public NameValueElementList AtMobiles { get; set; }
     }
     [Serializable]
     public class Slack : NotifyBase
@@ -148,33 +161,5 @@ namespace dackup.Configuration
 
         [XmlAttribute(AttributeName = "name")]
         public string Name { get; set; }
-    }
-
-    public static class NameValueElemenListExtensions 
-    { 
-        public static void NullSafeSetTo(this List<NameValueElement> list, string name, Action<string> setter)
-        {
-            var value = list?.Find(c => c.Name.ToLower() == name.ToLower())?.Value;
-            if (value != null)
-            {
-                setter(value);
-            }
-        }
-        public static void NullSafeSetTo(this List<NameValueElement> list, string name, Action<int> setter)
-        {
-            var value = list?.Find(c => c.Name.ToLower() == name.ToLower())?.Value;
-            if (value != null)
-            {
-                setter(Convert.ToInt32(value));
-            }
-        }
-        public static void NullSafeSetTo(this List<NameValueElement> list, string name, Action<bool> setter)
-        {
-            var value = list?.Find(c => c.Name.ToLower() == name.ToLower())?.Value;
-            if (value != null)
-            {
-                setter(Convert.ToBoolean(value));
-            }
-        }
     }
 }
