@@ -51,7 +51,7 @@ namespace dackup
         {
             get
             {
-                return generateFilesList.Distinct().ToList();
+                return generateFilesList.Distinct().OrderBy(c=>c).ToList();
             }
         }
         public void AddToGenerateFilesList(string fileName)
@@ -61,13 +61,21 @@ namespace dackup
                 generateFilesList.Add(fileName);
             }
         }
-        public void AddToGenerateFilesList(List<string> filesList)
+        public void AddToGenerateFilesList(IEnumerable<string> filesList)
         {
             if( filesList == null)
             {
                 return;
             }
             generateFilesList.AddRange(filesList);   
+        }
+        public static void resetForTesting()
+        {
+        #if (DEBUG )
+            instance = null;
+        #else
+            throw new InvalidOperationException("This method can only called on testting ");
+        #endif
         }
     }
 }
