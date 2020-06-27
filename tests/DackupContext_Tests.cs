@@ -40,7 +40,7 @@ namespace dackup.Tests
             DackupContext.Current.AddToGenerateFilesList("/tmp1");
             DackupContext.Current.AddToGenerateFilesList("/tmp0");
             DackupContext.Current.AddToGenerateFilesList("/tmp1");
-            DackupContext.Current.AddToGenerateFilesList(new[]{"/tmp2","/tmp3"});
+            DackupContext.Current.AddToGenerateFilesList(new[]{"/tmp3","/tmp2"});
 
             Assert.Equal(new List<string>{"/tmp0","/tmp1","/tmp2","/tmp3"}, DackupContext.Current.GenerateFilesList);
         }
