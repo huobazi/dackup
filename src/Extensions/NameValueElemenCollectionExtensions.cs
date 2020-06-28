@@ -12,7 +12,7 @@ using dackup.Configuration;
 
 namespace dackup.Extensions
 {
-    public static class NameValueElemenListExtensions
+    public static class NameValueElementCollectionExtensions
     {
         public static void NullSafeSetTo<T>(this NameValueElementCollection list,  Action<T> setter, params string[] nameArray)
         {
