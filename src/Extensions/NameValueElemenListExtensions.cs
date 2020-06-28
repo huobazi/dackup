@@ -14,7 +14,7 @@ namespace dackup.Extensions
 {
     public static class NameValueElemenListExtensions
     {
-        public static void NullSafeSetTo<T>(this NameValueElementList list,  Action<T> setter, params string[] nameArray)
+        public static void NullSafeSetTo<T>(this NameValueElementCollection list,  Action<T> setter, params string[] nameArray)
         {
             var value = list?.ToList().Find(c => c.Name.ToLower().In(nameArray.Select(c => c.ToLower())))?.Value;
             if (value != null)

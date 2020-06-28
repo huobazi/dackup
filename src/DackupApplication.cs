@@ -280,7 +280,7 @@ namespace dackup
 
             return tasks;
         }
-        private AliyunOssStorage PopulateAliyunOssStorage(Storage storageConfig)
+        private AliyunOssStorage PopulateAliyunOssStorage(StorageConfig storageConfig)
         {
             var task = ServiceProviderFactory.ServiceProvider.GetService<AliyunOssStorage>();
 
@@ -297,7 +297,7 @@ namespace dackup
 
             return task;
         }
-        private S3Storage PopulateS3Storage(Storage storageConfig)
+        private S3Storage PopulateS3Storage(StorageConfig storageConfig)
         {
             var task = ServiceProviderFactory.ServiceProvider.GetService<S3Storage>();
 
@@ -314,7 +314,7 @@ namespace dackup
 
             return task;
         }
-        private ArchiveBackupTask PopulateArchiveBackupTask(Archive cfg)
+        private ArchiveBackupTask PopulateArchiveBackupTask(ArchiveConfig cfg)
         {
             var task             = ServiceProviderFactory.ServiceProvider.GetService<ArchiveBackupTask>();
 
@@ -324,7 +324,7 @@ namespace dackup
 
             return task;
         }
-        private PostgresBackupTask PopulatePostgresBackupTask(Database dbConfig)
+        private PostgresBackupTask PopulatePostgresBackupTask(DatabaseConfig dbConfig)
         {
             var task = ServiceProviderFactory.ServiceProvider.GetService<PostgresBackupTask>();
             dbConfig.OptionList.NullSafeSetTo<string>(s => task.Host = s, "host");
@@ -343,7 +343,7 @@ namespace dackup
 
             return task;
         }
-        private MySqlBackupTask PopulateMysqlBuckupTask(Database dbConfig)
+        private MySqlBackupTask PopulateMysqlBuckupTask(DatabaseConfig dbConfig)
         {
             var task = ServiceProviderFactory.ServiceProvider.GetService<MySqlBackupTask>();
             dbConfig.OptionList.NullSafeSetTo<string>(s => task.Host = s, "host");
@@ -362,7 +362,7 @@ namespace dackup
 
             return task;
         }
-        private MongoDBBackupTask PopulateMongoDBBackupTask(Database dbConfig)
+        private MongoDBBackupTask PopulateMongoDBBackupTask(DatabaseConfig dbConfig)
         {
             var task = ServiceProviderFactory.ServiceProvider.GetService<MongoDBBackupTask>();
             dbConfig.OptionList.NullSafeSetTo<string>(s => task.Host = s, "host");
@@ -381,7 +381,7 @@ namespace dackup
 
             return task;
         }
-        private MsSqlBackupTask PopulateMsSqlBackupTask(Database dbConfig)
+        private MsSqlBackupTask PopulateMsSqlBackupTask(DatabaseConfig dbConfig)
         {
             var task = ServiceProviderFactory.ServiceProvider.GetService<MsSqlBackupTask>();
             dbConfig.OptionList.NullSafeSetTo<string>(s => task.Host = s, "host");
@@ -400,7 +400,7 @@ namespace dackup
 
             return task;
         }
-        private SmtpEmailNotify PopulateEmailSmtpNotify(Email cfg)
+        private SmtpEmailNotify PopulateEmailSmtpNotify(EmailNotifyConfig cfg)
         {
             var emailNotify       = ServiceProviderFactory.ServiceProvider.GetService<SmtpEmailNotify>();
             
@@ -423,7 +423,7 @@ namespace dackup
 
             return emailNotify;
         }
-        private SlackNotify PopulateSlackNotify(Slack cfg)
+        private SlackNotify PopulateSlackNotify(SlackNotifyConfig cfg)
         {
             var slackNotify       = ServiceProviderFactory.ServiceProvider.GetService<SlackNotify>();
            
@@ -439,7 +439,7 @@ namespace dackup
 
             return slackNotify;
         }
-        private DingtalkRobotNotify PopulateDingtalkRobotNotify(DingtalkRobot cfg)
+        private DingtalkRobotNotify PopulateDingtalkRobotNotify(DingtalkRobotNotifyConfig cfg)
         {
             var dingtalkRobotNotify = ServiceProviderFactory.ServiceProvider.GetService<DingtalkRobotNotify>();
             cfg.OptionList.NullSafeSetTo<string>(s => dingtalkRobotNotify.WebHookUrl = s, "url");
@@ -461,7 +461,7 @@ namespace dackup
 
             return dingtalkRobotNotify;
         }
-        private HttpPostNotify PopulateHttpPostNotify(HttpPost cfg)
+        private HttpPostNotify PopulateHttpPostNotify(HttpPostNotifyConfig cfg)
         {
             var httpPostNotify = ServiceProviderFactory.ServiceProvider.GetService<HttpPostNotify>();
             cfg.OptionList.NullSafeSetTo<string>(s => httpPostNotify.WebHookUrl = s, "url");
