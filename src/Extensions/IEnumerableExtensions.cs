@@ -15,5 +15,17 @@ namespace dackup.Extensions
                 action(element);
             }
         }
+
+        public static void ForEach<T>(this IEnumerable<T> source, Action<T, int> action)
+        {
+            if (source == null) throw new ArgumentNullException(nameof(source));
+            if (action == null) throw new ArgumentNullException(nameof(action));
+
+            var index = 0;
+            foreach (var element in source)
+            {
+                action(element, index++);
+            }
+        }
     }
 }
