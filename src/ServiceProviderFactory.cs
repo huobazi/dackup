@@ -35,6 +35,7 @@ namespace dackup
             services.AddTransient<MsSqlBackupTask>();
             services.AddTransient<MySqlBackupTask>();
             services.AddTransient<PostgresBackupTask>();
+            services.AddTransient<RedisBackupTask>();
             
             // add storage tasks
             services.AddTransient<LocalStorage>();

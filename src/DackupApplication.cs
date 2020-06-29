@@ -176,6 +176,11 @@ namespace dackup
                                 MsSqlBackupTask task = PopulateMsSqlBackupTask(dbConfig);
                                 tasks.Add(task);
                             }
+                            else if(dbConfig.Type.ToLower().Trim() == "redis")
+                            {
+                                RedisBackupTask task = PopulateRedisBackupTask(dbConfig);
+                                tasks.Add(task);
+                            }
                         }
                     });
                 }
@@ -397,6 +402,17 @@ namespace dackup
                     task.AddCommandOptions(c.Name, c.Value);
                 });
             }
+
+            return task;
+        }
+        private RedisBackupTask PopulateRedisBackupTask(DatabaseConfig dbConfig)
+        {
+            var task = ServiceProviderFactory.ServiceProvider.GetService<RedisBackupTask>();
+
+            dbConfig.OptionList.NullSafeSetTo<string>(s => task.Host = s, "host");
+            dbConfig.OptionList.NullSafeSetTo<int>(s => task.Port = s, "port");
+            dbConfig.OptionList.NullSafeSetTo<string>(s => task.Password = s, "password");
+            dbConfig.OptionList.NullSafeSetTo<string>(s => task.PathToRedisCLI = s, "path_to_redis_cli");
 
             return task;
         }
