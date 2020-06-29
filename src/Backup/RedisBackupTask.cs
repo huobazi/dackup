@@ -38,7 +38,7 @@ namespace dackup
             }
             catch (Exception exception)
             {
-                logger.LogError(exception, "Can not connection to redis '{Host}:{Port}' !!!");
+                logger.LogError(exception, $"Can not connection to redis '{Host}:{Port}' !!!");
                 return false;
             }
             logger.LogInformation($"Connection to redis '{Host}:{Port}' established.");

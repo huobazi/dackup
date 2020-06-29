@@ -29,7 +29,7 @@ namespace dackup
         }
         protected override bool CheckDbConnection()
         {
-            logger.LogInformation($"Testing connection to '{UserName}@{Host}:{Port}/{Database}'...");
+            logger.LogInformation($"Testing connection to Postgres '{UserName}@{Host}:{Port}/{Database}'...");
 
             var connectionString = $"Server={Host};Port={Port};User Id={UserName};Password={Password};Database={Database};";
             using (var connection = new NpgsqlConnection(connectionString))
@@ -40,12 +40,12 @@ namespace dackup
                 }
                 catch(Exception exception)
                 {
-                    logger.LogError(exception, "Can not connection !!!");
+                    logger.LogError(exception, $"Can not connection to to Postgres '{UserName}@{Host}:{Port}/{Database}' !!!");
                     return false;
                 }            
             }
 
-            logger.LogInformation("Connection to DB established.");
+            logger.LogInformation($"Connection to to Postgres '{UserName}@{Host}:{Port}/{Database}' established.");
             return true;
         }
         private (string resultFileName, string resultContent) GenerateOptionsToCommand()
@@ -135,7 +135,7 @@ namespace dackup
             process.WaitForExit();
             var code = process.ExitCode;
 
-            logger.LogInformation($"{Database} backup completed. dump files : {backupFile}");
+            logger.LogInformation($"Postgres {Database} backup completed. dump files : {backupFile}");
 
             var result = new BackupTaskResult
             {

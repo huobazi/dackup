@@ -31,7 +31,7 @@ namespace dackup
         }
         protected override bool CheckDbConnection()
         {
-            logger.LogInformation($"Testing connection to '{UserName}@{Host}:{Port}/{Database}'...");
+            logger.LogInformation($"Testing connection to MySql '{UserName}@{Host}:{Port}/{Database}'...");
 
             using (var connection = new MySqlConnection($"Server={Host};Port={Port};Database={Database};User Id={UserName};Password={Password};"))
             {
@@ -41,11 +41,11 @@ namespace dackup
                 }
                 catch(Exception exception)
                 {
-                    logger.LogError(exception, "Can not connection !!!");
+                    logger.LogError(exception, $"Can not connection to MySql '{UserName}@{Host}:{Port}/{Database}' !!!");
                     return false;
                 }            
             }
-            logger.LogInformation("Connection to DB established.");
+            logger.LogInformation($"Connection to to MySql '{UserName}@{Host}:{Port}/{Database}' established.");
             
             return true;
         }
@@ -138,7 +138,7 @@ namespace dackup
 
             Utils.CreateTarGZ(new List<string> { dumpfile, }, dumpTGZFileName);
 
-            logger.LogInformation($"{Database} backup completed. dump files : {dumpTGZFileName}");
+            logger.LogInformation($"MySql {Database} backup completed. dump files : {dumpTGZFileName}");
 
             var result = new BackupTaskResult
             {

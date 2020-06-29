@@ -37,14 +37,14 @@ namespace dackup
                 };
             }
 
-            logger.LogInformation($"Archive backup start");
+            logger.LogInformation($"Archive {Name} backup start");
 
             var directory = Path.Combine(DackupContext.Current.TmpPath, "archives");
             Directory.CreateDirectory(directory);
 
             this.IncludePathList.ForEach(file =>
             {
-                logger.LogInformation($"Archive backup : {file}");
+                logger.LogInformation($"Archive {Name} backup : {file}");
 
                 FileAttributes attr = File.GetAttributes(file);
                 if (attr.HasFlag(FileAttributes.Directory))

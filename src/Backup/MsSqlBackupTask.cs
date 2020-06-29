@@ -30,7 +30,7 @@ namespace dackup
 
         protected override bool CheckDbConnection()
         {
-            logger.LogInformation($"Testing connection to '{UserName}@{Host}:{Port}/{Database}'...");
+            logger.LogInformation($"Testing connection to SQL Server '{UserName}@{Host}:{Port}/{Database}'...");
 
             using (var connection = new SqlConnection($"Data Source={Host},{Port};Initial Catalog={Database};User Id={UserName};Password={Password};"))
             {
@@ -40,11 +40,11 @@ namespace dackup
                 }
                 catch(Exception exception)
                 {
-                    logger.LogError(exception, "Can not connection !!!");
+                    logger.LogError(exception, $"Can not connection to SQL Server '{UserName}@{Host}:{Port}/{Database}'!!!");
                     return false;
                 }
             }
-            logger.LogInformation("Connection to DB established.");
+            logger.LogInformation($"Connection to SQL Server '{UserName}@{Host}:{Port}/{Database}' established.");
             
             return true;
         }
@@ -100,7 +100,7 @@ namespace dackup
 
             Utils.CreateTarGZ(new List<string> { dumpfile, }, dumpTgzFileName);
 
-            logger.LogInformation($"{Database} backup completed. dump files : {dumpTgzFileName}");
+            logger.LogInformation($"SQL Server{Database} backup completed. dump files : {dumpTgzFileName}");
 
             var result = new BackupTaskResult
             {

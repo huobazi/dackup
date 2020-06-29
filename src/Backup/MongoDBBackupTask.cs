@@ -39,10 +39,10 @@ namespace dackup
             }
             catch(Exception exception)
             {
-                logger.LogError(exception, "Can not connection !!!");
+                logger.LogError(exception, $"Can not connection to 'mongodb://{UserName}@{Host}:{Port}/{Database}' !!!");
                 return false;
             }
-            logger.LogInformation("Connection to DB established.");
+            logger.LogInformation($"Connection to 'mongodb://{UserName}@{Host}:{Port}/{Database}' DB established.");
             
             return true;
         }
@@ -121,7 +121,7 @@ namespace dackup
             process.WaitForExit();
             var code = process.ExitCode;
 
-            logger.LogInformation($"{Database} backup completed. dump files : {backupFile}");
+            logger.LogInformation($"MongoDb {Database} backup completed. dump files : {backupFile}");
 
             var result = new BackupTaskResult
             {
