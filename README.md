@@ -17,6 +17,7 @@ Dackup is a fullstack backup tool was written by .NET Core, that is fast, effici
 - [x] [MySQL](https://www.mysql.com)
 - [x] [MongoDB](https://www.mongodb.com)
 - [x] [SQL Server](https://www.microsoft.com/sql-server)
+- [x] [Redis](https://redis.io)
 
 ### Archive
 

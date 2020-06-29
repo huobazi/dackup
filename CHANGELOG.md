@@ -1,6 +1,14 @@
 
 ## CHANGE LOG
 
+### v0.0.4
+
+- Coding refartoring.
+- https://github.com/huobazi/dackup/pull/6
+  
+- Added redis Database provider.
+- https://github.com/huobazi/dackup/pull/7
+  
 ### v0.0.3
 
 - Added mssql (SQL Server) Database provider.
