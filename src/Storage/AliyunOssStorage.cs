@@ -22,10 +22,7 @@ namespace dackup
         {
             get { return logger; }
         }
-        public AliyunOssStorage(ILogger<AliyunOssStorage> logger)
-        {
-            this.logger = logger;
-        }
+        public AliyunOssStorage(ILogger<AliyunOssStorage> logger) => this.logger = logger;
         protected override UploadResult Upload(string fileName)
         {
             OssClient client = new OssClient(Endpoint, AccessKeyId, AccessKeySecret);

@@ -11,10 +11,7 @@ namespace dackup
     public sealed class SlackClient
     {
         private readonly Uri webHookUri;
-        public SlackClient(Uri webHookUri)
-        {
-            this.webHookUri = webHookUri;
-        }
+        public SlackClient(Uri webHookUri) => this.webHookUri = webHookUri;
         public void SendSlackMessage(SlackMessage message)
         {
             using (var webClient = new WebClient())

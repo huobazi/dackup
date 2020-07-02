@@ -14,11 +14,7 @@ namespace dackup
     public class MySqlBackupTask: DatabaseBackupTask
     {
         private readonly ILogger logger;
-
-        public MySqlBackupTask(ILogger<MySqlBackupTask> logger): base("mysql") 
-        {
-            this.logger = logger;
-        }
+        public MySqlBackupTask(ILogger<MySqlBackupTask> logger) : base("mysql") => this.logger = logger;
         public string PathToMysqlDump { get; set; } = "mysqldump";
         public string Host { get; set; }            = "localhost";
         public int Port { get; set; }               = 3306;

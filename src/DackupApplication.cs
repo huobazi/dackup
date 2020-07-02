@@ -16,10 +16,7 @@ namespace dackup
     public class DackupApplication
     {
         private readonly ILogger logger;
-        public DackupApplication(ILogger<DackupApplication> logger)
-        {
-            this.logger = logger;
-        }
+        public DackupApplication(ILogger<DackupApplication> logger) => this.logger = logger;
         public async Task Run(string configFilePath)
         {
             var statistics           = new Statistics();

@@ -22,10 +22,7 @@ namespace dackup
         public string WebHookUrl { get; set; }
         public NameValueCollection Params { get; set; }
         public NameValueCollection Headers { get; set; }
-        public HttpPostNotify(ILogger<HttpPostNotify> logger)
-        {            
-            this.logger = logger;
-        }
+        public HttpPostNotify(ILogger<HttpPostNotify> logger) => this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
         public override async Task<NotifyResult> NotifyAsync(Statistics statistics)
         {
             logger.LogInformation($"Dackup start [{this.GetType().Name }.NotifyAsync]");

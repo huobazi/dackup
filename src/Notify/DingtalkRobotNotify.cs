@@ -24,10 +24,7 @@ namespace dackup
             get{ return this.logger;}
         }
         private DingtalkRobotNotify(){}
-        public DingtalkRobotNotify(ILogger<DingtalkRobotNotify> logger, string url)
-        {
-            this.logger = logger;
-        }
+        public DingtalkRobotNotify(ILogger<DingtalkRobotNotify> logger) => this.logger = logger;
         public override async Task<NotifyResult> NotifyAsync(Statistics statistics)
         {
             Logger.LogInformation($"Dackup start [{this.GetType().Name }.NotifyAsync]");

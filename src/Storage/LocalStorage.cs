@@ -20,10 +20,7 @@ namespace dackup
             }
         }
         private LocalStorage(){}
-        public LocalStorage(ILogger<LocalStorage> logger)
-        {
-            this.logger = logger;
-        }
+        public LocalStorage(ILogger<LocalStorage> logger) => this.logger = logger;
         protected override UploadResult Upload(string fileName)
         {
             if (string.IsNullOrWhiteSpace(Path))

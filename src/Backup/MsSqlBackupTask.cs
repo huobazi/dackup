@@ -11,12 +11,7 @@ namespace dackup
     public class MsSqlBackupTask : DatabaseBackupTask
     {
         private readonly ILogger logger;
-
-        public MsSqlBackupTask(ILogger<MsSqlBackupTask> logger) : base("mssql")
-        {
-            this.logger = logger;
-        }
-
+        public MsSqlBackupTask(ILogger<MsSqlBackupTask> logger) : base("mssql") => this.logger = logger;
         public string PathToMssqlDump { get; set; } = "sqlcmd";
         public string Host { get; set; } = "localhost";
         public int Port { get; set; } = 1433;
@@ -27,7 +22,6 @@ namespace dackup
         {
             get { return this.logger; }
         }
-
         protected override bool CheckDbConnection()
         {
             logger.LogInformation($"Testing connection to SQL Server '{UserName}@{Host}:{Port}/{Database}'...");
@@ -48,7 +42,6 @@ namespace dackup
             
             return true;
         }
-
         private (string resultFileName, string resultContent) GenerateOptionsToCommand()
         {
             RemoveCommandOptions("--host");

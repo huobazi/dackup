@@ -18,10 +18,7 @@ namespace dackup
         public string UserName { get; set; }
         public string Icon_emoji { get; set; } = ":ghost:";
 
-        public SlackNotify(ILogger<SlackNotify> logger,string webHookUrl)
-        {
-            this.logger     = logger;
-        }
+        public SlackNotify(ILogger<SlackNotify> logger) => this.logger = logger;
         protected override NotifyResult Notify(Statistics statistics)
         {
             logger.LogInformation($"Dackup start [{this.GetType().Name }.NotifyAsync]");

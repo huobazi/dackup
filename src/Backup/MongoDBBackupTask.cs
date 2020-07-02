@@ -15,10 +15,7 @@ namespace dackup
     {
         private readonly ILogger logger;
 
-        public MongoDBBackupTask(ILogger<MongoDBBackupTask> logger) : base("mongodb")
-        {
-            this.logger = logger;
-        }
+        public MongoDBBackupTask(ILogger<MongoDBBackupTask> logger) : base("mongodb") => this.logger = logger;
         public string PathToMongoDump { get; set; } = "mongodump";
         public string Host { get; set; } = "localhost";
         public int Port { get; set; } = 27017;
