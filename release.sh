@@ -31,21 +31,21 @@ readonly BASE_PWD=$PWD
 readonly SCRIPT_PATH="$( cd "$(dirname "$0")" ; pwd -P )"
 readonly SRC_PATH=$SCRIPT_PATH/src
 readonly PROJECT_PATH=$SRC_PATH/dackup.csproj
-readonly DOTNET_CORE_APP_VERSION_FOLDER=$SRC_PATH/bin/release/netcoreapp3.1
+readonly DOTNET_CORE_APP_VERSION_FOLDER=$SRC_PATH/bin/Release/netcoreapp3.1
 
 
 rm -rf $SCRIPT_PATH/dist 
 mkdir $SCRIPT_PATH/dist
-rm -rf $SRC_PATH/bin/release 
+rm -rf $SRC_PATH/bin/Release 
 
-declare -a winOS=("win10-x64" "win-x64")
+declare -a winOS=("win10-x64" "win81-x64" "win7-x64" "win-x64")
 declare -a unixOS=("osx-x64" "linux-x64")
 declare -a releaseFiles=()
 
 for rid in "${winOS[@]}"
 do
     distFile="$SCRIPT_PATH/dist/dackup-$rid.zip"
-    cd $SRC_PATH && dotnet publish -c Release -p:PublishSingleFile=true /p:IncludeSymbolsInSingleFile=true -r $rid 
+    dotnet publish $PROJECT_PATH -c Release -p:PublishSingleFile=true /p:IncludeSymbolsInSingleFile=true -r $rid 
     cd $DOTNET_CORE_APP_VERSION_FOLDER/$rid/publish/
     zip -r $distFile .
     releaseFiles+=($distFile)
@@ -55,7 +55,7 @@ done
 for rid in "${unixOS[@]}"
 do 
     distFile="$SCRIPT_PATH/dist/dackup-$rid.zip"
-    cd $SRC_PATH && dotnet publish -c Release -p:PublishSingleFile=true /p:IncludeSymbolsInSingleFile=true -r $rid 
+    dotnet publish $PROJECT_PATH -c Release -p:PublishSingleFile=true /p:IncludeSymbolsInSingleFile=true -r $rid 
     cd $DOTNET_CORE_APP_VERSION_FOLDER/$rid/publish/
     tar -cvzf  $distFile *
     releaseFiles+=($distFile)
