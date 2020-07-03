@@ -45,7 +45,6 @@ declare -a releaseFiles=()
 for rid in "${winOS[@]}"
 do
     distFile="$SCRIPT_PATH/dist/dackup-$rid.zip"
-    #dotnet publish $PROJECT_PATH -r $rid -c release
     cd $SRC_PATH && dotnet publish -c Release -p:PublishSingleFile=true /p:IncludeSymbolsInSingleFile=true -r $rid 
     cd $DOTNET_CORE_APP_VERSION_FOLDER/$rid/publish/
     zip -r $distFile .
@@ -56,7 +55,6 @@ done
 for rid in "${unixOS[@]}"
 do 
     distFile="$SCRIPT_PATH/dist/dackup-$rid.zip"
-    #dotnet publish $PROJECT_PATH -r $rid -c release
     cd $SRC_PATH && dotnet publish -c Release -p:PublishSingleFile=true /p:IncludeSymbolsInSingleFile=true -r $rid 
     cd $DOTNET_CORE_APP_VERSION_FOLDER/$rid/publish/
     tar -cvzf  $distFile *
