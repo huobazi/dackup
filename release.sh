@@ -33,6 +33,7 @@ readonly SRC_PATH=$SCRIPT_PATH/src
 readonly PROJECT_PATH=$SRC_PATH/dackup.csproj
 readonly DOTNET_CORE_APP_VERSION_FOLDER=$SRC_PATH/bin/Release/netcoreapp3.1
 
+dotnet nuget locals all --clear
 
 rm -rf $SCRIPT_PATH/dist 
 mkdir $SCRIPT_PATH/dist
