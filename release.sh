@@ -54,8 +54,8 @@ do
 done
 
 for rid in "${unixOS[@]}"
-do 
-    distFile="$SCRIPT_PATH/dist/dackup-$rid.zip"
+do
+    distFile="$SCRIPT_PATH/dist/dackup-$rid.tar.gz"
     dotnet publish $PROJECT_PATH -c Release -p:PublishSingleFile=true /p:IncludeSymbolsInSingleFile=true -r $rid 
     cd $DOTNET_CORE_APP_VERSION_FOLDER/$rid/publish/
     tar -cvzf  $distFile *
