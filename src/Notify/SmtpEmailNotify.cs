@@ -6,7 +6,7 @@ using System.Linq;
 
 using Microsoft.Extensions.Logging;
 
-namespace dackup
+namespace Dackup.Notify
 {
     public class SmtpEmailNotify : NotifyBase
     {

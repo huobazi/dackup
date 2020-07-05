@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 
 using Aliyun.OSS;
 
-namespace dackup
+namespace Dackup.Storage
 {
     public class AliyunOssStorage : StorageBase
     {

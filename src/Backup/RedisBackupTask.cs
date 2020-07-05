@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 
 using StackExchange.Redis;
 
-namespace dackup
+namespace Dackup.Backup
 {
     public class RedisBackupTask: DatabaseBackupTask
     {

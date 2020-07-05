@@ -3,7 +3,7 @@ using System.IO;
 
 using Microsoft.Extensions.Logging;
 
-namespace dackup
+namespace Dackup.Storage
 {
     public class LocalStorage : StorageBase
     {

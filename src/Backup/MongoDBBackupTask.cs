@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 
 using MongoDB.Driver;
 
-namespace dackup
+namespace Dackup.Backup
 {
     public class MongoDBBackupTask : DatabaseBackupTask
     {

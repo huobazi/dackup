@@ -1,9 +1,9 @@
 using Microsoft.Extensions.DependencyInjection;
 
-using dackup.Configuration;
-using dackup.Extensions;
+using Dackup.Configuration;
+using Dackup.Extensions;
 
-namespace dackup
+namespace Dackup.Storage
 {
     public static class StorageFactory
     {   

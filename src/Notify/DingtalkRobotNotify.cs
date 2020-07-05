@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace dackup
+namespace Dackup.Notify
 {
     public class DingtalkRobotNotify : NotifyBase
     {

@@ -8,10 +8,10 @@ using System.Xml.Serialization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
 
-using dackup.Configuration;
-using dackup.Extensions;
+using Dackup.Configuration;
+using Dackup.Extensions;
 
-namespace dackup
+namespace Dackup.Backup
 {
     public static class BackupTaskFactory
     {

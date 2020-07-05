@@ -4,7 +4,7 @@ using System.IO;
 
 using Microsoft.Extensions.Logging;
 
-namespace dackup
+namespace Dackup.Backup
 {
     public class ArchiveBackupTask : BackupTaskBase
     {

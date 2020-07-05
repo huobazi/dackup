@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 
 using MySql.Data.MySqlClient;
 
-namespace dackup
+namespace Dackup.Backup
 {
     public class MySqlBackupTask: DatabaseBackupTask
     {

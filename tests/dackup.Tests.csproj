@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\src\dackup.csproj" />
+    <ProjectReference Include="..\src\Dackup.csproj" />
   </ItemGroup>
 
 </Project>

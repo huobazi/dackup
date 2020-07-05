@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace dackup.Extensions
+namespace Dackup.Extensions
 {
     public static class IEnumerableExtensions
     {

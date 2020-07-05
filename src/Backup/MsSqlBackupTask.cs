@@ -7,7 +7,7 @@ using System.Text;
 
 using Microsoft.Extensions.Logging;
 
-namespace dackup
+namespace Dackup.Backup
 {
     public class MsSqlBackupTask : DatabaseBackupTask
     {

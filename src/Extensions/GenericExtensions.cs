@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 
-namespace dackup.Extensions
+namespace Dackup.Extensions
 {
     /// <summary>
     /// Generic Extension Type

@@ -2,7 +2,7 @@ using System;
 using System.Xml;
 using System.Xml.Serialization;
 
-namespace dackup.Configuration
+namespace Dackup.Configuration
 {
     [Serializable]
     public class NotifyConfigBase

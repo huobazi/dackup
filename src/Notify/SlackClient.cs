@@ -3,7 +3,7 @@ using System.Net;
 
 using Newtonsoft.Json;
 
-namespace dackup
+namespace Dackup.Notify
 {
     public sealed class SlackClient
     {

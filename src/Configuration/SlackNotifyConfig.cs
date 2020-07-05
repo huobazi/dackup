@@ -1,7 +1,7 @@
 using System;
 using System.Collections.ObjectModel;
 
-namespace dackup.Configuration
+namespace Dackup.Configuration
 {
     [Serializable]
     public class SlackNotifyConfig : NotifyConfigBase

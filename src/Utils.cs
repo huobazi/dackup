@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using ICSharpCode.SharpZipLib.GZip;
 using ICSharpCode.SharpZipLib.Tar;
 
-namespace dackup
+namespace Dackup
 {
     public static class Utils
     {

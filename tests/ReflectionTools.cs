@@ -1,7 +1,7 @@
 using System;
 using System.Reflection;
 
-namespace dackup.Tests
+namespace Dackup.Tests
 {
     public class ReflectionTools
     {

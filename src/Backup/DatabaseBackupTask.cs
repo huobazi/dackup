@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
 
-namespace dackup
+namespace Dackup.Backup
 {
     public abstract class DatabaseBackupTask : BackupTaskBase
     {

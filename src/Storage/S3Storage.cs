@@ -8,7 +8,7 @@ using Amazon.S3;
 using Amazon.S3.Model;
 using Amazon.S3.Transfer;
 
-namespace dackup
+namespace Dackup.Storage
 {
     public class S3Storage: StorageBase
     {

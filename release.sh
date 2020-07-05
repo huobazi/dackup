@@ -30,7 +30,7 @@ done
 readonly BASE_PWD=$PWD
 readonly SCRIPT_PATH="$( cd "$(dirname "$0")" ; pwd -P )"
 readonly SRC_PATH=$SCRIPT_PATH/src
-readonly PROJECT_PATH=$SRC_PATH/dackup.csproj
+readonly PROJECT_PATH=$SRC_PATH/Dackup.csproj
 readonly DOTNET_CORE_APP_VERSION_FOLDER=$SRC_PATH/bin/Release/netcoreapp3.1
 
 dotnet nuget locals all --clear

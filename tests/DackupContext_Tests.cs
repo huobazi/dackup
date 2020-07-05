@@ -3,11 +3,11 @@ using System.IO;
 using System.Collections;
 using System.Collections.Generic;
 
-using dackup;
+using Dackup;
 
 using Xunit;
 
-namespace dackup.Tests
+namespace Dackup.Tests
 {
     public class DackupContext_Tests
     {

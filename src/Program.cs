@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using McMaster.Extensions.CommandLineUtils;
 
-namespace dackup
+namespace Dackup
 {
     [Command(UnrecognizedArgumentHandling = UnrecognizedArgumentHandling.Throw)]
     class Program

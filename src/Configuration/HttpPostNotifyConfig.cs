@@ -4,7 +4,7 @@ using System.Xml.Serialization;
 using System.Collections.ObjectModel;
 
 
-namespace dackup.Configuration
+namespace Dackup.Configuration
 {
     [Serializable]
     public class HttpPostNotifyConfig : NotifyConfigBase

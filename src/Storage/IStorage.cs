@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 
-namespace dackup
+namespace Dackup.Storage
 {
     public interface IStorage
     {

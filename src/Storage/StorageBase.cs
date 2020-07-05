@@ -2,7 +2,7 @@ using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
 
-namespace dackup
+namespace Dackup.Storage
 {
     public abstract class StorageBase: IStorage
     {

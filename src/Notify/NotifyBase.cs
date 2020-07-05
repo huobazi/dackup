@@ -2,7 +2,7 @@ using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
 
-namespace dackup
+namespace Dackup.Notify
 {
     public abstract class NotifyBase : INotify
     {

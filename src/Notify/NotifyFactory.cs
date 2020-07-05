@@ -4,10 +4,10 @@ using System.Collections.Specialized;
 using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
 
-using dackup.Configuration;
-using dackup.Extensions;
+using Dackup.Configuration;
+using Dackup.Extensions;
 
-namespace dackup
+namespace Dackup.Notify
 {
     public static class NotifyFactory
     {

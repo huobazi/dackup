@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 using Xunit;
 
-namespace dackup.Tests
+namespace Dackup.Tests
 {
     public class Utils_Tests
     {

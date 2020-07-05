@@ -1,9 +1,9 @@
 
 using System;
 using System.Linq;
-using dackup.Configuration;
+using Dackup.Configuration;
 
-namespace dackup.Extensions
+namespace Dackup.Extensions
 {
     public static class NameValueElementCollectionExtensions
     {

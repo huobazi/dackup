@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 
 using Npgsql;
 
-namespace dackup
+namespace Dackup.Backup
 {
     public class PostgresBackupTask : DatabaseBackupTask
     {

@@ -4,7 +4,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 using Serilog;
-namespace dackup
+
+using Dackup.Backup;
+using Dackup.Storage;
+using Dackup.Notify;
+
+namespace Dackup
 {
     public static class ServiceProviderFactory
     {

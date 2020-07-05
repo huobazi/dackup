@@ -3,7 +3,7 @@ using System.Xml;
 using System.Xml.Serialization;
 using System.Collections.ObjectModel;
 
-namespace dackup.Configuration
+namespace Dackup.Configuration
 {
     public class DingtalkRobotNotifyConfig : NotifyConfigBase
     {

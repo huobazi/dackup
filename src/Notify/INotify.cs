@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 
-namespace dackup
+namespace Dackup.Notify
 {
     public interface INotify
     {        

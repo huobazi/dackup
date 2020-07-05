@@ -7,10 +7,13 @@ using System.Xml.Serialization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
 
-using dackup.Configuration;
-using dackup.Extensions;
+using Dackup.Configuration;
+using Dackup.Extensions;
+using Dackup.Backup;
+using Dackup.Storage;
+using Dackup.Notify;
 
-namespace dackup
+namespace Dackup
 {
     public class DackupApplication
     {

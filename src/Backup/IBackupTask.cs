@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 
 
-namespace dackup
+namespace Dackup.Backup
 {
     public interface IBackupTask
     {
