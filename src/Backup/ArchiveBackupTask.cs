@@ -45,13 +45,13 @@ namespace Dackup.Backup
                 FileAttributes attr = File.GetAttributes(file);
                 if (attr.HasFlag(FileAttributes.Directory))
                 {
-                    var destDirectory = Path.Combine(directory, file.TrimStart('/'));
+                    var destDirectory = Path.Combine(directory, file.TrimStart(Path.DirectorySeparatorChar));
                     Utils.DirectoryCopy(file, destDirectory, ExcludePathList);
                 }
                 else
                 {
-                    var destFile      = Path.Combine(directory, file.TrimStart('/'));
-                    var destDirectory = destFile.Substring(0, destFile.LastIndexOf('/') + 1);
+                    var destFile      = Path.Combine(directory, file.TrimStart(Path.DirectorySeparatorChar));
+                    var destDirectory = destFile.Substring(0, destFile.LastIndexOf(Path.DirectorySeparatorChar) + 1);
                     Directory.CreateDirectory(destDirectory);
                     Utils.FileCopy(file, destFile, ExcludePathList);
                 }
