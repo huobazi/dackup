@@ -118,13 +118,12 @@ You can download binary from [releases](https://github.com/huobazi/dackup/releas
 
 ## Build
 
-Install dotnet core sdk 3.1 then
+Install dotnet core sdk 3.1 then run
 
 ```bash
-dotnet publish src/Dackup.csproj -c Release -p:PublishSingleFile=true /p:IncludeSymbolsInSingleFile=true -r win-x64;
-dotnet publish src/Dackup.csproj -c Release -p:PublishSingleFile=true /p:IncludeSymbolsInSingleFile=true -r osx-x64;
-dotnet publish src/Dackup.csproj -c Release -p:PublishSingleFile=true /p:IncludeSymbolsInSingleFile=true -r linux-x64;
+./release.sh
 ```
+see also: [Release Script](https://github.com/huobazi/dackup/blob/master/release.sh)
 
 ## Contributing
 
