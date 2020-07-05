@@ -1,6 +1,3 @@
-using System;
-using System.Collections;
-using System.Collections.Specialized;
 using System.Threading.Tasks;
 using System.Net;
 using System.Net.Mail;
@@ -8,9 +5,6 @@ using System.Text;
 using System.Linq;
 
 using Microsoft.Extensions.Logging;
-
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace dackup
 {

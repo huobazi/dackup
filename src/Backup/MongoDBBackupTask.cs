@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 
 using MongoDB.Driver;
-using MongoDB.Bson;
 
 namespace dackup
 {
@@ -31,7 +30,7 @@ namespace dackup
             logger.LogInformation($"Testing connection to 'mongodb://{UserName}@{Host}:{Port}/{Database}'...");
             try
             {
-                var client = new MongoClient($"mongodb://{UserName}:{Password}@{Host}:{Port}");
+                var client   = new MongoClient($"mongodb://{UserName}:{Password}@{Host}:{Port}");
                 var database = client.GetDatabase(Database);
             }
             catch(Exception exception)
@@ -108,8 +107,8 @@ namespace dackup
             var processStartInfo = new ProcessStartInfo("bash", $"-c \"{PathToMongoDump}  {cmdOptions} \"")
             {
                 RedirectStandardOutput = true,
-                UseShellExecute = false,
-                CreateNoWindow = true
+                UseShellExecute        = false,
+                CreateNoWindow         = true
             };
 
             var process = new Process { StartInfo = processStartInfo };

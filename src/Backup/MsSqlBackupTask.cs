@@ -4,6 +4,7 @@ using System.Data.SqlClient;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
+
 using Microsoft.Extensions.Logging;
 
 namespace dackup
@@ -78,12 +79,12 @@ namespace dackup
         protected override BackupTaskResult CreateNewBackup()
         {
             var (dumpfile, cmdOptions) = GenerateOptionsToCommand();
-            var dumpTgzFileName = dumpfile + ".tar.gz";
+            var dumpTgzFileName        = dumpfile + ".tar.gz";
             var processStartInfo = new ProcessStartInfo("bash", $"-c \"{PathToMssqlDump} {cmdOptions} \"")
             {
                 RedirectStandardOutput = true,
-                UseShellExecute = false,
-                CreateNoWindow = true
+                UseShellExecute        = false,
+                CreateNoWindow         = true
             };
 
             var process = new Process { StartInfo = processStartInfo };

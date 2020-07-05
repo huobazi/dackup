@@ -1,11 +1,3 @@
-using System;
-using System.IO;
-using System.Linq;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Xml.Serialization;
-
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
 
 using dackup.Configuration;

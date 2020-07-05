@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using System.IO;
 
 using Microsoft.Extensions.Logging;
@@ -51,7 +50,7 @@ namespace dackup
                 }
                 else
                 {
-                    var destFile = Path.Combine(directory, file.TrimStart('/'));
+                    var destFile      = Path.Combine(directory, file.TrimStart('/'));
                     var destDirectory = destFile.Substring(0, destFile.LastIndexOf('/') + 1);
                     Directory.CreateDirectory(destDirectory);
                     Utils.FileCopy(file, destFile, ExcludePathList);
@@ -64,7 +63,7 @@ namespace dackup
 
             return new BackupTaskResult
             {
-                Result = true,
+                Result    = true,
                 FilesList = new List<string> { tgzFileName },
             };
         }

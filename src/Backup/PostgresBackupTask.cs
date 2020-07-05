@@ -16,7 +16,6 @@ namespace dackup
         {
             this.logger = logger;
         }
-
         public string PathToPgDump { get; set; } = "pg_dump";
         public string Host { get; set; } = "localhost";
         public int Port { get; set; } = 5432;
@@ -124,8 +123,8 @@ namespace dackup
             var processStartInfo = new ProcessStartInfo("bash", $"-c \"{PathToPgDump}  {cmdOptions} \"")
             {
                 RedirectStandardOutput = true,
-                UseShellExecute = false,
-                CreateNoWindow = true
+                UseShellExecute        = false,
+                CreateNoWindow         = true
             };
 
             processStartInfo.Environment.Add("PGPASSWORD", Password);
