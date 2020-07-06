@@ -12,7 +12,7 @@ namespace Dackup.Storage
 {
     public class S3Storage: StorageBase
     {
-        private ILogger logger;
+        private readonly ILogger logger;
         private S3Storage() { }
         public string Region { get; set; }
         public string BucketName { get; set; }

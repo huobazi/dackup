@@ -10,6 +10,7 @@
   <ItemGroup>
     <PackageReference Include="Aliyun.OSS.SDK.NetCore" Version="2.10.0" />
     <PackageReference Include="AWSSDK.S3" Version="3.3.111.14" />
+    <PackageReference Include="FluentFTP" Version="32.4.3" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.0-preview.5.20278.1" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="5.0.0-preview.5.20278.1" />
     <PackageReference Include="MongoDB.Driver" Version="2.10.4" />

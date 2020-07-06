@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 
 using Microsoft.Extensions.Logging;
 
@@ -47,15 +48,19 @@ namespace Dackup.Storage
             logger.LogInformation($"Purge to local  removeThreshold: {RemoveThreshold}");
 
             System.IO.DirectoryInfo di = new DirectoryInfo(Path);
-
-            foreach (FileInfo file in di.GetFiles())
+            var filesToPurge = di.GetFiles().Where(file => file.LastWriteTime.ToUniversalTime() <= RemoveThreshold.Value);
+            if (filesToPurge.Count() == 0)
             {
-                if (file.LastWriteTime.ToUniversalTime() <= RemoveThreshold.Value)
+                logger.LogInformation("Nothing to purge.");
+            }
+            else
+            {
+                foreach (var file in filesToPurge)
                 {
                     file.Delete();
                 }
             }
-
+            
             return new PurgeResult();
         }
     }
