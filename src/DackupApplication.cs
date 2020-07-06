@@ -183,10 +183,12 @@ namespace Dackup
                         {
                             if (storageConfig.Type.ToLower().Trim() == "local")
                             {
-                                var task = ServiceProviderFactory.ServiceProvider.GetService<LocalStorage>();
-                                storageConfig.OptionList.NullSafeSetTo<string>(s => task.Path = s, "path");
-                                storageConfig.OptionList.NullSafeSetTo<string>(s => task.RemoveThreshold = Utils.ConvertRemoveThresholdToDateTime(s), "remove_threshold");
-                    
+                                LocalStorage task = StorageFactory.CreateLocalStorage(storageConfig);
+                                tasks.Add(task);
+                            }
+                            if (storageConfig.Type.ToLower().Trim() == "ftp")
+                            {
+                                FTPStorage task = StorageFactory.CreateFTPStorage(storageConfig);
                                 tasks.Add(task);
                             }
                             if (storageConfig.Type.ToLower().Trim().In("s3", "aws_s3", "aws-s3"))
