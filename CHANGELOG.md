@@ -1,6 +1,11 @@
 
 ## CHANGE LOG
 
+### v0.0.5
+
+- Add FTP support
+- https://github.com/huobazi/dackup/pull/9
+
 ### v0.0.4
 
 - Coding refartoring.
