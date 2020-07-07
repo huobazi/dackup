@@ -45,12 +45,12 @@ namespace Dackup.Storage
         }
         public override async Task<PurgeResult> PurgeAsync()
         {           
-            logger.LogInformation($"Purge to s3  removeThreshold: {RemoveThreshold}");
-
             if (RemoveThreshold == null || RemoveThreshold.Value > DateTime.Now)
             {
                 return new PurgeResult();
             }
+
+            logger.LogInformation($"Purge to s3  removeThreshold: {RemoveThreshold}");
 
             using (var s3Client = new AmazonS3Client(this.AccessKeyId, this.AccessKeySecret, RegionEndpoint.GetBySystemName(this.Region)))
             {

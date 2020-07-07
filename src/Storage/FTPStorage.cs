@@ -25,6 +25,10 @@ namespace Dackup.Storage
         public DateTime? RemoveThreshold { get; set; }
         public override async Task<PurgeResult> PurgeAsync()
         {
+            if (RemoveThreshold == null || RemoveThreshold.Value > DateTime.Now)
+            {
+                return new PurgeResult();
+            }
             if (string.IsNullOrWhiteSpace(Path))
             {
                 Path = "/";
@@ -39,10 +43,8 @@ namespace Dackup.Storage
             
             var client = await CreateFtpClient();
 
-            var filesToPurge = (await client.GetListingAsync(this.Path, FtpListOption.AllFiles))
-                                            .Where(item => item.Type == FtpFileSystemObjectType.File)
-                                            .Where(item => client.GetModifiedTime(item.FullName).ToUniversalTime() <= RemoveThreshold.Value)
-                                            .ToList();
+            var filesToPurge = (await client.GetListingAsync(this.Path, FtpListOption.Recursive))
+                                            .Where(item => item.Type == FtpFileSystemObjectType.File || item.Type == FtpFileSystemObjectType.Directory);
             if (filesToPurge.Count() == 0)
             {
                 logger.LogInformation("Nothing to purge.");
@@ -50,10 +52,42 @@ namespace Dackup.Storage
             else
             {
                 List<Task> tasks = new List<Task>();
-                foreach (var item in filesToPurge)
+                foreach (var item in filesToPurge.Where(c => c.Type == FtpFileSystemObjectType.File))
                 {
-                    logger.LogInformation($"Prepare to purge: {item.FullName}");
-                    tasks.Add(client.DeleteFileAsync(item.FullName));
+                    var modified = await client.GetModifiedTimeAsync(item.FullName);
+                    // https://github.com/robinrodricks/FluentFTP/issues/191
+                    // On my OSX + QNAP NAS, the error was reproduce 
+                    // https://github.com/robinrodricks/FluentFTP/blob/master/FluentFTP/Client/FtpClient_FileProperties.cs#L482
+                    if(modified == DateTime.MinValue)
+                    {
+                        continue;
+                    }
+                    if (modified.ToUniversalTime() <= RemoveThreshold.Value)
+                    {
+                        logger.LogInformation($"Prepare to purge: {item.FullName}");
+                        tasks.Add(client.DeleteFileAsync(item.FullName));
+                    }
+                }
+                if(tasks.Count > 0)
+                {
+                    await Task.WhenAll(tasks);
+                    tasks.Clear();
+                }
+                foreach (var item in filesToPurge.Where(c => c.Type == FtpFileSystemObjectType.Directory))
+                {     
+                    var modified = await client.GetModifiedTimeAsync(item.FullName);
+                    // https://github.com/robinrodricks/FluentFTP/issues/191
+                    // On my OSX + QNAP NAS, the error was reproduce
+                    // https://github.com/robinrodricks/FluentFTP/blob/master/FluentFTP/Client/FtpClient_FileProperties.cs#L482
+                    if(modified == DateTime.MinValue)
+                    {
+                        continue;
+                    }
+                    if (modified.ToUniversalTime() <= RemoveThreshold.Value)
+                    {               
+                        logger.LogInformation($"Prepare to purge: {item.FullName}");
+                        tasks.Add(client.DeleteDirectoryAsync(item.FullName));
+                    }
                 }
                 await Task.WhenAll(tasks);
             }
@@ -66,7 +100,7 @@ namespace Dackup.Storage
 
         public override async Task<UploadResult> UploadAsync(string fileName)
         {
-            if (string.IsNullOrWhiteSpace(Path))
+            if (string.IsNullOrWhiteSpace(this.Path))
             {
                 Path = "/";
             }
@@ -76,8 +110,16 @@ namespace Dackup.Storage
 
             logger.LogInformation($"Upload '{fileName}' to FTP");
 
+            bool directoryExists = await client.DirectoryExistsAsync(this.Path);
+
+            if (!directoryExists) 
+            {
+				var b = await client.CreateDirectoryAsync(path: this.Path, force: true);
+            }
+
             var status = await client.UploadFileAsync( localPath: fileName,
-                                                remotePath: System.IO.Path.Combine(this.Path, fileInfo.Name),
+                                                remotePath: System.IO.Path.Combine(this.Path,$"{DateTime.Now:yyyy_MM_dd_HH_mm_ss}", fileInfo.Name),
+                                                existsMode: FtpRemoteExists.Overwrite,
                                                 createRemoteDir: true);
             await client.DisconnectAsync();
 

@@ -27,9 +27,11 @@ namespace Dackup.Storage
                 throw new ArgumentException("Path can not be null or empty.");
             }
 
+            var destPath = System.IO.Path.Combine(this.Path, $"{DateTime.Now:yyyy_MM_dd_HH_mm_ss}");
+            System.IO.Directory.CreateDirectory(destPath);
+
             var fileInfo = new FileInfo(fileName);
-            System.IO.Directory.CreateDirectory(this.Path);
-            System.IO.File.Copy(fileName, System.IO.Path.Combine(this.Path, fileInfo.Name));
+            System.IO.File.Copy(fileName, System.IO.Path.Combine(destPath ,fileInfo.Name));
 
             return new UploadResult();
         }
