@@ -9,7 +9,7 @@ namespace Dackup.Storage
 {
     public class AliyunOssStorage : StorageBase
     {
-        private ILogger logger;
+        private readonly ILogger logger;
         public string Endpoint { get; set; }
         public string AccessKeyId { get; set; }
         public string AccessKeySecret { get; set; }

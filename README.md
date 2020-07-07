@@ -28,6 +28,7 @@ Archive files or folder into a `.tar.gz` file.
 - [x] Local
 - [x] [Amazon S3](https://aws.amazon.com/s3)
 - [x] [Alibaba Cloud Object Storage Service (OSS)](https://www.alibabacloud.com/product/oss)
+- [x] FTP 
 
 ### Notifiers
 

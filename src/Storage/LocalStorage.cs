@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 
 using Microsoft.Extensions.Logging;
 
@@ -26,9 +27,11 @@ namespace Dackup.Storage
                 throw new ArgumentException("Path can not be null or empty.");
             }
 
+            var destPath = System.IO.Path.Combine(this.Path, $"{DateTime.Now:yyyy_MM_dd_HH_mm_ss}");
+            System.IO.Directory.CreateDirectory(destPath);
+
             var fileInfo = new FileInfo(fileName);
-            System.IO.Directory.CreateDirectory(this.Path);
-            System.IO.File.Copy(fileName, System.IO.Path.Combine(this.Path, fileInfo.Name));
+            System.IO.File.Copy(fileName, System.IO.Path.Combine(destPath ,fileInfo.Name));
 
             return new UploadResult();
         }
@@ -47,15 +50,19 @@ namespace Dackup.Storage
             logger.LogInformation($"Purge to local  removeThreshold: {RemoveThreshold}");
 
             System.IO.DirectoryInfo di = new DirectoryInfo(Path);
-
-            foreach (FileInfo file in di.GetFiles())
+            var filesToPurge = di.GetFiles().Where(file => file.LastWriteTime.ToUniversalTime() <= RemoveThreshold.Value);
+            if (filesToPurge.Count() == 0)
             {
-                if (file.LastWriteTime.ToUniversalTime() <= RemoveThreshold.Value)
+                logger.LogInformation("Nothing to purge.");
+            }
+            else
+            {
+                foreach (var file in filesToPurge)
                 {
                     file.Delete();
                 }
             }
-
+            
             return new PurgeResult();
         }
     }

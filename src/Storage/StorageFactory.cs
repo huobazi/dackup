@@ -7,6 +7,28 @@ namespace Dackup.Storage
 {
     public static class StorageFactory
     {   
+        public static LocalStorage CreateLocalStorage(StorageConfig storageConfig)
+        {
+            var task = ServiceProviderFactory.ServiceProvider.GetService<LocalStorage>();
+
+            storageConfig.OptionList.NullSafeSetTo<string>(s => task.Path = s, "path");
+            storageConfig.OptionList.NullSafeSetTo<string>(s => task.RemoveThreshold = Utils.ConvertRemoveThresholdToDateTime(s), "remove_threshold");
+                    
+            return task;
+        }
+        public static FTPStorage CreateFTPStorage(StorageConfig storageConfig)
+        {
+            var task = ServiceProviderFactory.ServiceProvider.GetService<FTPStorage>();
+
+            storageConfig.OptionList.NullSafeSetTo<string>(s => task.Host = s, "host");
+            storageConfig.OptionList.NullSafeSetTo<int>(s => task.Port = s, "port");
+            storageConfig.OptionList.NullSafeSetTo<string>(s => task.UserName = s, "username");
+            storageConfig.OptionList.NullSafeSetTo<string>(s => task.Password = s, "password");
+            storageConfig.OptionList.NullSafeSetTo<string>(s => task.Path = s, "path");
+            storageConfig.OptionList.NullSafeSetTo<string>(s => task.RemoveThreshold = Utils.ConvertRemoveThresholdToDateTime(s), "remove_threshold");
+
+            return task;
+        }
         public static AliyunOssStorage CreateAliyunOssStorage(StorageConfig storageConfig)
         {
             var task = ServiceProviderFactory.ServiceProvider.GetService<AliyunOssStorage>();

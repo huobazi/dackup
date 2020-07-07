@@ -46,6 +46,7 @@ namespace Dackup
             services.AddTransient<LocalStorage>();
             services.AddTransient<AliyunOssStorage>();
             services.AddTransient<S3Storage>();
+            services.AddTransient<FTPStorage>();
 
             // add notify tasks
             services.AddTransient<DingtalkRobotNotify>();
