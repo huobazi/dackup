@@ -55,5 +55,20 @@ namespace Dackup.Storage
 
             return task;
         }
+
+        public static SCPStorage CreateSCPStorage(StorageConfig storageConfig)
+        {
+            var task = ServiceProviderFactory.ServiceProvider.GetService<SCPStorage>();
+
+            storageConfig.OptionList.NullSafeSetTo<string>(s => task.Host = s, "host");
+            storageConfig.OptionList.NullSafeSetTo<int>(s => task.Port = s, "port");
+            storageConfig.OptionList.NullSafeSetTo<string>(s => task.UserName = s, "username");
+            storageConfig.OptionList.NullSafeSetTo<string>(s => task.Password = s, "password");
+            storageConfig.OptionList.NullSafeSetTo<string>(s => task.Path = s, "path");
+            storageConfig.OptionList.NullSafeSetTo<string>(s => task.PrivateKeyFile = s, "private_key_file");
+            storageConfig.OptionList.NullSafeSetTo<string>(s => task.RemoveThreshold = Utils.ConvertRemoveThresholdToDateTime(s), "remove_threshold");
+
+            return task;
+        }
     }
 }

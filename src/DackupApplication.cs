@@ -186,17 +186,22 @@ namespace Dackup
                                 LocalStorage task = StorageFactory.CreateLocalStorage(storageConfig);
                                 tasks.Add(task);
                             }
-                            if (storageConfig.Type.ToLower().Trim() == "ftp")
+                            else if (storageConfig.Type.ToLower().Trim() == "ftp")
                             {
                                 FTPStorage task = StorageFactory.CreateFTPStorage(storageConfig);
                                 tasks.Add(task);
                             }
-                            if (storageConfig.Type.ToLower().Trim().In("s3", "aws_s3", "aws-s3"))
+                            else if (storageConfig.Type.ToLower().Trim() == "scp")
+                            {
+                                SCPStorage task = StorageFactory.CreateSCPStorage(storageConfig);
+                                tasks.Add(task);
+                            }
+                            else if (storageConfig.Type.ToLower().Trim().In("s3", "aws_s3", "aws-s3"))
                             {
                                 S3Storage task = StorageFactory.CreateS3Storage(storageConfig);
                                 tasks.Add(task);
                             }
-                            if (storageConfig.Type.ToLower().Trim().In("aliyun_oss", "aliyun-oss"))
+                            else if (storageConfig.Type.ToLower().Trim().In("aliyun_oss", "aliyun-oss"))
                             {
                                 AliyunOssStorage task = StorageFactory.CreateAliyunOssStorage(storageConfig);
                                 tasks.Add(task);

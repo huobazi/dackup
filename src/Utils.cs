@@ -232,5 +232,15 @@ namespace Dackup
             return false;
         }
 
+        public static string GetPathWithHome(string path)
+        {
+            if (!string.IsNullOrWhiteSpace(path) && path.StartsWith("~/"))
+            {
+                var homePath = Environment.GetEnvironmentVariable("HOME");
+                path = System.IO.Path.Combine(homePath, path.TrimStart('~').TrimStart('/'));
+            }
+
+            return path;
+        }
     }
 }
