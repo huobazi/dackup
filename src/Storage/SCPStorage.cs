@@ -23,7 +23,7 @@ namespace Dackup.Storage
         public string UserName { get; set; }
         public string Password { get; set; }
         public string PrivateKeyFile { get; set; } = "~/.ssh/id_rsa";
-        public string Path { get; set; } = "/";
+        public string Path { get; set; } = "~/";
         public DateTime? RemoveThreshold { get; set; }
 
         protected override PurgeResult Purge()
