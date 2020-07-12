@@ -23,9 +23,9 @@ namespace Dackup.Storage
         public string UserName { get; set; }
         public string Password { get; set; }
         public string PrivateKeyFile { get; set; } = "~/.ssh/id_rsa";
+        public string PrivateKeyPassphrase { get; set;}
         public string Path { get; set; } = "~/";
         public DateTime? RemoveThreshold { get; set; }
-
         protected override PurgeResult Purge()
         {
             if (RemoveThreshold == null || RemoveThreshold.Value > DateTime.Now)
@@ -65,7 +65,6 @@ namespace Dackup.Storage
 
             return new PurgeResult();
         }
-
         protected override UploadResult Upload(string fileName)
         {
             if (string.IsNullOrWhiteSpace(this.Path))
@@ -112,7 +111,7 @@ namespace Dackup.Storage
             else
             {
                 var privateKeyFile = Utils.GetPathWithHome(this.PrivateKeyFile);
-                client = new ScpClient(this.Host, this.Port, this.UserName, new PrivateKeyFile(privateKeyFile));
+                client = new ScpClient(this.Host, this.Port, this.UserName, new PrivateKeyFile(privateKeyFile, this.PrivateKeyPassphrase));
             }
 
             client.OperationTimeout = TimeSpan.FromSeconds(this.Timeout);
