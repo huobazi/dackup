@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-readonly RELEASE_VERSION="0.0.5.beta-1"
+readonly RELEASE_VERSION=`cat REVISION`
 
 usage()
 {
