@@ -95,6 +95,12 @@ Use arrow keys to scroll. Press 'q' to exit.
 
 ```
 
+### docker
+
+```
+docker run --rm --net=host -v /config/dackup.config:/config/dackup.config dackup perform --config-file /config/dackup.config
+```
+
 ## Configuration
 
 Use the subcommand ``` new ``` to generate a task config file, such as [mockup config file](https://github.com/huobazi/dackup/blob/master/src/perform-config-mockup.config)
