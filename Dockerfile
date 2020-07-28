@@ -7,7 +7,7 @@ COPY src/*.csproj .
 RUN dotnet restore -r linux-x64
 
 # copy and publish app and libraries
-COPY src. .
+COPY src/. .
 RUN dotnet publish -c release -o /app -r linux-x64 --self-contained true --no-restore /p:PublishTrimmed=true /p:PublishReadyToRun=true
 
 # final stage/image
