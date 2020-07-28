@@ -35,4 +35,4 @@ RUN echo "deb [ arch=amd64 ] https://repo.mongodb.org/apt/ubuntu bionic/mongodb-
 
 WORKDIR /app
 COPY --from=build /app .
-ENTRYPOINT ["./dotnetapp"]
+ENTRYPOINT ["./dackup"]
