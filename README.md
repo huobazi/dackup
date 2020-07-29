@@ -95,12 +95,6 @@ Use arrow keys to scroll. Press 'q' to exit.
 
 ```
 
-### Docker
-
-```
-docker run --rm --net=host -v /config/dackup.config:/config/dackup.config dackup perform --config-file /config/dackup.config
-```
-
 ## Configuration
 
 Use the subcommand ``` new ``` to generate a task config file, such as [mockup config file](https://github.com/huobazi/dackup/blob/master/src/perform-config-mockup.config)
@@ -109,19 +103,31 @@ Use the subcommand ``` new ``` to generate a task config file, such as [mockup c
 $ /your_path/dackup new my_first_task
 ```
 
+## Docker
+
+```
+docker pull huobazi/dackup:latest
+
+docker run --name dackup --net=host -v /config/dackup.config:/config/dackup.config huobazi/dackup perform --config-file /config/dackup.config
+```
+
 ## Crontab
 
 ```bash
 
 $ crontab -l
-0 0 * * * /your_path/dackup perform --config-file /your_path/your_first_task.config --tmp-path /your_tmp_path/first --log-path /your_log_path
+0 1 * * * /your_path/dackup perform --config-file /your_path/your_first_task.config --tmp-path /your_tmp_path/first --log-path /your_log_path
 0 2 * * * /your_path/dackup perform --config-file /your_path/your_second_task.config --tmp-path /your_tmp_path/second --log-path /your_log_path
+
+0 3 * * * docker run --name dackup --net=host -v /config/dackup.config:/config/dackup.config huobazi/dackup perform --config-file /config/dackup.config
 
 ```
 
 ## Install
 
 You can download binary from [releases](https://github.com/huobazi/dackup/releases) page and place it in $PATH directory.
+
+Or pull it from [Docker Hub](https://hub.docker.com/r/huobazi/dackup)
 
 ## Build
 
