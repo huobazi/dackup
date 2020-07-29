@@ -24,7 +24,7 @@ RUN apt-get update && apt-get install -y gnupg2 \
     && apt-get update \
     && apt-get install -y mongodb-org-shell postgresql-client mysql-client openssh-client apt-transport-https ca-certificates software-properties-common \
     && update-ca-certificates \
-    && apt-get install -y wget build-deps gcc make linux-headers musl-dev tar \
+    && apt-get install -y wget build-deps gcc make musl-dev tar \
     && wget -O redis.tar.gz "$REDIS_DOWNLOAD_URL" \
     && mkdir -p /usr/src/redis \
     && tar -xzf redis.tar.gz -C /usr/src/redis --strip-components=1 \
