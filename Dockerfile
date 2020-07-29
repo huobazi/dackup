@@ -25,7 +25,8 @@ RUN apt-get update && apt-get install -y gnupg2 \
     && make \
     && cp src/redis-cli /usr/local/bin/ \
     && chmod 755 /usr/local/bin/redis-cli \
-    && rm -rf /tmp/redis-stable* 
+    && rm -rf /tmp/redis-stable  \
+    && rm -rf /var/lib/apt/lists/*
 
 
 WORKDIR /app
