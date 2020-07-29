@@ -12,7 +12,7 @@ RUN dotnet publish -c release -o /app -r linux-x64 --self-contained true --no-re
 
 # final stage/image
 FROM mcr.microsoft.com/dotnet/core/runtime-deps:3.1-bionic
-RUN apt-get update && apt-get install -y gnupg2 \	
+RUN apt-get clean && apt-get update && apt-get install -y gnupg2 \	
     &&  echo "deb [ arch=amd64 ] https://repo.mongodb.org/apt/ubuntu bionic/mongodb-org/4.0 multiverse"  | tee /etc/apt/sources.list.d/mongodb-org-4.0.list \
     && apt-key adv --keyserver hkp://keyserver.ubuntu.com:80  --recv 9DA31620334BD75D9DCB49F368818C72E52529D4 \
     && apt-get update \
