@@ -13,26 +13,20 @@ RUN dotnet publish -c release -o /app -r linux-x64 --self-contained true --no-re
 # final stage/image
 FROM mcr.microsoft.com/dotnet/core/runtime-deps:3.1-bionic
 
-ARG REDIS_VERSION="6.0.4"
-ARG REDIS_DOWNLOAD_URL="http://download.redis.io/releases/redis-${REDIS_VERSION}.tar.gz"
-
-RUN apt-get update && apt-get install -y gnupg2 \
-    && echo "deb [ arch=amd64 ] https://repo.mongodb.org/apt/ubuntu bionic/mongodb-org/4.0 multiverse" \
-    | tee /etc/apt/sources.list.d/mongodb-org-4.0.list \
-    && apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 \
-    --recv 9DA31620334BD75D9DCB49F368818C72E52529D4 \
+RUN  echo "deb [ arch=amd64 ] https://repo.mongodb.org/apt/ubuntu bionic/mongodb-org/4.0 multiverse"  | tee /etc/apt/sources.list.d/mongodb-org-4.0.list \
+    && apt-key adv --keyserver hkp://keyserver.ubuntu.com:80  --recv 9DA31620334BD75D9DCB49F368818C72E52529D4 \
     && apt-get update \
     && apt-get install -y mongodb-org-shell postgresql-client mysql-client openssh-client apt-transport-https ca-certificates software-properties-common \
-    && update-ca-certificates \
-    && apt-get install -y wget build-deps gcc make musl-dev tar \
-    && wget -O redis.tar.gz "$REDIS_DOWNLOAD_URL" \
-    && mkdir -p /usr/src/redis \
-    && tar -xzf redis.tar.gz -C /usr/src/redis --strip-components=1 \
-    && rm redis.tar.gz \
-    && make -C /usr/src/redis install redis-cli /usr/bin \
-    && rm -r /usr/src/redis \
-    && apt-get --purge remove build-deps \
-    && rm -rf /var/cache/apk/*
+    && update-ca-certificates \    
+    && cd /tmp \
+    && wget http://download.redis.io/redis-stable.tar.gz  \
+    && tar xvzf redis-stable.tar.gz \
+    && cd redis-stable \
+    && make \
+    && cp src/redis-cli /usr/local/bin/ \
+    && chmod 755 /usr/local/bin/redis-cli
+    && rm -rf /tmp/redis-stable* 
+
 
 WORKDIR /app
 COPY --from=build /app .
