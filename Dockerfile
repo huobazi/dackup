@@ -25,7 +25,7 @@ LABEL org.label-schema.vcs-url="https://github.com/huobazi/dackup"
 LABEL org.label-schema.vendor="Marble Wu"
 
 
-RUN apk --update add --no-cache postgresql-client mysql-client mongodb mongodb-tools \
+RUN apk --update add --no-cache postgresql-client mysql-client mongodb-tools \
   && rm -rf /var/cache/apk/*
 
 WORKDIR /app
