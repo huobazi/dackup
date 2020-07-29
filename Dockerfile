@@ -11,10 +11,22 @@ COPY src/. .
 RUN dotnet publish -c release -o /app -r linux-musl-x64 --self-contained true --no-restore /p:PublishTrimmed=true /p:PublishReadyToRun=true
 
 FROM goodsmileduck/redis-cli AS redis-cli
+WORKDIR /app
+COPY --from=build /app .
+
 FROM leobueno1982/mssql-tools-alpine:1.0 AS mssql-tools
+WORKDIR /app
+COPY --from=redis-cli /app .
+COPY --from=redis-cli /usr/bin/redis-cli /usr/bin/redis-cli
+
 
 # final stage/image
 FROM mcr.microsoft.com/dotnet/core/runtime-deps:3.1-alpine
+WORKDIR /app
+
+COPY --from=mssql-tools /app .
+COPY --from=mssql-tools /usr/bin/redis-cli /usr/bin/redis-cli
+COPY --from=mssql-tools /opt/mssql-tools/bin /opt/mssql-tools/bin
 
 # Labels
 LABEL maintainer="huobazi@gmail.com"
@@ -26,13 +38,10 @@ LABEL org.label-schema.vendor="Marble Wu"
 
 
 RUN apk --update add --no-cache postgresql-client mysql-client mongodb-tools \
+  && mkdir /opt/redis-cli/bin \
+  && mkdir /opt/mssql-tools/bin \
   && rm -rf /var/cache/apk/*
 
-WORKDIR /app
-
-COPY --from=build /app .
-COPY --from=redis-cli /usr/bin/redis-cli /usr/bin/redis-cli
-COPY --from=mssql-tools /opt/mssql-tools/bin /opt/mssql-tools/bin
 
 ENV PATH=$PATH:/opt/mssql-tools/bin
 

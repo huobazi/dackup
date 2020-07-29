@@ -118,7 +118,6 @@ docker run --name dackup --net=host -v /config/dackup.config:/config/dackup.conf
 $ crontab -l
 0 1 * * * /your_path/dackup perform --config-file /your_path/your_first_task.config --tmp-path /your_tmp_path/first --log-path /your_log_path
 0 2 * * * /your_path/dackup perform --config-file /your_path/your_second_task.config --tmp-path /your_tmp_path/second --log-path /your_log_path
-
 0 3 * * * docker run --name dackup --net=host -v /config/dackup.config:/config/dackup.config huobazi/dackup perform --config-file /config/dackup.config
 
 ```
