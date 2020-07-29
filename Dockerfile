@@ -15,6 +15,7 @@ FROM mcr.microsoft.com/dotnet/core/runtime-deps:3.1-bionic
 RUN apt-get clean && apt-get update && apt-get install -y wget gnupg \	
     && wget -qO - https://www.mongodb.org/static/pgp/server-4.2.asc |  apt-key add - \
     &&  echo "deb [ arch=amd64 ] https://repo.mongodb.org/apt/ubuntu bionic/mongodb-org/4.0 multiverse"  | tee /etc/apt/sources.list.d/mongodb-org-4.0.list \
+    && apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 68818C72E52529D4
     && apt-get update \
     && apt-get install -y mongodb-org-tools postgresql-client mysql-client openssh-client apt-transport-https ca-certificates software-properties-common \
     && update-ca-certificates \    
