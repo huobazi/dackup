@@ -1,35 +1,39 @@
 # https://hub.docker.com/_/microsoft-dotnet-core
-FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS build
+FROM mcr.microsoft.com/dotnet/core/sdk:3.1-alpine AS build
 WORKDIR /source
 
 # copy csproj and restore as distinct layers
-COPY src/*.csproj .
-RUN dotnet restore -r linux-x64
+COPY src/dackup.csproj .
+RUN dotnet restore -r linux-musl-x64
 
 # copy and publish app and libraries
 COPY src/. .
-RUN dotnet publish -c release -o /app -r linux-x64 --self-contained true --no-restore /p:PublishTrimmed=true /p:PublishReadyToRun=true
+RUN dotnet publish -c release -o /app -r linux-musl-x64 --self-contained true --no-restore /p:PublishTrimmed=true /p:PublishReadyToRun=true
+
+FROM goodsmileduck/redis-cli AS redis-cli
+FROM leobueno1982/mssql-tools-alpine AS mssql-tools
 
 # final stage/image
-FROM mcr.microsoft.com/dotnet/core/runtime-deps:3.1-bionic
-RUN apt-get clean && apt-get update && apt-get install -y wget gnupg  build-essential make \	
-    && wget -qO - https://www.mongodb.org/static/pgp/server-4.2.asc |  apt-key add - \
-    &&  echo "deb [ arch=amd64 ] https://repo.mongodb.org/apt/ubuntu bionic/mongodb-org/4.0 multiverse"  | tee /etc/apt/sources.list.d/mongodb-org-4.0.list \
-    && apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 68818C72E52529D4 \
-    && apt-get update \
-    && apt-get install -y mongodb-org-tools postgresql-client mysql-client openssh-client apt-transport-https ca-certificates software-properties-common \
-    && update-ca-certificates \    
-    && cd /tmp \
-    && wget http://download.redis.io/redis-stable.tar.gz  \
-    && tar xvzf redis-stable.tar.gz \
-    && cd redis-stable \
-    && make \
-    && cp src/redis-cli /usr/local/bin/ \
-    && chmod 755 /usr/local/bin/redis-cli \
-    && rm -rf /tmp/redis-stable  \
-    && rm -rf /var/lib/apt/lists/*
+FROM mcr.microsoft.com/dotnet/core/runtime-deps:3.1-alpine
 
+# Labels
+LABEL maintainer="huobazi@gmail.com"
+LABEL org.label-schema.name="dackup"
+LABEL org.label-schema.description="Dackup is a free, open source, backup client for your files and database to Cloud "
+LABEL org.label-schema.url="https://huobazi.github.io/dackup"
+LABEL org.label-schema.vcs-url="https://github.com/huobazi/dackup"
+LABEL org.label-schema.vendor="Marble Wu"
+
+
+RUN apk --update add --no-cache postgresql-client mysql-client mongodb mongodb-tools \
+  && rm -rf /var/cache/apk/*
 
 WORKDIR /app
+
 COPY --from=build /app .
-ENTRYPOINT ["./dackup"]
+COPY --from=redis-cli /usr/bin/redis-cli /usr/bin/redis-cli
+COPY --from=mssql-tools /opt/mssql-tools/bin /opt/mssql-tools/bin
+
+ENV PATH=$PATH:/opt/mssql-tools/bin
+
+ENTRYPOINT ["./dackup"] 
