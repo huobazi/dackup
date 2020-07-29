@@ -11,15 +11,15 @@ COPY src/. .
 RUN dotnet publish -c release -o /app -r linux-musl-x64 --self-contained true --no-restore /p:PublishTrimmed=true /p:PublishReadyToRun=true
 
 FROM goodsmileduck/redis-cli AS redis-cli
-FROM leobueno1982/mssql-tools-alpine AS mssql-tools
+FROM leobueno1982/mssql-tools-alpine:1.0 AS mssql-tools
 
 # final stage/image
 FROM mcr.microsoft.com/dotnet/core/runtime-deps:3.1-alpine
 
 # Labels
 LABEL maintainer="huobazi@gmail.com"
-LABEL org.label-schema.name="dackup"
-LABEL org.label-schema.description="Dackup is a free, open source, backup client for your files and database to Cloud "
+LABEL org.label-schema.name="Dackup"
+LABEL org.label-schema.description="Dackup is a free open source backup client for your files and database to Cloud "
 LABEL org.label-schema.url="https://huobazi.github.io/dackup"
 LABEL org.label-schema.vcs-url="https://github.com/huobazi/dackup"
 LABEL org.label-schema.vendor="Marble Wu"
