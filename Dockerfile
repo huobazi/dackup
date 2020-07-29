@@ -38,8 +38,6 @@ LABEL org.label-schema.vendor="Marble Wu"
 
 
 RUN apk --update add --no-cache postgresql-client mysql-client mongodb-tools \
-  && mkdir /opt/redis-cli/bin \
-  && mkdir /opt/mssql-tools/bin \
   && rm -rf /var/cache/apk/*
 
 
