@@ -24,7 +24,7 @@ RUN  echo "deb [ arch=amd64 ] https://repo.mongodb.org/apt/ubuntu bionic/mongodb
     && cd redis-stable \
     && make \
     && cp src/redis-cli /usr/local/bin/ \
-    && chmod 755 /usr/local/bin/redis-cli
+    && chmod 755 /usr/local/bin/redis-cli \
     && rm -rf /tmp/redis-stable* 
 
 
