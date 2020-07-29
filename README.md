@@ -95,7 +95,7 @@ Use arrow keys to scroll. Press 'q' to exit.
 
 ```
 
-### docker
+### Docker
 
 ```
 docker run --rm --net=host -v /config/dackup.config:/config/dackup.config dackup perform --config-file /config/dackup.config
