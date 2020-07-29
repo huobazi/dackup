@@ -16,7 +16,7 @@ RUN apt-get update && apt-get install -y gnupg2 \
     &&  echo "deb [ arch=amd64 ] https://repo.mongodb.org/apt/ubuntu bionic/mongodb-org/4.0 multiverse"  | tee /etc/apt/sources.list.d/mongodb-org-4.0.list \
     && apt-key adv --keyserver hkp://keyserver.ubuntu.com:80  --recv 9DA31620334BD75D9DCB49F368818C72E52529D4 \
     && apt-get update \
-    && apt-get install -y mongodb-org-shell postgresql-client mysql-client openssh-client apt-transport-https ca-certificates software-properties-common \
+    && apt-get install -y wget mongodb-org-shell postgresql-client mysql-client openssh-client apt-transport-https ca-certificates software-properties-common \
     && update-ca-certificates \    
     && cd /tmp \
     && wget http://download.redis.io/redis-stable.tar.gz  \
