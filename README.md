@@ -106,9 +106,8 @@ $ /your_path/dackup new my_first_task
 ## Docker
 
 ```
-docker pull huobazi/dackup:latest
-
-docker run --name dackup --net=host -v /config/dackup.config:/config/dackup.config huobazi/dackup perform --config-file /config/dackup.config
+$ docker pull huobazi/dackup:latest
+$ docker run --name dackup --net=host -v /config/dackup.config:/config/dackup.config huobazi/dackup perform --config-file /config/dackup.config
 ```
 
 ## Crontab
