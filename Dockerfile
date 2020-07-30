@@ -13,15 +13,15 @@ RUN dotnet publish -c release -o /app -r linux-musl-x64 --self-contained true --
 # final stage/image
 FROM mcr.microsoft.com/dotnet/core/runtime-deps:3.1-alpine
 
-ARG REDIS_VERSION="6.0.4"
+ARG REDIS_VERSION="6.0.6"
 ARG REDIS_DOWNLOAD_URL="http://download.redis.io/releases/redis-${REDIS_VERSION}.tar.gz"
 
 ARG MSSQL_VERSION=17.5.2.1-1
 ENV MSSQL_VERSION=${MSSQL_VERSION}
 
 RUN apk update && apk upgrade \
-    && apk add --update --no-cache --virtual build-deps gcc make linux-headers musl-dev tar \
-    && wget -O redis.tar.gz "$REDIS_DOWNLOAD_URL" \
+    && apk add --update --no-cache curl --virtual build-deps gcc make linux-headers musl-dev tar \
+    && curl -O redis.tar.gz "$REDIS_DOWNLOAD_URL" \
     && mkdir -p /usr/src/redis \
     && tar -xzf redis.tar.gz -C /usr/src/redis --strip-components=1 \
     && rm redis.tar.gz \
@@ -29,7 +29,7 @@ RUN apk update && apk upgrade \
     && rm -r /usr/src/redis \
 
     # Installing system utilities
-    && apk add --no-cache curl gnupg --virtual .build-dependencies --  \
+    && apk add --no-cache  gnupg --virtual .build-dependencies --  \
     # Adding custom MS repository for mssql-tools and msodbcsql
     && curl -O https://download.microsoft.com/download/e/4/e/e4e67866-dffd-428c-aac7-8d28ddafb39b/msodbcsql17_${MSSQL_VERSION}_amd64.apk  \
     && curl -O https://download.microsoft.com/download/e/4/e/e4e67866-dffd-428c-aac7-8d28ddafb39b/mssql-tools_${MSSQL_VERSION}_amd64.apk  \
