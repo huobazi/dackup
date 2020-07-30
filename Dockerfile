@@ -1,4 +1,3 @@
-
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1-alpine AS build
 WORKDIR /source
 
@@ -21,7 +20,7 @@ ENV MSSQL_VERSION=${MSSQL_VERSION}
 
 RUN apk update && apk upgrade \
     && apk add --update --no-cache curl --virtual build-deps gcc make linux-headers musl-dev tar \
-    && curl -O redis.tar.gz "$REDIS_DOWNLOAD_URL" \
+    && curl "$REDIS_DOWNLOAD_URL" -o redis.tar.gz  \
     && mkdir -p /usr/src/redis \
     && tar -xzf redis.tar.gz -C /usr/src/redis --strip-components=1 \
     && rm redis.tar.gz \
