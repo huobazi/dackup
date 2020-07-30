@@ -1,10 +1,3 @@
-FROM goodsmileduck/redis-cli AS redis-cli
-WORKDIR /cmd
-RUN cp -r /usr/bin/redis-cli /cmd/redis-cli
-
-FROM leobueno1982/mssql-tools-alpine:1.0 AS mssql-tools
-WORKDIR /cmd
-RUN cp -r /opt/mssql-tools/bin/* /cmd/*
 
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1-alpine AS build
 WORKDIR /source
@@ -19,6 +12,41 @@ RUN dotnet publish -c release -o /app -r linux-musl-x64 --self-contained true --
 
 # final stage/image
 FROM mcr.microsoft.com/dotnet/core/runtime-deps:3.1-alpine
+
+ARG REDIS_VERSION="6.0.4"
+ARG REDIS_DOWNLOAD_URL="http://download.redis.io/releases/redis-${REDIS_VERSION}.tar.gz"
+
+ARG MSSQL_VERSION=17.5.2.1-1
+ENV MSSQL_VERSION=${MSSQL_VERSION}
+
+RUN apk update && apk upgrade \
+    && apk add --update --no-cache --virtual build-deps gcc make linux-headers musl-dev tar \
+    && wget -O redis.tar.gz "$REDIS_DOWNLOAD_URL" \
+    && mkdir -p /usr/src/redis \
+    && tar -xzf redis.tar.gz -C /usr/src/redis --strip-components=1 \
+    && rm redis.tar.gz \
+    && make -C /usr/src/redis install redis-cli /usr/bin \
+    && rm -r /usr/src/redis \
+
+    # Installing system utilities
+    && apk add --no-cache curl gnupg --virtual .build-dependencies --  \
+    # Adding custom MS repository for mssql-tools and msodbcsql
+    && curl -O https://download.microsoft.com/download/e/4/e/e4e67866-dffd-428c-aac7-8d28ddafb39b/msodbcsql17_${MSSQL_VERSION}_amd64.apk  \
+    && curl -O https://download.microsoft.com/download/e/4/e/e4e67866-dffd-428c-aac7-8d28ddafb39b/mssql-tools_${MSSQL_VERSION}_amd64.apk  \
+    # Verifying signature
+    && curl -O https://download.microsoft.com/download/e/4/e/e4e67866-dffd-428c-aac7-8d28ddafb39b/msodbcsql17_${MSSQL_VERSION}_amd64.sig  \
+    && curl -O https://download.microsoft.com/download/e/4/e/e4e67866-dffd-428c-aac7-8d28ddafb39b/mssql-tools_${MSSQL_VERSION}_amd64.sig  \
+    # Importing gpg key
+    && curl https://packages.microsoft.com/keys/microsoft.asc  | gpg --import -  \
+    && gpg --verify msodbcsql17_${MSSQL_VERSION}_amd64.sig msodbcsql17_${MSSQL_VERSION}_amd64.apk  \
+    && gpg --verify mssql-tools_${MSSQL_VERSION}_amd64.sig mssql-tools_${MSSQL_VERSION}_amd64.apk  \
+    # Installing packages
+    && echo y | apk add --allow-untrusted msodbcsql17_${MSSQL_VERSION}_amd64.apk mssql-tools_${MSSQL_VERSION}_amd64.apk  \
+    # Deleting packages
+    && apk del .build-dependencies && rm -f msodbcsql*.sig mssql-tools*.apk \    
+    && apk del build-deps \
+    && rm -rf /var/cache/apk/* \
+
 WORKDIR /app
 
 # Labels
@@ -29,15 +57,10 @@ LABEL org.label-schema.url="https://huobazi.github.io/dackup"
 LABEL org.label-schema.vcs-url="https://github.com/huobazi/dackup"
 LABEL org.label-schema.vendor="Marble Wu"
 
-
 RUN apk --update add --no-cache postgresql-client mysql-client mongodb-tools \
     && rm -rf /var/cache/apk/*
 
-
 COPY --from=build /app .
-COPY --from=redis-cli /cmd .
-COPY --from=mssql-tools /cmd .
 
-ENV PATH=$PATH:/app
-
+ENV PATH=$PATH:/opt/mssql-tools/bin:/app
 ENTRYPOINT ["./dackup"] 
