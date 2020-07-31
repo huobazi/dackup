@@ -14,7 +14,6 @@ FROM mcr.microsoft.com/dotnet/core/runtime-deps:3.1-alpine
 
 ARG REDIS_VERSION="6.0.6"
 ARG REDIS_DOWNLOAD_URL="http://download.redis.io/releases/redis-${REDIS_VERSION}.tar.gz"
-
 ARG MSSQL_VERSION=17.5.2.1-1
 ENV MSSQL_VERSION=${MSSQL_VERSION}
 
@@ -41,10 +40,8 @@ RUN apk update && apk upgrade \
     && echo y | apk add --allow-untrusted msodbcsql17_${MSSQL_VERSION}_amd64.apk mssql-tools_${MSSQL_VERSION}_amd64.apk  \
     # Deleting packages
     && rm -f msodbcsql*.sig mssql-tools*.apk \    
+    && apk --update add --no-cache postgresql-client mysql-client mongodb-tools \
     && apk del build-deps \
-    && rm -rf /var/cache/apk/* 
-
-    RUN  apk --update add --no-cache postgresql-client mysql-client mongodb-tools \
     && rm -rf /var/cache/apk/* 
 
 WORKDIR /app
