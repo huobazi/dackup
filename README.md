@@ -6,6 +6,7 @@ Dackup is a fullstack backup tool was written by .NET Core, that is fast, effici
 
 - [x] Cross-Platform (win/osx/linux).
 - [x] No Dependence.
+- [x] Docker Container support
 - [x] Archive folder or files to tar.gz
 - [x] Multiple Databases source support.
 - [x] Multiple Storage type support.
