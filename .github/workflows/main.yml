@@ -7,17 +7,18 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+        
       - name: Build dackup image
         run: docker build -t dackup .
         
-      - name: Push the images to GitHub Package Registry
+      - name: Push the image to GitHub Package Registry
         if: github.ref == 'refs/heads/master'
         run: |
           docker login docker.pkg.github.com -u $GITHUB_ACTOR -p ${{ secrets.PACKAGES_TOKEN }}
           docker tag builder docker.pkg.github.com/huobazi/dackup/dackup:latest
           docker push docker.pkg.github.com/huobazi/dackup/dackup:latest      
            
-      - name: Push the images to Docker Hub
+      - name: Push the image to Docker Hub
         if: github.ref == 'refs/heads/master'
         run: |
           docker login -u huobazi -p ${{ secrets.DOCKER_TOKEN }}
