@@ -105,6 +105,9 @@ $ /your_path/dackup new my_first_task
 ```
 
 ## Docker
+Compiled Docker image can be pulled from: [Docker Hub](https://hub.docker.com/r/huobazi/dackup).
+
+![](http://dockeri.co/image/huobazi/dackup)
 
 ```
 $ docker pull huobazi/dackup:latest
