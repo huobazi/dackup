@@ -15,12 +15,12 @@ jobs:
         if: github.ref == 'refs/heads/master'
         run: |
           docker login docker.pkg.github.com -u $GITHUB_ACTOR -p ${{ secrets.PACKAGES_TOKEN }}
-          docker tag builder docker.pkg.github.com/huobazi/dackup/dackup:latest
+          docker tag dackup docker.pkg.github.com/huobazi/dackup/dackup:latest
           docker push docker.pkg.github.com/huobazi/dackup/dackup:latest      
            
       - name: Push the image to Docker Hub
         if: github.ref == 'refs/heads/master'
         run: |
           docker login -u huobazi -p ${{ secrets.DOCKER_TOKEN }}
-          docker tag builder huobazi/dackup:latest
+          docker tag dackup huobazi/dackup:latest
           docker push huobazi/dackup:latest
