@@ -39,7 +39,7 @@ rm -rf $SCRIPT_PATH/dist
 mkdir $SCRIPT_PATH/dist
 rm -rf $SRC_PATH/bin/Release 
 
-declare -a winOS=("win10-x64" "win81-x64" "win7-x64" "win-x64")
+declare -a winOS=("win-x64")
 declare -a unixOS=("osx-x64" "linux-x64")
 declare -a releaseFiles=()
 
