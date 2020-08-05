@@ -69,7 +69,7 @@ do
 done
 
 if [ "$github_api_token" = "" ]; then
-    exit 1
+    exit 0
 fi
 
 readonly owner="huobazi"
