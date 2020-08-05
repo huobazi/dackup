@@ -2,6 +2,8 @@
 
 Dackup is a fullstack backup tool was written by .NET Core, that is fast, efficient and secure. It supports the three major operating systems (Linux, macOS, Windows)
 
+[![dackup](http://dockeri.co/image/huobazi/dackup)](https://hub.docker.com/r/huobazi/dackup)
+
 ## Features
 
 - [x] Cross-Platform (win/osx/linux).
@@ -106,8 +108,6 @@ $ /your_path/dackup new my_first_task
 
 ## Docker
 Compiled Docker image can be pulled from: [Docker Hub](https://hub.docker.com/r/huobazi/dackup).
-
-![](http://dockeri.co/image/huobazi/dackup)
 
 ```
 $ docker pull huobazi/dackup:latest
