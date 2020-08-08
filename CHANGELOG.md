@@ -1,6 +1,11 @@
 
 ## CHANGE LOG
 
+### v0.0.5-beta.6
+
+- Add docker cupport
+- https://hub.docker.com/r/huobazi/dackup
+
 ### v0.0.5
 
 - Add FTP support
