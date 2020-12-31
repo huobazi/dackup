@@ -3,7 +3,7 @@
 
 ### v0.0.5-beta.6
 
-- Add docker cupport
+- Add docker support
 - https://hub.docker.com/r/huobazi/dackup
 
 ### v0.0.5
