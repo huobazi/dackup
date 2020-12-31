@@ -4,7 +4,9 @@
 ### v0.0.5-beta.6
 
 - Add docker support
-- https://hub.docker.com/r/huobazi/dackup
+- https://github.com/huobazi/dackup/pull/10
+- https://github.com/huobazi/dackup/pull/11
+- https://github.com/huobazi/dackup/pull/12
 
 ### v0.0.5
 
