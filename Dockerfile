@@ -18,7 +18,7 @@ ARG MSSQL_VERSION=17.5.2.1-1
 ENV MSSQL_VERSION=${MSSQL_VERSION}
 
 RUN apk update && apk upgrade \
-    && apk --update add --no-cache  --virtual build-deps curl gcc make linux-headers musl-dev tar gnupg \
+    && apk --update add --no-cache  --virtual build-deps curl gcc make linux-headers musl-dev tar gnupg bash \
     && curl "$REDIS_DOWNLOAD_URL" -o redis.tar.gz  \
     && mkdir -p /usr/src/redis \
     && tar -xzf redis.tar.gz -C /usr/src/redis --strip-components=1 \
@@ -39,10 +39,10 @@ RUN apk update && apk upgrade \
     # Installing packages
     && echo y | apk add --allow-untrusted msodbcsql17_${MSSQL_VERSION}_amd64.apk mssql-tools_${MSSQL_VERSION}_amd64.apk  \
     # Deleting packages
-    && rm -f msodbcsql*.sig mssql-tools*.apk \    
+    && rm -f msodbcsql*.sig mssql-tools*.apk \
     && apk --update add --no-cache postgresql-client mysql-client mongodb-tools \
     && apk del build-deps \
-    && rm -rf /var/cache/apk/* 
+    && rm -rf /var/cache/apk/*
 
 WORKDIR /app
 
