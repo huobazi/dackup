@@ -1,6 +1,11 @@
 
 ## CHANGE LOG
 
+
+### v0.0.5-beta.7
+- Fix bugs
+- https://github.com/huobazi/dackup/pull/14
+
 ### v0.0.5-beta.6
 
 - Add docker support
