@@ -1,6 +1,12 @@
 
 ## CHANGE LOG
 
+### v0.0.5-beta.9
+- bump version only
+
+### v0.0.5-beta.8
+- Fix nuget feeds
+ref: https://github.com/dotnet/source-build/pull/1972
 
 ### v0.0.5-beta.7
 - Fix bugs
